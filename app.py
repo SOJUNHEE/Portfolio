@@ -10,10 +10,6 @@ from urllib.parse import urlsplit
 from flask import Flask, abort, g, redirect, render_template, request, send_from_directory, url_for
 
 app = Flask(__name__)
-if os.environ.get('RENDER'):
-    # Render terminates TLS at its proxy; trust one hop so external URLs (link previews) use https.
-    from werkzeug.middleware.proxy_fix import ProxyFix
-    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 app.config['DATA_DIR'] = Path(__file__).parent / 'data'
 app.config['DEMO_DIR'] = Path(__file__).parent / 'demos'  # outside static/: served only through /demo/<slug>/
 SLUG = re.compile(r'^[a-z0-9]+(?:-[a-z0-9]+)*$')
@@ -146,9 +142,16 @@ def get_project_by_slug(slug):
     return next((p for p in get_projects() if p['slug'] == slug), None)
 
 
+def site_root():
+    """Public origin for link-preview tags. Render/Cloudflare terminate TLS, so the first X-Forwarded-Proto
+    value is the scheme the visitor used; it only affects these absolute preview URLs."""
+    proto = request.headers.get('X-Forwarded-Proto', '').split(',')[0].strip()
+    return f"{'https' if proto == 'https' or request.is_secure else request.scheme}://{request.host}"
+
+
 @app.context_processor
 def shared_context():
-    return {'profile': get_profile()}
+    return {'profile': get_profile(), 'site_root': site_root}
 
 
 @app.route('/')

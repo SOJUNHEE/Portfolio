@@ -129,6 +129,8 @@ class PortfolioTests(unittest.TestCase):
         self.assertEqual((robots.status_code, robots.mimetype), (200, 'text/plain'))
         self.assertNotIn('Disallow', robots.text)
         self.assertIn('<meta property="og:image" content="http://localhost/static/images/projects/', home.text)
+        proxied = self.client.get('/', headers={'X-Forwarded-Proto': 'https, http'}).text
+        self.assertIn('<meta property="og:image" content="https://localhost/static/images/projects/', proxied)
         # Bundled demo: served under /demo/<slug>/, linked as Live Demo, scripts still 'self'-only, no traversal.
         for path in ('/demo/scm-dashboard/', '/demo/scm-dashboard/vendor/chart.umd.min.js'):
             with self.client.get(path) as demo:
