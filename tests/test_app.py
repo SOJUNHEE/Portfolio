@@ -26,6 +26,13 @@ class PortfolioTests(unittest.TestCase):
             response = self.client.get('/')
             self.assertEqual(response.status_code, 200)
             self.assertIn('Coming Soon', response.text)
+        # Malformed profile lists are dropped or normalised instead of breaking the page.
+        (Path(self.temp.name) / 'profile.json').write_text(json.dumps({
+            'skills': [{'category': 'A', 'state': 3, 'items': None}, 'x'], 'competencies': [{'title': 'T', 'items': 'abc'}],
+            'metrics': [{'value': 5}, None], 'certifications': 'x'}), encoding='utf-8')
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('<li>abc</li>', response.text)
 
     def test_invalid_json_falls_back(self):
         (Path(self.temp.name) / 'projects.json').write_text('{broken', encoding='utf-8')
@@ -50,7 +57,11 @@ class PortfolioTests(unittest.TestCase):
         self.projects([{'slug': 'safe-test', 'is_published': True, 'title': '<script>alert(1)</script>',
                         'github_url': 'javascript:alert(1)', 'live_url': '//evil.test',
                         'external_url': 'https://example.com', 'thumbnail': '../../.env',
-                        'tech_stack': None, 'gallery': [None, {'src': '/etc/passwd'}]}])
+                        'tech_stack': None, 'gallery': [None, {'src': '/etc/passwd'}]},
+                       {'slug': 'demo-test', 'is_published': True, 'live_url': '/demo/not-bundled/'},
+                       {'slug': 'demo-escape', 'is_published': True, 'live_url': '/demo/../app.py/'}])
+        for slug in ('demo-test', 'demo-escape'):  # internal demo paths only when the bundle exists
+            self.assertNotIn('/demo/', self.client.get(f'/projects/{slug}').text)
         response = self.client.get('/projects/safe-test')
         self.assertEqual(response.status_code, 200)
         self.assertNotIn('<script>alert', response.text)
@@ -58,6 +69,13 @@ class PortfolioTests(unittest.TestCase):
         self.assertNotIn('//evil.test', response.text)
         self.assertIn('rel="noopener noreferrer"', response.text)
         self.assertIn('https://example.com', response.text)
+        # A bundled demo is served only while a published project links to it.
+        self.assertEqual(self.client.get('/demo/scm-dashboard/').status_code, 404)
+        self.projects([{'slug': 'x', 'is_published': False, 'live_url': '/demo/scm-dashboard/'}])
+        self.assertEqual(self.client.get('/demo/scm-dashboard/').status_code, 404)
+        self.projects([{'slug': 'x', 'is_published': True, 'live_url': '/demo/scm-dashboard/'}])
+        with self.client.get('/demo/scm-dashboard/') as demo:
+            self.assertEqual(demo.status_code, 200)
 
     def test_full_schema(self):
         item = {'slug': 'schema-test', 'is_published': True}
@@ -105,6 +123,16 @@ class PortfolioTests(unittest.TestCase):
             self.assertEqual(self.client.get(path).status_code, 301)
         self.assertEqual(self.client.get('/privacy').status_code, 200)
         self.assertIn("object-src 'none'", home.headers['Content-Security-Policy'])
+        self.assertNotIn('unsafe-inline', home.headers['Content-Security-Policy'])
+        # Bundled demo: served under /demo/<slug>/, linked as Live Demo, scripts still 'self'-only, no traversal.
+        for path in ('/demo/scm-dashboard/', '/demo/scm-dashboard/vendor/chart.umd.min.js'):
+            with self.client.get(path) as demo:
+                self.assertEqual(demo.status_code, 200)
+                self.assertIn("script-src 'self';", demo.headers['Content-Security-Policy'])
+        for path in ('/demo/scm-dashboard/../../../app.py', '/demo/missing/', '/demo/Bad_Slug/',
+                     '/static/demos/scm-dashboard/index.html', '/static/../demos/scm-dashboard/index.html'):
+            self.assertEqual(self.client.get(path).status_code, 404)
+        self.assertIn('href="/demo/scm-dashboard/"', self.client.get('/projects/scm-operations-dashboard').text)
         self.assertFalse(app.debug)
 
 

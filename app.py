@@ -7,10 +7,11 @@ import threading
 import webbrowser
 from pathlib import Path
 from urllib.parse import urlsplit
-from flask import Flask, abort, g, redirect, render_template, url_for
+from flask import Flask, abort, g, redirect, render_template, request, send_from_directory, url_for
 
 app = Flask(__name__)
 app.config['DATA_DIR'] = Path(__file__).parent / 'data'
+app.config['DEMO_DIR'] = Path(__file__).parent / 'demos'  # outside static/: served only through /demo/<slug>/
 SLUG = re.compile(r'^[a-z0-9]+(?:-[a-z0-9]+)*$')
 
 
@@ -36,6 +37,14 @@ def get_profile():
         if key in fallback and not isinstance(value, type(fallback[key])):
             continue
         fallback[key] = value
+    # Keep only well-formed list entries so a malformed profile.json cannot break the home page.
+    text = lambda v: v if isinstance(v, str) else ''
+    fallback['skills'] = [{'category': text(s.get('category')), 'state': text(s.get('state')), 'items': text_list(s.get('items'))}
+                          for s in fallback['skills'] if isinstance(s, dict)]
+    fallback['competencies'] = [{'title': text(c.get('title')), 'subtitle': text(c.get('subtitle')), 'items': text_list(c.get('items'))}
+                                for c in fallback['competencies'] if isinstance(c, dict)]
+    fallback['metrics'] = [{k: text(m.get(k)) for k in ('value', 'label', 'source')} for m in fallback['metrics'] if isinstance(m, dict)]
+    fallback['certifications'] = text_list(fallback['certifications'])
     return fallback
 
 
@@ -65,6 +74,15 @@ def safe_url(value):
         return value if parsed.scheme in ('https', 'http') and parsed.hostname and not parsed.username and not parsed.password else ''
     except ValueError:
         return ''
+
+
+DEMO_URL = re.compile(r'^/demo/([a-z0-9]+(?:-[a-z0-9]+)*)/$')
+
+
+def demo_url(value):
+    """Internal demo path like /demo/<slug>/ — only when demos/<slug>/index.html exists."""
+    match = DEMO_URL.fullmatch(value) if isinstance(value, str) else None
+    return value if match and (Path(app.config['DEMO_DIR']) / match.group(1) / 'index.html').is_file() else ''
 
 
 def project_image(value):
@@ -102,6 +120,7 @@ def get_projects():
             item[key] = value.strip() if isinstance(value, str) and value.strip() else default
         for key in ('github_url', 'live_url', 'external_url'):
             item[key] = safe_url(raw.get(key))
+        item['live_url'] = item['live_url'] or demo_url(raw.get('live_url'))
         item['thumbnail'] = project_image(raw.get('thumbnail'))
         item['gallery'] = []
         for entry in raw.get('gallery', []) if isinstance(raw.get('gallery'), list) else []:
@@ -146,6 +165,16 @@ def privacy():
     return render_template('privacy.html')
 
 
+@app.route('/demo/<slug>/')
+@app.route('/demo/<slug>/<path:filename>')
+def demo(slug, filename='index.html'):
+    """Project demos bundled under demos/<slug>/, served only while a published project links to them
+    (send_from_directory blocks path traversal)."""
+    if not SLUG.fullmatch(slug) or not any(p['live_url'] == f'/demo/{slug}/' for p in get_projects()):
+        abort(404)
+    return send_from_directory(Path(app.config['DEMO_DIR']) / slug, filename)
+
+
 @app.route('/sub1')
 @app.route('/sub1/detail/<category>')
 def legacy_projects(category=None):
@@ -177,6 +206,10 @@ def security_headers(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
     response.headers['Content-Security-Policy'] = "default-src 'self'; style-src 'self' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net; img-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'none'"
+    if request.path.startswith('/demo/'):
+        # Bundled demo renders style="" attributes from its own scripts; scripts stay 'self'-only.
+        response.headers['Content-Security-Policy'] = response.headers['Content-Security-Policy'].replace(
+            "style-src 'self'", "style-src 'self' 'unsafe-inline'").replace("img-src 'self'", "img-src 'self' data: blob:")
     return response
 
 

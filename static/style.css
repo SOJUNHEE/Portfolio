@@ -88,11 +88,15 @@ a,button{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .menu-toggle span{display:block;width:20px;height:2px;margin:5px 0;background:var(--color-primary);transition:transform var(--ease)}
 main{padding-top:var(--header-h)}
 @media(max-width:767px){
-    .menu-toggle{display:block}
-    #main-nav{display:none;position:fixed;top:var(--header-h);left:0;right:0;background:var(--color-surface);padding:12px var(--gutter) 28px;border-bottom:1px solid var(--color-border);max-height:calc(100dvh - var(--header-h));overflow-y:auto;flex-direction:column;align-items:stretch;gap:0;box-shadow:0 24px 40px #172d431f}
-    #main-nav.is-open{display:flex}
-    #main-nav a{font-size:18px;min-height:52px;padding:0 8px;border-radius:0;border-bottom:1px solid var(--color-border)}
-    #main-nav .nav-contact{margin:16px 0 0;justify-content:center;border:1px solid var(--color-border);border-radius:var(--radius-sm)}
+    /* Without JavaScript the toggle cannot work, so the links stay visible as a compact row instead. */
+    html:not(.js-motion) .logo-name{display:none}
+    html:not(.js-motion) #main-nav a{padding:0 7px;font-size:14px}
+    html:not(.js-motion) #main-nav .nav-contact{margin-left:2px}
+    .js-motion .menu-toggle{display:block}
+    .js-motion #main-nav{display:none;position:fixed;top:var(--header-h);left:0;right:0;background:var(--color-surface);padding:12px var(--gutter) 28px;border-bottom:1px solid var(--color-border);max-height:calc(100dvh - var(--header-h));overflow-y:auto;flex-direction:column;align-items:stretch;gap:0;box-shadow:0 24px 40px #172d431f}
+    .js-motion #main-nav.is-open{display:flex}
+    .js-motion #main-nav a{font-size:18px;min-height:52px;padding:0 8px;border-radius:0;border-bottom:1px solid var(--color-border)}
+    .js-motion #main-nav .nav-contact{margin:16px 0 0;justify-content:center;border:1px solid var(--color-border);border-radius:var(--radius-sm)}
     .menu-toggle[aria-expanded=true] span:first-child{transform:translateY(3.5px) rotate(45deg)}
     .menu-toggle[aria-expanded=true] span:last-child{transform:translateY(-3.5px) rotate(-45deg)}
 }

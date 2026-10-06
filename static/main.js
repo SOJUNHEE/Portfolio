@@ -3,6 +3,7 @@ const toggle = document.querySelector('.menu-toggle');
 const nav = document.getElementById('main-nav');
 const main = document.getElementById('main');
 const footer = document.querySelector('.site-footer');
+const outsideMenu = [document.querySelector('.skip-link'), document.querySelector('.logo')].filter(Boolean);
 const media = window.matchMedia('(max-width: 767px)');
 function setMenu(open, restoreFocus = false) {
     if (!toggle || !nav) return;
@@ -12,6 +13,7 @@ function setMenu(open, restoreFocus = false) {
     document.body.classList.toggle('menu-open', open);
     if (main) main.inert = open;
     if (footer) footer.inert = open;
+    outsideMenu.forEach(el => { el.inert = open; });
     if (restoreFocus) toggle.focus();
 }
 if (toggle && nav) {
@@ -29,7 +31,9 @@ if (toggle && nav) {
             if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
         }
     });
-    media.addEventListener('change', () => { if (!media.matches) setMenu(false); });
+    const onMediaChange = () => { if (!media.matches) setMenu(false); };
+    if (media.addEventListener) media.addEventListener('change', onMediaChange);
+    else media.addListener(onMediaChange);  // Safari 13 and older
 }
 // Marks the link for the section currently in view (header menu on home, step list on detail pages).
 function trackCurrent(targets, links) {
@@ -77,7 +81,9 @@ if (revealEls.length && 'IntersectionObserver' in window && !reducedMotion.match
     });
     const showAll = () => { revealEls.forEach(show); revealObserver.disconnect(); };
     window.addEventListener('beforeprint', showAll);
-    reducedMotion.addEventListener('change', () => { if (reducedMotion.matches) showAll(); });
+    const onMotionChange = () => { if (reducedMotion.matches) showAll(); };
+    if (reducedMotion.addEventListener) reducedMotion.addEventListener('change', onMotionChange);
+    else reducedMotion.addListener(onMotionChange);
 }
 // Corrupt images also receive a readable fallback, beyond server-side existence checks.
 document.querySelectorAll('.hero-work-media img, .project-preview img, .detail-preview img, .gallery img').forEach(img => {

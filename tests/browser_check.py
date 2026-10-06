@@ -204,6 +204,9 @@ try:
                     assert hidden == 0, f'{name} {path}: {hidden} hidden'
                 else:
                     assert static_page.locator('.reveal-pending').count() == 0
+                    # Without JS the mobile menu cannot open, so its links must already be on screen.
+                    assert static_page.locator('#main-nav a').first.is_visible()
+                    assert not static_page.evaluate('document.documentElement.scrollWidth > innerWidth')
                     expect(static_page.locator('h1')).to_be_visible()
                     expect(static_page.locator('main section').last).to_be_visible()
             ctx.close()
@@ -250,6 +253,37 @@ try:
                 assert link.get_attribute('rel') == 'noopener noreferrer'
             app.config['DATA_DIR'] = original
         ok('0/1/2/3 projects, unpublished hidden, missing image fallback (isolated data)')
+
+        # Bundled live demos open from the detail page and run under the site's CSP without errors.
+        for project in published:
+            if not project['live_url'].startswith('/demo/'):
+                continue
+            for width in (1440, 360):
+                page.set_viewport_size({'width': width, 'height': 900})
+                page.goto(f"{BASE}/projects/{project['slug']}", wait_until='networkidle')
+                link = page.locator(f'a[href="{project["live_url"]}"]')
+                assert link.count() == 1
+                with page.context.expect_page() as popup:
+                    link.click()
+                demo = popup.value
+                demo_errors = []
+                demo.on('console', lambda m: demo_errors.append(m.text) if m.type == 'error' else None)
+                demo.on('pageerror', lambda e: demo_errors.append(str(e)))
+                demo.wait_for_load_state('networkidle')
+                demo.wait_for_selector('.loading', state='detached', timeout=30000)
+                screens = demo.evaluate("[...document.querySelectorAll('#nav [data-screen]')].map(b => '#' + b.dataset.screen)")
+                for screen in screens:  # every dashboard screen, so a CSP violation on any of them is caught
+                    demo.evaluate(f"location.hash = {screen!r}")
+                    demo.wait_for_timeout(700)
+                    assert demo.locator('canvas, table').count() > 0, f'demo screen {screen} empty'
+                    assert not demo.evaluate('document.documentElement.scrollWidth > innerWidth'), f'demo overflow {screen} at {width}'
+                assert len(screens) >= 8, screens
+                assert not demo_errors, demo_errors
+                demo.evaluate("location.hash = ''")
+                demo.wait_for_timeout(500)
+                demo.screenshot(path=str(output / f"demo-{project['slug']}-{width}.png"))
+                demo.close()
+        ok('bundled live demos')
 
         for path, status in (('/privacy', 200), ('/projects/missing', 404)):
             assert page.goto(BASE + path).status == status

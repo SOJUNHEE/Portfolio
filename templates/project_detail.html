@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
 {% block title %}{{ project.title }} | 소준희 Portfolio{% endblock %}
 {% block description %}{{ project.description or '소준희의 교육 과정 및 개인 프로젝트 기록입니다.' }}{% endblock %}
-{% macro gallery(images) %}<div class="gallery"><h3 class="tiny-label">프로젝트 화면</h3>{% for image in images %}<figure><img src="{{ image.src }}" alt="{{ image.alt }}" data-title="{{ image.alt }}" loading="lazy"><figcaption>{{ image.alt }}</figcaption></figure>{% endfor %}</div>{% endmacro %}
+{% macro gallery(images) %}<div class="gallery"><h3 class="tiny-label">프로젝트 화면</h3>{% for image in images %}<figure><img src="{{ image.src }}" alt="" data-title="{{ image.alt }}" loading="lazy"><figcaption>{{ image.alt }}</figcaption></figure>{% endfor %}</div>{% endmacro %}
 {% block content %}
 {% set steps = [('problem','문제 정의',''),('objective','목표',''),('data','활용 데이터','실제 데이터와 직접 만든 데이터를 구분해 적었습니다.'),('solution','해결 방법',''),('architecture','시스템 구조','실제 구현된 범위 기준입니다.'),('features','주요 기능',''),('result','결과','직접 검증한 내용과 아직 확인하지 못한 내용을 함께 적었습니다.'),('future_improvement','향후 개선','현재 구현의 한계와 확장에 필요한 과제입니다.')] %}
 {% set has_role = project.my_contribution or project.team_contribution or (project.role and project.role != project.card_role) %}
+{% set role_label = '내 기여와 팀의 역할' if project.team_contribution else '담당 범위' %}
 <article class="container detail-page">
     <a class="text-link back-link" href="{{ url_for('index') }}#projects">← 모든 프로젝트</a>
     <header class="detail-header">
@@ -23,12 +24,12 @@
     </header>
     <div class="detail-flow">
         <nav class="detail-steps" aria-label="프로젝트 서술 단계">
-            <ol>{% if has_role %}<li><a href="#step-role">내 기여와 팀의 역할</a></li>{% endif %}{% for key, label, note in steps %}{% if project[key] %}<li><a href="#step-{{ key }}">{{ label }}</a></li>{% endif %}{% endfor %}{% if project.tech_stack %}<li><a href="#step-tech">사용 기술</a></li>{% endif %}</ol>
+            <ol>{% if has_role %}<li><a href="#step-role">{{ role_label }}</a></li>{% endif %}{% for key, label, note in steps %}{% if project[key] %}<li><a href="#step-{{ key }}">{{ label }}</a></li>{% endif %}{% endfor %}{% if project.gallery and not project.features %}<li><a href="#step-gallery">프로젝트 화면</a></li>{% endif %}{% if project.tech_stack %}<li><a href="#step-tech">사용 기술</a></li>{% endif %}</ol>
         </nav>
         <div class="detail-content">
             {% if has_role %}
             <section id="step-role" class="role-section">
-                <h2>내 기여와 팀의 역할</h2>
+                <h2>{{ role_label }}</h2>
                 {% if project.my_contribution or project.team_contribution %}
                 <div class="role-grid">
                     {% if project.my_contribution %}<div class="role-mine"><h3>직접 담당한 부분</h3><ul>{% for entry in project.my_contribution %}<li>{{ entry }}</li>{% endfor %}</ul></div>{% endif %}

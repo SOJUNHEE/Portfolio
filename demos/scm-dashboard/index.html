@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dr.Reju-All SCM Operations — Portfolio</title>
+  <meta name="description" content="B2C 주문 처리와 약국·의원 B2B 납품, 재고·정산 검증을 한 화면에서 보는 SCM 운영 대시보드 (지원용 포트폴리오, 가상 데이터)">
+  <link rel="icon" href="/static/images/portfolio/mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="화면 이동">
+      <div class="brand">
+        <div class="brand-name">Dr.Reju-All</div>
+        <div class="brand-sub">SCM Operations — Portfolio</div>
+      </div>
+      <ul class="nav" id="nav"></ul>
+      <dl class="sidebar-foot" id="sidebarFoot"></dl>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <div class="topbar-row">
+          <div class="page-title">
+            <span class="eyebrow" id="pageEyebrow"></span>
+            <h1><span id="pageTitle"></span><span class="duty" id="pageDuty"></span></h1>
+          </div>
+          <form class="filters" id="filters">
+            <div class="field">
+              <label for="fPeriod">기간</label>
+              <select id="fPeriod">
+                <option value="7d">최근 7일</option>
+                <option value="30d">최근 30일</option>
+                <option value="90d" selected>최근 3개월</option>
+                <option value="180d">최근 6개월</option>
+                <option value="365d">최근 12개월</option>
+                <option value="custom">직접 선택</option>
+              </select>
+            </div>
+            <div class="custom-range" id="customRange">
+              <div class="field">
+                <label for="fFrom">시작일</label>
+                <input type="date" id="fFrom">
+              </div>
+              <div class="field">
+                <label for="fTo">종료일</label>
+                <input type="date" id="fTo">
+              </div>
+            </div>
+            <div class="field">
+              <label for="fChannel">채널</label>
+              <select id="fChannel"></select>
+            </div>
+            <div class="field">
+              <label for="fProduct">상품</label>
+              <select id="fProduct"></select>
+            </div>
+            <div class="field">
+              <label class="sr-only" for="fReset">필터 초기화</label>
+              <button type="button" class="btn" id="fReset">초기화</button>
+            </div>
+          </form>
+        </div>
+        <p class="scope-line" id="scopeLine"></p>
+      </header>
+
+      <main class="view" id="view" tabindex="-1">
+        <p class="loading">가상 데이터를 생성하고 있습니다…</p>
+      </main>
+
+      <footer class="disclaimer">
+        <p><strong>본 대시보드는 지원용 포트폴리오이며 주문·재고·정산 등 모든 수치는 가상입니다. 네오심플릭스의 실제 수치가 아닙니다.</strong></p>
+        <p>Dr.Reju-All SCM Operations — Portfolio</p>
+      </footer>
+    </div>
+  </div>
+
+  <!-- 포트폴리오 사이트 내장본: Chart.js 4.4.1을 로컬로 포함하고(CSP script-src 'self'), 인라인 onsubmit 대신 embed.js 사용 -->
+  <script src="vendor/chart.umd.min.js"></script>
+  <script src="js/embed.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/metrics.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/export.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

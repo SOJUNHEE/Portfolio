@@ -8,8 +8,8 @@ backups/
 test-results/
 .pytest_cache/
 # Separate projects / local-only folders (not part of the portfolio site)
-mini_6_data/
-Neo/
-Portfolio/
-.claude/
-CLAUDE.md
+/mini_6_data/
+/Neo/
+/Portfolio/
+/.claude/
+/CLAUDE.md
