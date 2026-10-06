@@ -31,7 +31,7 @@
       "뷰 로직은 templates/의 Jinja2 템플릿(base.html 공통 레이아웃과 templates/partials/의 재사용 조각)으로 구성했다.",
       "응답 헤더에 X-Content-Type-Options, Content-Security-Policy(script-src 'self', object-src 'none' 등), Referrer-Policy를 적용했다.",
       "별도 데이터베이스나 로그인 인증 체계는 없으며, 정적 JSON 파일을 신뢰 가능한 콘텐츠 소스로 간주하는 구조다.",
-      "개발 서버 실행(python app.py) 시 자동으로 기본 브라우저가 열리도록 했고, 배포 시에는 waitress(WSGI 서버)로 실행하는 것을 전제로 한다.",
+      "개발 서버 실행(python app.py) 시 자동으로 기본 브라우저가 열리도록 했고, 공개 사이트는 Render에 배포해 https://portfolio-sgt5.onrender.com 주소로 운영한다.",
       "데모 파일은 static/ 밖의 demos/ 폴더에 두고 /demo/<slug>/ 경로로만 제공하며, 경로 탈출을 막고 공개 프로젝트에 연결된 데모만 응답한다. 데모 응답에만 인라인 스타일을 허용하는 CSP를 따로 적용하고, 스크립트는 사이트 자체 파일만 허용한다."
     ],
     "features": [
@@ -54,16 +54,17 @@
     "result": [
       "tests/test_app.py의 유닛 테스트 7개(정상 라우팅, 빈/손상된 JSON 폴백, 미발행 프로젝트 차단, XSS·경로 탈출 방어, 전체 스키마 렌더링 등)가 모두 통과하는 것을 확인했다.",
       "tests/browser_check.py로 1920px부터 360px까지 8개 뷰포트에서 홈과 공개 프로젝트 상세를 자동 점검하고, 내장 데모의 8개 화면을 1440px·360px에서 실행해 가로 넘침 0건, 브라우저 콘솔 에러 0건을 확인했다. 같은 점검에서 JavaScript 미실행·움직임 줄이기 설정에서도 본문이 보이는지, 프로젝트 0~3개일 때 레이아웃이 유지되는지 확인했다.",
+      "2026-10-06 배포 주소에서 홈·프로젝트 상세 3개·내장 데모 8개 화면을 1440px·390px로 점검해, 브라우저 콘솔 에러 0건, 가로 넘침 0건, 깨진 이미지 0건과 비공개 데모 경로·없는 페이지의 404 응답, 보안 헤더(CSP) 적용을 확인했다.",
       "아직 실제 채용 담당자에게 공개해 반응을 확인한 단계는 아니며, 공개 이후의 효과는 예상 효과로 남겨둔다."
     ],
     "future_improvement": [
       "현재는 파일 기반(JSON) 콘텐츠 관리이며, 편집 빈도가 늘어나면 관리자 화면이나 경량 데이터베이스 연동을 고려할 수 있다.",
       "현재는 별도 로그인·관리자 인증이 없어 콘텐츠 수정이 파일 시스템 접근 권한에 의존한다. 향후 관리 기능을 추가한다면 인증 체계가 필요하다.",
       "실사용 트래픽 기준의 접근성(스크린 리더 등) 검증은 아직 수행하지 않았다.",
-      "코드는 GitHub 저장소(SOJUNHEE/Portfolio)에 공개했다. 도메인 연결·HTTPS·모니터링을 갖춘 웹 배포는 아직 진행하지 않았으며, 향후 기업 환경에 준하는 배포 파이프라인으로 확장할 수 있다."
+      "코드는 GitHub 저장소(SOJUNHEE/Portfolio)에 공개하고 Render에 배포했다. 개인 도메인 연결·가동 모니터링·오류 알림은 아직 없으며, 향후 기업 환경에 준하는 배포 파이프라인으로 확장할 수 있다."
     ],
     "github_url": "https://github.com/SOJUNHEE/Portfolio",
-    "live_url": "",
+    "live_url": "https://portfolio-sgt5.onrender.com",
     "external_url": "",
     "thumbnail": "images/projects/portfolio-website-thumb.png",
     "gallery": [],
