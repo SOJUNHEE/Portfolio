@@ -1621,7 +1621,7 @@
     document.getElementById('pageTitle').textContent = sc.ko;
     document.getElementById('pageDuty').textContent = sc.duty;
     document.getElementById('scopeLine').innerHTML = scopeLineHtml();
-    document.title = sc.ko + ' · Dr.Reju-All SCM Operations — Portfolio';
+    document.title = sc.ko + ' · K-Beauty Brand SCM Operations — Portfolio';
     var view = document.getElementById('view');
     view.innerHTML = RENDER[sc.id]();
     runHooks();
