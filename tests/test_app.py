@@ -124,10 +124,18 @@ class PortfolioTests(unittest.TestCase):
         self.assertEqual(self.client.get('/privacy').status_code, 200)
         self.assertIn("object-src 'none'", home.headers['Content-Security-Policy'])
         self.assertNotIn('unsafe-inline', home.headers['Content-Security-Policy'])
-        # Crawlers and link previews: explicit allow-all robots.txt and an absolute og:image.
+        # Crawling is blocked (robots.txt, X-Robots-Tag, meta robots); security headers on every response.
         robots = self.client.get('/robots.txt')
         self.assertEqual((robots.status_code, robots.mimetype), (200, 'text/plain'))
-        self.assertNotIn('Disallow', robots.text)
+        self.assertIn('Disallow: /', robots.text)
+        self.assertIn('<meta name="robots" content="noindex', home.text)
+        for path in ('/', '/projects/scm-operations-dashboard', '/demo/scm-dashboard/', '/robots.txt', '/projects/missing'):
+            with self.client.get(path) as r:
+                self.assertIn('noindex', r.headers['X-Robots-Tag'], path)
+                self.assertEqual(r.headers['X-Frame-Options'], 'DENY')
+                self.assertIn('camera=()', r.headers['Permissions-Policy'])
+        self.assertNotIn('Strict-Transport-Security', home.headers)  # plain-http local run
+        self.assertIn('max-age', self.client.get('/', base_url='https://localhost').headers['Strict-Transport-Security'])
         self.assertIn('<meta property="og:image" content="http://localhost/static/images/projects/', home.text)
         proxied = self.client.get('/', headers={'X-Forwarded-Proto': 'https, http'}).text
         self.assertIn('<meta property="og:image" content="https://localhost/static/images/projects/', proxied)

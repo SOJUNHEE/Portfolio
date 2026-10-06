@@ -176,8 +176,8 @@ def privacy():
 
 @app.route('/robots.txt')
 def robots():
-    # Public portfolio: allow all crawlers and link-preview fetchers.
-    return app.response_class('User-agent: *\nAllow: /\n', mimetype='text/plain')
+    # Owner's choice: ask every crawler (search engines, AI crawlers) not to collect the site.
+    return app.response_class('User-agent: *\nDisallow: /\n', mimetype='text/plain')
 
 
 @app.route('/demo/<slug>/')
@@ -220,6 +220,12 @@ def not_found(error):
 def security_headers(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers['X-Robots-Tag'] = 'noindex, nofollow, noarchive, nosnippet, noimageindex'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['Permissions-Policy'] = 'camera=(), microphone=(), geolocation=(), payment=(), usb=()'
+    response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
+    if site_root().startswith('https://'):
+        response.headers['Strict-Transport-Security'] = 'max-age=31536000'
     response.headers['Content-Security-Policy'] = "default-src 'self'; style-src 'self' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net; img-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'none'"
     if request.path.startswith('/demo/'):
         # Bundled demo renders style="" attributes from its own scripts; scripts stay 'self'-only.
