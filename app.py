@@ -143,10 +143,12 @@ def get_project_by_slug(slug):
 
 
 def site_root():
-    """Public origin for link-preview tags. Render/Cloudflare terminate TLS, so the first X-Forwarded-Proto
-    value is the scheme the visitor used; it only affects these absolute preview URLs."""
+    """Public origin for link-preview tags only. Render/Cloudflare terminate TLS and waitress drops untrusted
+    X-Forwarded-* headers, so also accept Cloudflare's CF-Visitor and the always-https onrender.com host."""
     proto = request.headers.get('X-Forwarded-Proto', '').split(',')[0].strip()
-    return f"{'https' if proto == 'https' or request.is_secure else request.scheme}://{request.host}"
+    secure = (proto == 'https' or request.is_secure or '"https"' in request.headers.get('CF-Visitor', '')
+              or request.host.split(':')[0].endswith('.onrender.com'))
+    return f"{'https' if secure else request.scheme}://{request.host}"
 
 
 @app.context_processor
