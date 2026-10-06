@@ -124,6 +124,11 @@ class PortfolioTests(unittest.TestCase):
         self.assertEqual(self.client.get('/privacy').status_code, 200)
         self.assertIn("object-src 'none'", home.headers['Content-Security-Policy'])
         self.assertNotIn('unsafe-inline', home.headers['Content-Security-Policy'])
+        # Crawlers and link previews: explicit allow-all robots.txt and an absolute og:image.
+        robots = self.client.get('/robots.txt')
+        self.assertEqual((robots.status_code, robots.mimetype), (200, 'text/plain'))
+        self.assertNotIn('Disallow', robots.text)
+        self.assertIn('<meta property="og:image" content="http://localhost/static/images/projects/', home.text)
         # Bundled demo: served under /demo/<slug>/, linked as Live Demo, scripts still 'self'-only, no traversal.
         for path in ('/demo/scm-dashboard/', '/demo/scm-dashboard/vendor/chart.umd.min.js'):
             with self.client.get(path) as demo:

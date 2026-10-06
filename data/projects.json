@@ -1,7 +1,7 @@
 [
   {
     "slug": "portfolio-website",
-    "is_published": true,
+    "is_published": false,
     "title": "개인 포트폴리오 웹사이트",
     "program": "개인 프로젝트",
     "description": "물류·SCM 실무 경험을 데이터·AI 역량과 함께 보여주기 위해 직접 설계한 포트폴리오 사이트. 콘텐츠를 JSON으로 분리해 코드 수정 없이 프로필·경력·프로젝트를 지속적으로 갱신할 수 있도록 구성했다.",
