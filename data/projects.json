@@ -61,9 +61,9 @@
       "현재는 파일 기반(JSON) 콘텐츠 관리이며, 편집 빈도가 늘어나면 관리자 화면이나 경량 데이터베이스 연동을 고려할 수 있다.",
       "현재는 별도 로그인·관리자 인증이 없어 콘텐츠 수정이 파일 시스템 접근 권한에 의존한다. 향후 관리 기능을 추가한다면 인증 체계가 필요하다.",
       "실사용 트래픽 기준의 접근성(스크린 리더 등) 검증은 아직 수행하지 않았다.",
-      "코드는 GitHub 저장소(SOJUNHEE/Portfolio)에 공개하고 Render에 배포했다. 개인 도메인 연결·가동 모니터링·오류 알림은 아직 없으며, 향후 기업 환경에 준하는 배포 파이프라인으로 확장할 수 있다."
+      "Render에 배포했다. 개인 도메인 연결·가동 모니터링·오류 알림은 아직 없으며, 향후 기업 환경에 준하는 배포 파이프라인으로 확장할 수 있다."
     ],
-    "github_url": "https://github.com/SOJUNHEE/Portfolio",
+    "github_url": "",
     "live_url": "https://portfolio-sgt5.onrender.com",
     "external_url": "",
     "thumbnail": "images/projects/portfolio-website-thumb.png",
@@ -132,7 +132,7 @@
       "실제 운영에 쓰려면 브라우저에서 생성하는 가상 데이터 대신 OMS·WMS·ERP API나 데이터베이스에서 데이터를 받아오는 구조가 필요하다.",
       "현재는 브라우저가 1년치 주문 약 12.5만 건을 직접 계산한다. 데이터가 커지면 집계를 서버나 데이터베이스로 옮겨야 한다.",
       "README의 교차 검증·CSV 대조를 다시 실행할 수 있도록 점검 스크립트를 프로젝트에 함께 보관해야 한다.",
-      "현재 데모는 이 포트폴리오 사이트 안의 경로(/demo/scm-dashboard/)로 실행하며, 별도 GitHub 저장소는 아직 없다. 실제 사용 환경이라면 로그인·권한과 지표 변경 이력 관리도 필요하다."
+      "현재 데모는 이 포트폴리오 사이트 안의 경로(/demo/scm-dashboard/)로 실행한다. 실제 사용 환경이라면 로그인·권한과 지표 변경 이력 관리도 필요하다."
     ],
     "github_url": "",
     "live_url": "/demo/scm-dashboard/",
@@ -219,7 +219,7 @@
       "실제 기업 데이터 기반 검증과 수출 규제 판정의 법적 정확성 검토는 아직 수행하지 않았다.",
       "공개 배포본은 외부 API 키를 넣지 않아 일부 지표가 ‘키 없음’으로 나오고, 무료 서버 디스크를 쓰기 때문에 재시작·재배포 시 방문자 작업이 사라진다. 실제 서비스라면 키 관리(비밀 저장소)와 외부 저장소·사용량 모니터링이 필요하다."
     ],
-    "github_url": "https://github.com/SOJUNHEE/Portfolio-AXPORT",
+    "github_url": "",
     "live_url": "https://portfolio-axport.onrender.com",
     "external_url": "",
     "thumbnail": "images/projects/axport-mini1-thumb.png",
