@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block content %}
+{% set featured = (projects | selectattr('is_featured') | first) or (projects[0] if projects else none) %}
+<section id="home" class="hero">
+    <div class="container hero-grid">
+        <div class="hero-copy">
+            <p class="eyebrow">물류·SCM · 무역 · 데이터·자동화</p>
+            <p class="hero-name">{{ profile.english_name }} <span>/ {{ profile.name }}</span></p>
+            <h1><span>현장을 이해하고,</span> <span>데이터로 운영을</span> <span class="accent">개선합니다.</span></h1>
+            <p class="hero-description">3PL·풀필먼트 센터 운영과 수입통관 실무에서 입출고·재고·정산·통관 일정을 다뤄 왔습니다. 지금은 데이터 분석과 AI, Python을 배우며 반복 업무와 운영 문제를 개선하는 역량을 넓히고 있습니다.</p>
+            <div class="actions"><a class="button primary" href="#projects">프로젝트 보기 <span aria-hidden="true">→</span></a><a class="button secondary" href="#experience">경력 보기</a></div>
+        </div>
+        {% if featured %}
+        <figure class="hero-work">
+            <a class="hero-work-media" href="{{ url_for('project_detail', slug=featured.slug) }}" aria-label="{{ featured.title }} 상세 보기">
+                {% if featured.thumbnail %}<img src="{{ featured.thumbnail }}" alt="{{ featured.title }} 화면" data-title="{{ featured.title }}">{% else %}<span class="image-placeholder"><small>Project Preview</small><strong>{{ featured.title }}</strong></span>{% endif %}
+            </a>
+            <figcaption>
+                <span class="tiny-label">대표 프로젝트</span>
+                <strong>{{ featured.title }}</strong>
+                {% set caption = [featured.card_label, featured.card_role] | select | join(' · ') %}
+                {% if caption %}<span class="hero-work-note">{{ caption }}</span>{% endif %}
+            </figcaption>
+        </figure>
+        {% else %}
+        <div class="hero-work hero-path">
+            <span class="tiny-label">실무에서 학습으로</span>
+            <ol>
+                <li><strong>실무 경험</strong><span>SCM · 재고 · 출고 · 정산 · 통관</span></li>
+                <li><strong>현재 학습</strong><span>데이터 분석 · Python · AI · 자동화</span></li>
+                <li><strong>지향점</strong><span>현업 문제를 시스템으로 해결</span></li>
+            </ol>
+        </div>
+        {% endif %}
+    </div>
+</section>
+<section class="metrics-section" aria-label="경력 핵심 지표">
+    <div class="container">
+        <p class="tiny-label metrics-caption">핵심 경력 지표 · 회사별 수치이며 서로 합산하지 않았습니다</p>
+        <dl class="metrics-grid">{% for metric in profile.metrics %}<div class="metric"><dt>{{ metric.label }}</dt><dd class="metric-value">{{ metric.value }}</dd><dd class="metric-source">{{ metric.source }}</dd></div>{% endfor %}</dl>
+    </div>
+</section>
+<section id="projects" class="section">
+    <div class="container">
+        <div class="section-heading reveal"><p class="eyebrow">01 / SELECTED PROJECTS</p><h2>현업의 질문을 기술로 풀어 본 프로젝트</h2><p>교육 과정과 개인 프로젝트의 결과를 기록합니다. 팀 프로젝트는 직접 담당한 범위를 따로 적었습니다.</p></div>
+        {% if projects %}
+        <div class="project-grid">{% for project in projects %}{% include 'partials/project_card.html' %}{% endfor %}</div>
+        {% else %}
+        <div class="empty-project reveal"><span class="badge learning">IN PROGRESS</span><h3>한국무역아카데미 무역 AX 2기 프로젝트 준비 중</h3><p>현업 문제를 데이터와 AI를 활용하여 해결하는 프로젝트를 진행하고 있습니다. 완료되는 프로젝트부터 순차적으로 공개할 예정입니다.</p><span class="coming-soon">Coming Soon</span></div>
+        {% endif %}
+    </div>
+</section>
+<section id="about" class="section bordered">
+    <div class="container">
+        <div class="about-grid">
+            <div class="section-heading reveal"><p class="eyebrow">02 / ABOUT</p><h2>현장에서 쌓은 이해가 개선의 출발점입니다.</h2></div>
+            <div class="about-copy reveal">
+                <p>3PL과 풀필먼트 현장에서 입출고, 재고, 작업 인력과 일정을 관리했습니다. WMS와 Excel로 운영 데이터를 확인하고, 화주사·협력사와 소통하며 현장의 문제를 개선해 왔습니다.</p>
+                <p>이후 수입식품 통관 서류와 보세창고 일정을 다루며 물류의 앞단까지 경험을 넓혔습니다. 지금은 한국무역아카데미 <strong>무역 AX 2기</strong>에서 데이터 분석, AI, Python과 웹 기반 시스템을 배우고 있습니다.</p>
+                <dl class="education"><div><dt>학력</dt><dd>{{ profile.education }}</dd></div><div><dt>자격</dt><dd>{{ profile.certifications | join(' · ') }}</dd></div></dl>
+                <p class="about-links"><a class="text-link" href="#skills">보유 역량 보기 <span aria-hidden="true">↓</span></a><a class="text-link" href="#journey">AX 학습 여정 보기 <span aria-hidden="true">↓</span></a></p>
+            </div>
+        </div>
+        {% if profile.competencies %}
+        <h3 class="competency-title">핵심 역량</h3>
+        <div class="competency-grid">{% for item in profile.competencies %}<div class="competency reveal"><h4>{{ item.subtitle }}</h4><p class="tiny-label">{{ item.title }}</p><ul>{% for entry in item['items'] %}<li>{{ entry }}</li>{% endfor %}</ul></div>{% endfor %}</div>
+        {% endif %}
+    </div>
+</section>
+<section id="experience" class="section bordered">
+    <div class="container">
+        <div class="section-heading reveal"><p class="eyebrow">03 / EXPERIENCE</p><h2>물류센터 운영에서 수입통관까지</h2><p>회사별 운영 규모와 대표 성과를 먼저 적었습니다. 주요 역할과 사용 도구는 펼쳐서 볼 수 있습니다.</p></div>
+        <div class="timeline">{% for experience in experiences %}{% include 'partials/experience_card.html' %}{% endfor %}</div>
+        <p class="section-note">각 성과는 해당 재직 기간의 업무 경험 기준이며, 회사별 운영 규모는 서로 합산하지 않았습니다.</p>
+    </div>
+</section>
+<section id="skills" class="section bordered">
+    <div class="container">
+        <div class="section-heading reveal"><p class="eyebrow">04 / SKILLS</p><h2>실무에서 써 온 것과 지금 배우는 것</h2><p>숙련도를 점수로 매기지 않고, 실무 경험과 학습 중인 영역을 구분해 적었습니다.</p></div>
+        <div class="skills-list">{% for skill in profile.skills %}<article class="skill-row reveal"><h3>{{ skill.category }}</h3><span class="badge {% if '학습' in skill.state and '실무' in skill.state %}mixed{% elif '학습' in skill.state %}learning{% else %}practice{% endif %}">{{ skill.state }}</span><ul class="tags">{% for item in skill['items'] %}<li>{{ item }}</li>{% endfor %}</ul></article>{% endfor %}</div>
+    </div>
+</section>
+<section id="journey" class="section bordered">
+    <div class="container">
+        <div class="section-heading reveal"><p class="eyebrow">05 / AX JOURNEY</p><h2>현장을 아는 사람에서, 직접 해결하는 사람으로.</h2><p>한국무역아카데미 <strong>무역 AX 2기</strong>에서 실무 경험을 데이터와 AI로 연결하는 역량을 학습 중입니다.</p></div>
+        <ol class="journey-steps">
+            <li class="reveal"><span class="journey-num">01</span><small>실무 경험</small><h3>현업의 맥락을 이해합니다.</h3><p>SCM · 재고 · 출고 · 정산 · 통관</p></li>
+            <li class="reveal"><span class="journey-num">02</span><small>현재 학습</small><h3>데이터와 기술로 시야를 넓힙니다.</h3><p>데이터 분석 · Python · AI · 자동화</p></li>
+            <li class="reveal"><span class="journey-num">03</span><small>지향점</small><h3>현업 문제를 시스템으로 해결합니다.</h3><p>현장에서 실제로 쓸 수 있는 도구를 만드는 것이 목표입니다.</p></li>
+        </ol>
+    </div>
+</section>
+<section id="contact" class="contact-section">
+    <div class="container contact-grid">
+        <div class="reveal"><p class="eyebrow">06 / CONTACT</p><h2>더 나은 운영을 만드는 일, 함께 이야기하고 싶습니다.</h2><p>SCM · 물류 · 무역, 그리고 데이터와 기술의 접점에서.</p></div>
+        <div class="contact-info reveal"><a class="email-link" href="mailto:{{ profile.email }}">{{ profile.email }} <span aria-hidden="true">↗</span></a>{% if profile.phone %}<a class="phone-link" href="tel:{{ profile.phone | replace('-', '') }}">{{ profile.phone }}</a>{% endif %}<button class="copy-email" type="button" data-email="{{ profile.email }}">이메일 복사 <span aria-hidden="true">⧉</span></button><span id="copy-status" class="copy-status" role="status" aria-live="polite"></span><p class="location">{{ profile.location }}</p></div>
+    </div>
+</section>
+{% endblock %}

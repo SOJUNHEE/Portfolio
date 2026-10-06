@@ -1,0 +1,18 @@
+<article class="experience-row reveal">
+    <div class="experience-when"><p class="experience-period">{{ experience.period }}</p><p class="experience-position">{{ experience.position }}</p></div>
+    <div class="experience-main">
+        <h3>{{ experience.company }}</h3>
+        <p class="experience-dept">{{ experience.department }}{% if experience.environment and experience.environment != experience.department %} · {{ experience.environment }}{% endif %}</p>
+        {% if experience.scale %}<p class="experience-scale"><span class="tiny-label">운영 규모</span>{{ experience.scale }}</p>{% endif %}
+    </div>
+    {% if experience.achievements %}<div class="experience-achievements"><h4 class="tiny-label">대표 성과</h4><ul>{% for achievement in experience.achievements %}<li>{{ achievement }}</li>{% endfor %}</ul></div>{% endif %}
+    {% if experience.roles or experience.tools %}
+    <details class="experience-more">
+        <summary>주요 역할 · 사용 도구 보기</summary>
+        <div class="experience-detail">
+            {% if experience.roles %}<div><h4 class="tiny-label">주요 역할</h4><ul>{% for role in experience.roles %}<li>{{ role }}</li>{% endfor %}</ul></div>{% endif %}
+            {% if experience.tools %}<div><h4 class="tiny-label">사용 시스템 및 업무 도구</h4><ul class="tags">{% for tool in experience.tools %}<li>{{ tool }}</li>{% endfor %}</ul></div>{% endif %}
+        </div>
+    </details>
+    {% endif %}
+</article>

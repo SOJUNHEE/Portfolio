@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{{ url_for('static', filename='motion-init.js') }}"></script>
+    <title>{% block title %}소준희 | 물류·SCM · 무역 · 데이터·자동화{% endblock %}</title>
+    <meta name="description" content="{% block description %}물류센터 운영부터 수입통관까지. 소준희의 SCM·물류 실무 경험과 데이터·AI를 향한 성장 기록입니다.{% endblock %}">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="ko_KR">
+    <meta property="og:title" content="{% if project is defined %}{{ project.title }} | {% endif %}소준희 — 현장을 이해하고, 데이터로 운영을 개선합니다.">
+    <meta property="og:description" content="물류·SCM · 무역 · 데이터·자동화 | 실무 경험과 현재의 성장 기록">
+    <meta name="theme-color" content="#172d43">
+    <link rel="icon" href="{{ url_for('static', filename='images/portfolio/mark.svg') }}" type="image/svg+xml">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='main.js') }}" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">본문으로 건너뛰기</a>
+<header class="site-header">
+    <div class="header-inner container">
+        <a class="logo" href="{{ url_for('index') }}" aria-label="소준희 포트폴리오 홈"><span class="monogram" aria-hidden="true">JH</span><span class="logo-name">{{ profile.english_name }}</span></a>
+        <button class="menu-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="메뉴 열기"><span></span><span></span></button>
+        <nav id="main-nav" aria-label="주요 메뉴">
+            {% for id, label in [('projects','프로젝트'),('about','소개'),('experience','경력'),('contact','연락처')] %}
+            <a href="{{ url_for('index') }}#{{ id }}"{% if id == 'contact' %} class="nav-contact"{% endif %}>{{ label }}</a>
+            {% endfor %}
+        </nav>
+    </div>
+</header>
+<main id="main" tabindex="-1">{% block content %}{% endblock %}</main>
+<footer class="site-footer">
+    <div class="container footer-inner">
+        <a class="footer-brand" href="{{ url_for('index') }}">{{ profile.english_name }}<span>{{ profile.name }} · 물류·SCM · 무역 · 데이터·자동화</span></a>
+        <nav class="footer-nav" aria-label="보조 메뉴">
+            <a href="{{ url_for('index') }}#skills">Skills</a>
+            <a href="{{ url_for('index') }}#journey">AX Journey</a>
+            <a href="{{ url_for('privacy') }}">개인정보 안내</a>
+            <a href="{{ url_for('index') }}#home">맨 위로 ↑</a>
+        </nav>
+        <p class="footer-copy">© 2026 {{ profile.english_name }}. All rights reserved.</p>
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,11 @@
+<article class="project-card reveal">
+    <a class="project-preview" href="{{ url_for('project_detail', slug=project.slug) }}" tabindex="-1" aria-hidden="true">{% if project.thumbnail %}<img src="{{ project.thumbnail }}" alt="" data-title="{{ project.title }}" loading="lazy">{% else %}<span class="image-placeholder"><small>Project Preview</small><strong>{{ project.title }}</strong></span>{% endif %}</a>
+    <div class="project-body">
+        <p class="project-meta">{% if project.card_label %}<span>{{ project.card_label }}</span>{% endif %}<span class="badge {% if '완료' in project.status %}practice{% else %}learning{% endif %}">{{ project.status }}</span></p>
+        <h3><a href="{{ url_for('project_detail', slug=project.slug) }}">{{ project.title }}</a></h3>
+        {% if project.card_summary %}<p class="project-summary">{{ project.card_summary }}</p>{% endif %}
+        {% if project.card_role %}<p class="project-role"><span class="tiny-label">내 역할</span>{{ project.card_role }}</p>{% endif %}
+        {% if project.tech_stack %}<ul class="tags" aria-label="핵심 기술">{% for tech in project.tech_stack[:4] %}<li>{{ tech }}</li>{% endfor %}{% if project.tech_stack | length > 4 %}<li class="more">외 {{ project.tech_stack | length - 4 }}개</li>{% endif %}</ul>{% endif %}
+        <div class="project-actions"><a class="button primary small" href="{{ url_for('project_detail', slug=project.slug) }}" aria-label="{{ project.title }} 상세 보기">상세 보기 <span aria-hidden="true">→</span></a>{% include 'partials/project_links.html' %}</div>
+    </div>
+</article>

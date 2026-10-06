@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}{{ project.title }} | 소준희 Portfolio{% endblock %}
+{% block description %}{{ project.description or '소준희의 교육 과정 및 개인 프로젝트 기록입니다.' }}{% endblock %}
+{% macro gallery(images) %}<div class="gallery"><h3 class="tiny-label">프로젝트 화면</h3>{% for image in images %}<figure><img src="{{ image.src }}" alt="{{ image.alt }}" data-title="{{ image.alt }}" loading="lazy"><figcaption>{{ image.alt }}</figcaption></figure>{% endfor %}</div>{% endmacro %}
+{% block content %}
+{% set steps = [('problem','문제 정의',''),('objective','목표',''),('data','활용 데이터','실제 데이터와 직접 만든 데이터를 구분해 적었습니다.'),('solution','해결 방법',''),('architecture','시스템 구조','실제 구현된 범위 기준입니다.'),('features','주요 기능',''),('result','결과','직접 검증한 내용과 아직 확인하지 못한 내용을 함께 적었습니다.'),('future_improvement','향후 개선','현재 구현의 한계와 확장에 필요한 과제입니다.')] %}
+{% set has_role = project.my_contribution or project.team_contribution or (project.role and project.role != project.card_role) %}
+<article class="container detail-page">
+    <a class="text-link back-link" href="{{ url_for('index') }}#projects">← 모든 프로젝트</a>
+    <header class="detail-header">
+        <div class="detail-intro">
+            <p class="eyebrow">PROJECT{% if project.program %} / {{ project.program }}{% endif %}</p>
+            <h1>{{ project.title }}</h1>
+            {% if project.description %}<p class="detail-lead">{{ project.description }}</p>{% endif %}
+            <dl class="detail-meta">
+                {% if project.period %}<div><dt>기간</dt><dd>{{ project.period }}</dd></div>{% endif %}
+                <div><dt>상태</dt><dd>{{ project.status }}</dd></div>
+                {% if project.card_role %}<div><dt>내 역할</dt><dd>{{ project.card_role }}</dd></div>{% endif %}
+            </dl>
+            {% include 'partials/project_links.html' %}
+        </div>
+        <div class="detail-preview">{% if project.thumbnail %}<img src="{{ project.thumbnail }}" alt="{{ project.title }} 대표 이미지" data-title="{{ project.title }}">{% else %}<div class="image-placeholder"><small>Project Preview</small><strong>{{ project.title }}</strong><span>화면 이미지는 준비 중입니다.</span></div>{% endif %}</div>
+    </header>
+    <div class="detail-flow">
+        <nav class="detail-steps" aria-label="프로젝트 서술 단계">
+            <ol>{% if has_role %}<li><a href="#step-role">내 기여와 팀의 역할</a></li>{% endif %}{% for key, label, note in steps %}{% if project[key] %}<li><a href="#step-{{ key }}">{{ label }}</a></li>{% endif %}{% endfor %}{% if project.tech_stack %}<li><a href="#step-tech">사용 기술</a></li>{% endif %}</ol>
+        </nav>
+        <div class="detail-content">
+            {% if has_role %}
+            <section id="step-role" class="role-section">
+                <h2>내 기여와 팀의 역할</h2>
+                {% if project.my_contribution or project.team_contribution %}
+                <div class="role-grid">
+                    {% if project.my_contribution %}<div class="role-mine"><h3>직접 담당한 부분</h3><ul>{% for entry in project.my_contribution %}<li>{{ entry }}</li>{% endfor %}</ul></div>{% endif %}
+                    {% if project.team_contribution %}<div><h3>다른 팀원이 담당한 부분</h3><ul>{% for entry in project.team_contribution %}<li>{{ entry }}</li>{% endfor %}</ul></div>{% endif %}
+                </div>
+                {% else %}<p>{{ project.role }}</p>{% endif %}
+            </section>
+            {% endif %}
+            {% set ns = namespace(gallery_done=false) %}
+            {% for key, label, note in steps %}{% if project[key] %}
+            <section id="step-{{ key }}" class="reveal">
+                <h2>{{ label }}</h2>
+                {% if note %}<p class="step-note">{{ note }}</p>{% endif %}
+                {% for paragraph in project[key] %}<p>{{ paragraph }}</p>{% endfor %}
+                {% if key == 'features' and project.gallery %}{{ gallery(project.gallery) }}{% set ns.gallery_done = true %}{% endif %}
+            </section>
+            {% endif %}{% endfor %}
+            {% if project.gallery and not ns.gallery_done %}<section id="step-gallery" class="reveal"><h2>프로젝트 화면</h2>{{ gallery(project.gallery) }}</section>{% endif %}
+            {% if project.tech_stack %}<section id="step-tech" class="reveal"><h2>사용 기술</h2><ul class="tags">{% for tech in project.tech_stack %}<li>{{ tech }}</li>{% endfor %}</ul></section>{% endif %}
+            <a class="button primary" href="{{ url_for('index') }}#projects">프로젝트 목록으로 돌아가기 <span aria-hidden="true">→</span></a>
+        </div>
+    </div>
+</article>
+{% endblock %}

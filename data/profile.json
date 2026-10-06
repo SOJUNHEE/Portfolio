@@ -1,0 +1,30 @@
+{
+  "name": "소준희",
+  "english_name": "SO JUN HEE",
+  "email": "sojh90@naver.com",
+  "phone": "010-7769-3557",
+  "location": "Seoul, Republic of Korea",
+  "education": "수원과학대학교 · 건축학과",
+  "certifications": ["新 JLPT N5", "건설기계조종면허", "1종 보통 운전면허"],
+  "metrics": [
+    {"value": "4Y 8M", "label": "물류·무역 실무 경험", "source": "전체 경력 · 약 4년 8개월"},
+    {"value": "50K+", "label": "월 출고 운영 경험", "source": "굿앤파트너스 · 월 50,000건 이상"},
+    {"value": "15", "label": "화주사 대응", "source": "굿앤파트너스 · 약 15개사"},
+    {"value": "99%", "label": "재고 정확도", "source": "제이아이로지스"},
+    {"value": "7 → 3", "label": "월 마감 소요일 단축", "source": "두잇로지스 · 7일 → 3일"},
+    {"value": "10%", "label": "장기 적치 보관비 감소", "source": "젠미코리아 · 약 10%"}
+  ],
+  "competencies": [
+    {"title": "Logistics Operations", "subtitle": "흐름을 아는 현장 운영", "items": ["3PL · Fulfillment", "Warehouse Operations", "Inbound / Outbound", "B2C / B2B"]},
+    {"title": "Inventory & Systems", "subtitle": "재고와 전산의 연결", "items": ["WMS · DAS", "Inventory Management", "Excel · 사방넷"]},
+    {"title": "Trade & Customs", "subtitle": "입항부터 창고까지", "items": ["Import · Customs Clearance", "Invoice · B/L · Packing List", "UNI-PASS · Bonded Warehouse"]},
+    {"title": "Operations Improvement", "subtitle": "숫자로 확인하는 개선", "items": ["Logistics Cost · Settlement", "Productivity · Workflow", "Client / Partner Communication"]}
+  ],
+  "skills": [
+    {"category": "SCM & Logistics", "state": "실무 경험", "items": ["3PL / 풀필먼트", "WMS / DAS", "재고 · 입출고 관리", "FCL", "물류비 정산"]},
+    {"category": "Trade & Customs", "state": "실무 경험", "items": ["수입통관 서류", "UNI-PASS", "보세창고", "사방넷", "협력사 일정 조율"]},
+    {"category": "Data", "state": "실무 + 학습 확장", "items": ["Excel 전산관리 · 실무", "생산성 데이터 확인 · 실무", "데이터 분석 · 학습 중"]},
+    {"category": "Development", "state": "현재 학습 중", "items": ["Python", "웹 기반 시스템 개발"]},
+    {"category": "AI & Automation", "state": "현재 학습 중", "items": ["AI 활용", "반복 업무 자동화", "현업 문제의 시스템화"]}
+  ]
+}

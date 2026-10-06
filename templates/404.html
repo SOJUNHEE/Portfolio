@@ -1,0 +1,3 @@
+{% extends 'base.html' %}
+{% block title %}페이지를 찾을 수 없습니다 | 소준희{% endblock %}
+{% block content %}<section class="container message-page"><p class="eyebrow">404 / PAGE NOT FOUND</p><h1>아직 연결되지 않은 페이지입니다.</h1><p>주소가 잘못되었거나, 아직 공개되지 않은 프로젝트입니다.</p><a class="button primary" href="{{ url_for('index') }}#projects">프로젝트 확인하기 →</a></section>{% endblock %}
