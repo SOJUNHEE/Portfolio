@@ -10,6 +10,7 @@ test-results/
 # Separate projects / local-only folders (not part of the portfolio site)
 /mini_6_data/
 /Neo/
+/Mitchu/
 /Portfolio/
 /.claude/
 /CLAUDE.md
