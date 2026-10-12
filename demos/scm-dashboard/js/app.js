@@ -13,22 +13,26 @@
 
   var DEFAULT_FILTER = { period: '90d', from: null, to: null, channel: 'ALL', product: 'ALL' };
   var state = {
-    screen: 'overview',
+    screen: 'fit',
     filter: JSON.parse(JSON.stringify(DEFAULT_FILTER)),
     local: { actionGroup: 'ALL', reconDiffOnly: false, billDiffOnly: false, billMonth: 'ALL', issueStatus: 'ALL', simSku: null, simShare: null, mmOpenOnly: false }
   };
   var exportsReg = {}, blocks = {}, hooks = [];
   var F = null;
 
+  // duty = 로로벨 채용공고 담당 업무 번호 (00 화면의 공고 매핑 표 참고)
   var SCREENS = [
+    { id: 'fit', no: '00', ko: '로로벨 SCM 한눈에', en: 'Role Fit', duty: '공고 담당 업무 ↔ 화면' },
     { id: 'overview', no: '01', ko: '종합 현황', en: 'Overview', duty: '' },
-    { id: 'orders', no: '02', ko: '주문·발주·출고', en: 'Order to Ship', duty: '담당 업무 1' },
-    { id: 'b2b', no: '03', ko: 'B2B 거래처 입출고', en: 'B2B Fulfillment', duty: '담당 업무 2 · 3' },
-    { id: 'inventory', no: '04', ko: '재고 운영', en: 'Inventory', duty: '담당 업무 2 · 3' },
-    { id: 'issues', no: '05', ko: '3PL·이슈·유관부서', en: '3PL & Issues', duty: '담당 업무 3 · 4' },
-    { id: 'integrity', no: '06', ko: '데이터 정합성·재고 정상화', en: 'Data Integrity', duty: '담당 업무 5 · 6' },
-    { id: 'settlement', no: '07', ko: '정산 검증·운영 효율', en: 'Settlement & Efficiency', duty: '담당 업무 6 · 우대사항' },
-    { id: 'ratecard', no: '08', ko: '3PL 견적 단가', en: '3PL Rate Card', duty: '담당 업무 4 · 6' }
+    { id: 'channels', no: '02', ko: '판매·납품 채널 구조', en: 'Channel Map', duty: '담당 업무 3 · 5 · 6 · 7' },
+    { id: 'sales', no: '03', ko: '제품별 매출', en: 'Product Sales', duty: '담당 업무 1 · 4' },
+    { id: 'orders', no: '04', ko: '주문·발주·출고 (B2C)', en: 'Order to Ship', duty: '담당 업무 3 · 5' },
+    { id: 'b2b', no: '05', ko: 'B2B 납품·수출', en: 'B2B & Export', duty: '담당 업무 6 · 7' },
+    { id: 'inventory', no: '06', ko: '재고 운영', en: 'Inventory', duty: '담당 업무 1' },
+    { id: 'issues', no: '07', ko: '3PL·이슈·유관부서', en: '3PL & Issues', duty: '담당 업무 2' },
+    { id: 'integrity', no: '08', ko: '데이터 정합성·재고 정상화', en: 'Data Integrity', duty: '담당 업무 2 · 5' },
+    { id: 'settlement', no: '09', ko: '정산 검증·운영 효율', en: 'Settlement & Efficiency', duty: '담당 업무 2 · 4' },
+    { id: 'ratecard', no: '10', ko: '3PL 견적 단가', en: '3PL Rate Card', duty: '담당 업무 2 · 4' }
   ];
   var RENDER = {};
 
@@ -141,6 +145,342 @@
   function b(x) { return '<b>' + x + '</b>'; }
   function pctTxt(v, d) { return Fm.pct(v, d); }
   function ppTxt(v, d) { return Fm.pp(v, d); }
+
+  function goBtns(ids) {
+    return ids.map(function (id) {
+      var s = SCREENS.filter(function (x) { return x.id === id; })[0];
+      return '<button type="button" class="link-btn" data-go="' + id + '">' + esc(s.no + ' ' + s.ko) + '</button>';
+    }).join(' ');
+  }
+  function screenNames(ids) {
+    return ids.map(function (id) { var s = SCREENS.filter(function (x) { return x.id === id; })[0]; return s.no + ' ' + s.ko; }).join(', ');
+  }
+
+  /* ==================================================================
+   * 00 로로벨 SCM 한눈에 — 공고 담당 업무·핵심역량·현장 과제 ↔ 대시보드 화면
+   *    공고 문구는 채용공고(잡코리아 50089908) 원문, 과제·시나리오는 지원자가 정리한 가정
+   * ================================================================== */
+  var DUTIES = [
+    { no: 1, text: 'SCM(공급망 관리) 기반 재고 운영 총괄', go: ['inventory', 'sales'], show: '현재고·재고 소진 예측·입고 계획, B2C·B2B 재고 배분 시뮬레이션, 제품별 판매 추이' },
+    { no: 2, text: '3PL 물류센터 운영 관리 (WMS, 재고 정합성, 출고 SLA 확인)', go: ['issues', 'integrity', 'settlement'], show: '출고 정확도·마감 준수율(SLA), 사방넷·WMS·ERP 재고 대사와 정상화, 3PL 청구 검증' },
+    { no: 3, text: '주문 수집 → 발주 → 출고까지의 전체 물류 프로세스 운영', go: ['orders', 'channels'], show: '단계별 건수·소요시간과 병목(발주 등록 → 출고 지시), 미출고·보류 주문' },
+    { no: 4, text: '엑셀·구글시트 활용 리포트 작성', go: ['sales', 'settlement'], show: '모든 표를 현재 필터 그대로 엑셀(CSV)로 내보내기, 월별 매출·물류비 리포트' },
+    { no: 5, text: '카페24, 스마트스토어, 사방넷 기반 주문·출고 관리', go: ['channels', 'orders'], show: '채널별 주문·당일 출고율·출고 소요시간, 라이브·공동구매 물량 집중일 대응' },
+    { no: 6, text: '쿠팡, 컬리, 올리브영 등 B2B 주문·납품 일정 관리', go: ['b2b'], show: '2주 출고 일정표와 재고 위험, 납품처별 납기 준수율, 센터 입고 반려, 유통기한 잔여율' },
+    { no: 7, text: '해외 출고(수출) 건 대응 및 서류 관리', go: ['b2b'], show: '수출 PO별 C/I·P/L·C/O 준비 상태, P/L 총중량 대비 3PL 실측 차이 점검' }
+  ];
+  var VALUES = [
+    { name: '꼼꼼함', how: '사방넷·WMS·ERP 수량을 SKU 단위로 매일 대사하고, 3PL 청구서를 작업 실적과 한 줄씩 맞춰 봅니다.', go: ['integrity', 'settlement'] },
+    { name: '성실성', how: '기준 시각마다 미출고 주문·B2B 납품 임박·미해결 불일치·기한 초과 이슈를 한 목록으로 모아 당일 처리합니다.', go: ['overview'] },
+    { name: '계획성', how: '라이브·행사 일정과 B2B 확정 발주를 재고 소진 예측에 넣어, 입고·분할 납품을 미리 정합니다.', go: ['inventory', 'b2b'] },
+    { name: '메타인지', how: '데이터로 확인한 것과 가정한 것을 화면마다 구분하고, 표본이 부족한 구간은 해석을 생략합니다.', go: ['fit'] },
+    { name: '협동심', how: '이슈를 접수처(CS·영업·3PL)와 담당 부서별로 나눠 처리 기한과 다음 조치를 공유합니다.', go: ['issues'] }
+  ];
+
+  RENDER.fit = function () {
+    var br = D.brand, oral = SK.filter(function (k) { return k.category === '구강케어'; }).length, skin = SK.filter(function (k) { return k.category === '스킨케어'; }).length;
+    var h = section({
+      en: 'ROROBELL at a Glance', ko: '로로벨 SCM 한눈에',
+      desc: '(주)로로벨 SCM 물류 및 재고 관리 직무 지원을 위해 만든 운영 대시보드입니다. 회사·제품 정보는 공식몰(' + esc(br.site) + ', ' + esc(br.checked) + ' 확인)과 채용공고에서 확인한 내용만 사용했습니다.',
+      body: '<div class="stat-row">' +
+        stat('공식몰 카테고리', '4', '개', '스킨케어 · 메이크업 · 선케어 · 오랄케어') +
+        stat('대시보드 반영 제품', Fm.int(oral + skin), '종', '구강케어(와와) ' + oral + ' · 스킨케어 ' + skin + ' + 세트 3') +
+        stat('B2C 판매 채널', Fm.int(D.channels.b2c.length), '개', '카페24 자사몰 · 스마트스토어 등 → 사방넷 수집') +
+        stat('B2B·수출 채널', Fm.int(D.channels.b2b.length), '개', '쿠팡 · 컬리 · 올리브영 · 해외 수출') +
+        stat('본사', '성수동', '', '서울 성동구 · 자사몰 카페24 기반') + '</div>' +
+        '<p class="note-box" style="margin-top:16px"><b>실제 정보</b> — 제품명·공식몰 판매가·소비자가, 공고에 적힌 채널(카페24·스마트스토어·사방넷, 쿠팡·컬리·올리브영, 수출)과 업무 · ' +
+        '<b>가정·가상</b> — 주문·발주·재고·매출·정산 수치, 원가·공급률·유통기한, 3PL 센터와 납품처(센터·바이어) 이름, 세트 2종(와와치약 3개 묶음, 와와 구강케어 세트). 로로벨의 실제 운영 수치가 아닙니다.</p>'
+    });
+
+    h += section({
+      en: 'Job Duties → Screens', ko: '채용공고 담당 업무 ↔ 대시보드 화면',
+      desc: '공고의 담당 업무 7가지를 이 대시보드의 어느 화면에서 어떤 수치로 보여 주는지 연결했습니다. 각 화면 제목 옆의 "담당 업무 N"이 이 번호입니다.',
+      body: table('duties', {
+        columns: [
+          { label: '번호', type: 'int', value: function (r) { return r.no; } },
+          { label: '공고 담당 업무(원문)', type: 'text', value: function (r) { return r.text; }, cls: 'strong' },
+          { label: '대시보드에서 보여 주는 것', type: 'text', value: function (r) { return r.show; } },
+          { label: '화면', type: 'text', value: function (r) { return screenNames(r.go); }, html: function (r) { return goBtns(r.go); }, cls: 'wrap' }
+        ], rows: DUTIES, filename: 'ROROBELL_공고담당업무_화면매핑.csv', limit: 0
+      })
+    });
+
+    h += section({
+      en: 'Core Values', ko: '공고 핵심역량 5가지를 일하는 방식으로',
+      desc: '공고에 적힌 핵심역량(꼼꼼함, 성실성, 계획성, 메타인지, 협동심)을 SCM 업무에서 어떻게 실천하는지, 대시보드의 어느 기능으로 보여 주는지 정리했습니다.',
+      body: table('values', {
+        columns: [
+          { label: '핵심역량', type: 'text', value: function (r) { return r.name; }, cls: 'strong nowrap' },
+          { label: '실천 방식', type: 'text', value: function (r) { return r.how; } },
+          { label: '화면', type: 'text', value: function (r) { return screenNames(r.go); }, html: function (r) { return goBtns(r.go); }, cls: 'wrap' }
+        ], rows: VALUES, filename: 'ROROBELL_핵심역량.csv', limit: 0
+      })
+    });
+
+    h += section({
+      en: 'Six SCM Challenges', ko: '옴니채널 SCM 6대 과제와 대시보드 근거',
+      desc: '자사몰·오픈마켓 B2C와 쿠팡·컬리·올리브영 B2B, 수출을 함께 운영할 때 생길 수 있는 과제를 내부 운영 3가지와 B2B·수출 3가지로 나눴습니다. 오른쪽 수치는 선택 기간의 가상 데이터로 계산한 값입니다.',
+      body: '<div class="fit-list">' + challengeCards().map(function (c, i) {
+        return '<div class="fit-card"><div><span class="q">' + (i < 3 ? 'B2C · 3PL 내부 운영' : 'B2B · 수출') + ' ' + (i % 3 + 1) + '</span><h3>' + esc(c.title) + '</h3><p class="muted" style="margin-top:6px">' + esc(c.problem) + '</p></div>' +
+          '<div><span class="q">대응</span><p>' + esc(c.action) + '</p><p style="margin-top:6px"><span class="tag">대시보드 근거</span> ' + c.evidence + '</p></div>' +
+          '<div>' + goBtns(c.go) + '</div></div>';
+      }).join('') + '</div>'
+    });
+
+    h += section({
+      en: 'Scenarios', ko: '현장 시나리오 3선 (가정)',
+      desc: '면접에서 위기 대응 순서를 설명하기 위한 가정 시나리오입니다. 수량은 예시이며, 같은 유형의 판단을 대시보드 어느 화면에서 하는지 함께 적었습니다.',
+      body: '<div class="fit-list">' + SCENARIOS.map(function (c) {
+        return '<div class="case"><span class="eyebrow">' + esc(c.type) + '</span><h3>' + esc(c.title) + '</h3><div class="case-grid">' +
+          '<div><h4>상황 (가정)</h4><p style="font-size:13.5px;line-height:1.7">' + esc(c.situation) + '</p></div>' +
+          '<div><h4>대응 순서</h4><ol>' + c.steps.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ol></div></div>' +
+          '<p style="margin-top:12px;font-size:13px"><span class="tag">대시보드 연결</span> ' + esc(c.link) + ' ' + goBtns(c.go) + '</p></div>';
+      }).join('') + '</div>'
+    });
+    return h;
+  };
+  var SCENARIOS = [
+    { type: '채널 간 가용재고 배분 · 분할 입고', title: '올리브영 행사 발주와 자사몰 라이브가 겹쳐 와와치약 재고가 모자라는 상황',
+      situation: '올리브영에서 와와치약 20,000개 발주가 들어왔는데 3PL 보유 재고는 15,000개이고, 다음 주 자사몰 라이브(목표 8,000개)도 예정되어 있어 약 13,000개가 모자랍니다.',
+      steps: ['OEM 제조사와 생산 중인 로트의 1차 완료분을 앞당겨 분할 입고할 수 있는지 확인합니다.', '영업을 통해 올리브영에 1차·2차 분할 납품 일정을 협의하고 입고 예약을 다시 잡습니다.', '라이브 물량 중 즉시 출고분과 예약 판매분을 나누고, 고객 안내 문구를 CS·마케팅과 맞춥니다.'],
+      link: '재고 운영의 채널 배분 시뮬레이션에서 B2B 비중별 재고 소진일을 계산하고, B2B 출고 일정표에서 재고 위험 발주를 먼저 봅니다.', go: ['inventory', 'b2b'] },
+    { type: '3PL 출고 품질 · SLA 관리', title: '패키지가 비슷한 와와 치약을 잘못 보내고 송장 등록이 늦어지는 상황',
+      situation: '잇몸 케어 치약 주문에 미백 치약이 나가는 오출고가 반복되고, 사방넷 송장 등록이 늦어 스마트스토어 발송 지연이 쌓입니다.',
+      steps: ['오출고 건의 SKU 조합과 출고 시간대를 모아 원인(인접 로케이션·검수 생략)을 확인합니다.', '치약 5종 로케이션을 분리하고 출고 검수 때 바코드 스캔을 거치지 않으면 송장이 나가지 않도록 3PL과 합의합니다.', '3PL 송장 회신 마감 시각과 지연 시 처리 기준을 SLA에 넣고 주간 회의에서 점검합니다.'],
+      link: '3PL·이슈 화면의 재발 방지 카드에서 로케이션 분리 전후 오출고율을 비교합니다.', go: ['issues'] },
+    { type: '수출 서류 · 실측 제원', title: '일본 바이어 긴급 수출 발주에서 P/L 중량이 실측과 맞지 않는 상황',
+      situation: '일본 드럭스토어 벤더가 2주 안 선적(FOB)을 요청했고, 포장명세서(P/L) 총중량이 3PL 실측과 0.5% 넘게 차이 나면 통관이 보류될 수 있습니다.',
+      steps: ['바이어가 요청한 서류(C/I·P/L·C/O·성분표)를 체크리스트로 만들고 제조사 서류 발급 일정을 먼저 확인합니다.', '3PL 팔레타이징 후 실측 중량·CBM을 받아 P/L을 실측값으로 발행하고, SKU 제원 마스터를 갱신합니다.', '포워더 선적 일정과 3PL 출고·수출 신고 일정을 하나의 일정표로 맞춥니다.'],
+      link: 'B2B 납품·수출 화면의 수출 서류 점검 표에서 실측 차이 초과 PO와 정정 조치를 확인합니다.', go: ['b2b'] }
+  ];
+  function challengeCards() {
+    var all = S.resolveFilter({ period: '365d', channel: 'ALL', product: 'ALL' });
+    var mr = S.matchRate(F), open = S.actionList(F).openMismatches.length;
+    var daily = F.b2c ? S.dailyVsCapacity(F) : [], over = daily.filter(function (r) { return r.over; }).length;
+    var pc = S.prepackCompare(all);
+    var shelf = S.shelfLife(all);
+    var rej = { b: 0, bn: 0, a: 0, an: 0 };
+    D.b2b.forEach(function (x) {
+      if (!x.ships.length || x.type === 'EXPORT') return;
+      if (x.ships[0].day < M.B2B_CHECK_DAY) { rej.bn++; if (x.rejected) rej.b++; } else { rej.an++; if (x.rejected) rej.a++; }
+    });
+    var rs = M.riskSku, rk = SK[rs], avail = D.stockStatus[rs].available;
+    var openB2B = D.b2b.filter(function (x) { return x.sku === rs && x.delivered === null; }).reduce(function (a, x) { return a + x.qty - x.shippedQty; }, 0);
+    var docIssues = D.exportDocs.filter(function (p) { return p.docIssue; });
+    return [
+      { title: '사방넷·WMS 재고 전산 불일치', problem: '취소 주문 미회수, 반품 입고 미등록, 세트 구성품 차감 누락으로 전산 재고와 실물이 달라지고, 팔 수 있는 상품이 품절로 보이거나 반대로 초과 판매가 생깁니다.',
+        action: '매일 사방넷·WMS·ERP 수량을 SKU 단위로 대사하고, 원인별 재발 방지 규칙(취소 자동 회수, 반품 D+1 처리, 세트 BOM 매핑)을 적용합니다.',
+        evidence: '기간 말 일치율 ' + b(mr.value === null ? '—' : pctTxt(mr.value)) + ' · 미해결 불일치 ' + b(open + '건'), go: ['integrity'] },
+      { title: '라이브·공동구매 주문 폭증과 출고 지연', problem: '라이브·공동구매 당일 주문이 3PL 일 처리량을 넘으면 당일 출고가 깨지고 B2B 출고까지 뒤로 밀립니다.',
+        action: '마케팅과 일정을 미리 공유해 세트를 사전 포장하고, 적체 주간에도 B2B 출고 슬롯을 먼저 확보합니다.',
+        evidence: '선택 기간 처리량 초과 ' + b(over + '일') + (pc.before.live && pc.after.live ? ' · 사전 포장 후 라이브 주문 평균 출고 ' + b(Fm.num1(pc.before.live.avg) + '→' + Fm.num1(pc.after.live.avg) + '시간') : ''), go: ['orders'] },
+      { title: '치약·가글 로트 추적과 선유통기한 출고(FEFO)', problem: '장기 보관 로트가 그대로 B2B로 나가면 납품처 입고 기준(잔여 유통기한)에 걸리고, 남은 재고는 소진 시기를 놓칩니다.',
+        action: 'B2B 출고는 잔여율 기준으로 로트를 지정하고, 기준에 못 미치는 로트는 B2C 프로모션으로 먼저 소진합니다.',
+        evidence: '최근 12개월 잔여율 70% 미만 납품 ' + b(shelf.below.length + '건') + ' (' + pctTxt(shelf.belowRate) + ')', go: ['b2b', 'inventory'] },
+      { title: '쿠팡·컬리·올리브영 센터 입고 반려', problem: '물류 바코드·팔레트 적재 높이·박스당 입수 표기·입고 예약 시간 중 하나만 어긋나도 반송되고 재입고까지 납기가 밀립니다.',
+        action: '채널별 입고 규격을 한 장의 체크리스트로 만들고, 상차 전날(D-1)까지 3PL 사전 검수를 마칩니다.',
+        evidence: '체크리스트 도입(' + Cal.isoOf(M.B2B_CHECK_DAY).slice(5).replace('-', '/') + ') 전후 반려율 ' + b(Fm.pct(rej.bn ? rej.b / rej.bn : null, 1) + '→' + Fm.pct(rej.an ? rej.a / rej.an : null, 1)), go: ['b2b', 'issues'] },
+      { title: 'B2C와 대형 B2B 사이의 재고 배분 충돌', problem: '생산이 늦어진 품목에 대형 B2B 발주가 몰리면 자사몰 결품과 B2B 미납 중 하나를 고르게 됩니다.',
+        action: '채널별 결품 영향과 납품 일정을 비교해 B2B 분할 납품과 B2C 판매 수량을 정하고, 입고 일정을 영업·마케팅과 공유합니다.',
+        evidence: rk.name + ' 가용 ' + b(Fm.int(avail) + '개') + ' · 미출고 B2B ' + b(Fm.int(openB2B) + '개') + ' · ' + esc(M.riskReason) + '(잔량 ' + M.riskRestIso.slice(5).replace('-', '/') + ' 입고 예정)', go: ['inventory', 'b2b'] },
+      { title: '수출 서류(C/I·P/L) 오류와 통관 보류', problem: 'P/L의 중량·CBM이 실측과 다르거나 원산지 증명이 늦으면 통관이 보류되고 선적이 밀립니다.',
+        action: 'SKU별 제원(개당 중량, 카톤 입수·CBM)을 표준화하고, 3PL 실측값으로 P/L을 발행합니다.',
+        evidence: '수출 PO ' + b(D.exportDocs.length + '건') + ' 중 실측 차이 초과 ' + b(docIssues.length + '건') + (docIssues.length ? '(정정 재발행)' : ''), go: ['b2b'] }
+    ];
+  }
+
+  /* ==================================================================
+   * 02 판매·납품 채널 구조
+   * ================================================================== */
+  var LANES = [
+    { name: 'B2C 온라인', sub: '카페24 자사몰 · 스마트스토어 · 기타 오픈마켓 · 라이브·공동구매', steps: [
+      ['주문 접수', '판매 채널별 결제 완료'], ['사방넷 수집', '전 채널 주문 자동 수집(약 30분 주기)'], ['발주 등록', '사방넷 → 3PL 발주 등록'],
+      ['출고 지시', '10:00 · 13:00 배치 업로드'], ['피킹·포장·검수', '3PL 14:00 마감 · 바코드 검수'], ['택배 출고', '송장 회신 → 사방넷 → 채널 발송 처리']] },
+    { name: 'B2B 납품', sub: '쿠팡(로켓배송) · 컬리 · 올리브영', steps: [
+      ['발주 접수', '채널별 발주서 · 납품 요청일'], ['납품 일정 확정', '센터 입고 예약'], ['재고 할당·로트 지정', '잔여 유통기한 70% 이상 로트'],
+      ['B2B 출고', '물류 바코드 · 팔레트 적재 · 입수 표기'], ['센터 입고·검수', '반려 시 재작업·재입고'], ['거래명세서 대사', '명세서 수량 = 실제 출고']] },
+    { name: '해외 수출', sub: '해외 바이어 (FOB 조건, 가정)', steps: [
+      ['바이어 PO', '품목·수량·선적 희망일'], ['C/I·P/L 작성', 'SKU 제원 마스터 기준'], ['3PL 팔레타이징·실측', '실측 중량·CBM 반영'],
+      ['C/O 발급·수출 신고', '관세사 · 원산지 증명'], ['선적', '포워더 선복 · 부산항/인천공항'], ['서류 송부', '바이어·관세사 최종 서류']] }
+  ];
+  RENDER.channels = function () {
+    var cs = S.channelSummary(F), rows = cs.rows;
+    var h = section({
+      en: 'Order Flow', ko: '주문·납품 흐름 한눈에',
+      desc: '채용공고에 적힌 채널(카페24·스마트스토어·사방넷, 쿠팡·컬리·올리브영, 수출)을 B2C·B2B·수출 세 갈래로 나눴습니다. 단계별 시각·기준은 이 대시보드의 가정입니다.',
+      body: '<div class="lanes">' + LANES.map(function (l) {
+        return '<div class="lane"><div class="lane-head"><h3>' + esc(l.name) + '</h3><p>' + esc(l.sub) + '</p></div><div class="lane-steps">' +
+          l.steps.map(function (s, i) { return (i ? '<span class="lane-arrow" aria-hidden="true">→</span>' : '') + '<div class="lane-step"><b>' + esc(s[0]) + '</b><span>' + esc(s[1]) + '</span></div>'; }).join('') + '</div></div>';
+      }).join('') + '</div>'
+    });
+
+    function card(r) {
+      var dl = r.kind === 'B2C'
+        ? '<dt>주문</dt><dd>' + Fm.int(r.orders) + '건</dd><dt>매출</dt><dd>' + Fm.wonShort(r.amount) + '</dd><dt>당일 출고율</dt><dd>' + pctTxt(r.sameDay) + '</dd><dt>평균 출고 소요</dt><dd>' + (r.lead === null ? '—' : Fm.num1(r.lead) + '시간') + '</dd>'
+        : '<dt>발주(PO)</dt><dd>' + Fm.int(r.orders) + '건</dd><dt>출고 수량</dt><dd>' + Fm.int(r.qty) + '개</dd><dt>매출(공급가)</dt><dd>' + Fm.wonShort(r.amount) + '</dd><dt>납기 준수율</dt><dd>' + pctTxt(r.onTimeRate) + '</dd>';
+      return '<div class="ch-card' + (r.active ? '' : ' off') + '"><h3><span>' + esc(r.name) + '</span><span class="tag">' + r.kind + '</span></h3>' +
+        '<div class="ch-desc">' + esc(r.desc) + (r.kind === 'B2B' ? ' · ' + esc(r.mode) + ' · 납품처 ' + r.accounts + '곳 · 공급률 ' + Fm.pct(r.supplyRate, 0) + '(가정)' : '') + '</div>' +
+        '<div class="share-bar" title="매출 비중"><i style="width:' + Math.round((r.share || 0) * 100) + '%"></i></div><div class="ch-desc">매출 비중 ' + pctTxt(r.share) + '</div>' +
+        '<dl>' + dl + '</dl><div style="margin-top:auto;padding-top:6px">' + goBtns([r.kind === 'B2C' ? 'orders' : 'b2b']) + '</div></div>';
+    }
+    var b2cRows = rows.filter(function (r) { return r.kind === 'B2C'; }), b2bRows = rows.filter(function (r) { return r.kind === 'B2B'; });
+    h += section({
+      en: 'Channels', ko: '채널별 현황',
+      desc: '선택 기간 기준입니다. B2C 매출 = 공식몰 판매가 × 주문 수량(주문일 기준), B2B 매출 = 소비자가 × 공급률(가정) × 출고 수량(출고일 기준). 필터에서 제외된 채널은 흐리게 표시합니다.',
+      body: '<h3 class="panel-title" style="margin-bottom:8px">B2C · 사방넷 수집 채널</h3><div class="ch-cards">' + b2cRows.map(card).join('') + '</div>' +
+        '<h3 class="panel-title" style="margin:20px 0 8px">B2B · 수출 채널</h3><div class="ch-cards">' + b2bRows.map(card).join('') + '</div>'
+    });
+
+    var ms = S.salesMonthly(F);
+    h += section({
+      en: 'Revenue Mix', ko: '채널별 매출 비중과 월별 B2C · B2B 매출',
+      desc: '왼쪽은 선택 기간 채널별 매출, 오른쪽은 달별 B2C·B2B 매출입니다(기간이 걸친 달은 기간 안의 일자만 합산).',
+      body: '<div class="grid-2">' + panel('채널별 매출', '선택 기간 합계 ' + Fm.wonShort(cs.total), chartBox('chChMix', 'tall', '채널별 매출')) +
+        panel('월별 B2C · B2B 매출', ms.length + '개월', chartBox('chChMonthly', 'tall', '월별 B2C B2B 매출')) + '</div>'
+    });
+    hook(function () { drawChannelCharts(rows, ms); });
+
+    h += section({
+      en: 'Channel Table', ko: '채널 요약표',
+      body: table('channels', {
+        columns: [
+          { label: '구분', type: 'text', value: function (r) { return r.kind; } },
+          { label: '채널', type: 'text', value: function (r) { return r.name; }, cls: 'strong' },
+          { label: '주문·발주(건)', type: 'int', value: function (r) { return r.orders; } },
+          { label: '판매·출고 수량', type: 'int', value: function (r) { return r.qty; } },
+          { label: '매출(원)', type: 'won', value: function (r) { return r.amount; } },
+          { label: '매출 비중', type: 'pct', value: function (r) { return r.share; } },
+          { label: '당일 출고율(B2C)', type: 'pct', value: function (r) { return r.kind === 'B2C' ? r.sameDay : null; } },
+          { label: '납기 준수율(B2B)', type: 'pct', value: function (r) { return r.kind === 'B2B' ? r.onTimeRate : null; } },
+          { label: '운영 포인트', type: 'text', value: function (r) { return r.kind === 'B2B' ? r.desc : r.desc; } }
+        ], rows: rows, filename: fileName('채널구조', '채널요약'), limit: 0
+      })
+    });
+    h += summary(channelsSummary(rows, cs));
+    return h;
+  };
+  function drawChannelCharts(rows, ms) {
+    var P = CH.palette();
+    var act = rows.filter(function (r) { return r.amount > 0; }).sort(function (a, c) { return c.amount - a.amount; });
+    CH.render('chChMix', { type: 'bar', data: { labels: act.map(function (r) { return r.name; }), datasets: [{ label: '매출', data: act.map(function (r) { return r.amount; }),
+      backgroundColor: act.map(function (r) { return r.kind === 'B2C' ? P.primary : P.soft; }), maxBarThickness: 22 }] },
+      options: { indexAxis: 'y', scales: { x: { grid: { color: P.grid }, border: { display: false }, beginAtZero: true, ticks: { callback: function (v) { return Math.round(v / 1e6) + '백만'; } } }, y: { grid: { display: false } } },
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (c) { var r = act[c.dataIndex]; return r.kind + ' · ' + Fm.won(r.amount) + ' (' + Fm.pct(r.share) + ')'; } } } } } });
+    CH.render('chChMonthly', { type: 'bar', data: { labels: ms.map(function (r) { return Fm.month(r.month); }), datasets: [
+      { label: 'B2C', data: ms.map(function (r) { return r.b2c; }), backgroundColor: P.primary, stack: 's', maxBarThickness: 40 },
+      { label: 'B2B · 수출', data: ms.map(function (r) { return r.b2b; }), backgroundColor: P.soft, stack: 's', maxBarThickness: 40 }
+    ] }, options: { scales: CH.baseScales({ stacked: true, yFmt: function (v) { return Math.round(v / 1e6) + '백만'; } }), interaction: { mode: 'index', intersect: false },
+      plugins: { tooltip: { callbacks: { label: function (c) { return c.dataset.label + ': ' + Fm.wonShort(c.parsed.y); }, footer: function (it) { var r = ms[it[0].dataIndex]; return '합계 ' + Fm.wonShort(r.total) + ' · B2B 비중 ' + Fm.pct(r.b2b / r.total); } } } } } });
+  }
+  function channelsSummary(rows, cs) {
+    var out = [];
+    var b2c = rows.filter(function (r) { return r.kind === 'B2C' && r.active; }), b2bR = rows.filter(function (r) { return r.kind === 'B2B' && r.active; });
+    var sum = function (a) { return a.reduce(function (s, r) { return s + r.amount; }, 0); };
+    if (cs.total) {
+      var top = rows.slice().sort(function (a, c) { return c.amount - a.amount; })[0];
+      out.push('<span class="flow-tag">지표</span>선택 기간 매출은 ' + b(Fm.wonShort(cs.total)) + '이고 B2C ' + b(pctTxt(sum(b2c) / cs.total)) + ', B2B·수출 ' + b(pctTxt(sum(b2bR) / cs.total)) + '입니다. 매출이 가장 큰 채널은 ' + b(esc(top.name)) + '(' + pctTxt(top.share) + ')입니다.');
+    }
+    var live = rows.filter(function (r) { return r.id === 'LIVE'; })[0];
+    if (live && live.active && live.orders) out.push('<span class="flow-tag">지표 → 원인</span>라이브·공동구매는 주문이 특정 일자에 몰립니다. 같은 사방넷·3PL 흐름을 쓰기 때문에 그날 B2C 당일 출고율과 B2B 출고가 함께 영향을 받습니다. 주문·발주·출고 화면의 일별 처리량 차트에서 확인할 수 있습니다.');
+    var worst = b2bR.filter(function (r) { return r.onTimeRate !== null; }).sort(function (a, c) { return a.onTimeRate - c.onTimeRate; })[0];
+    if (worst) out.push('<span class="flow-tag">지표 → 조치</span>B2B 중 납기 준수율이 가장 낮은 채널은 ' + b(esc(worst.name)) + '(' + pctTxt(worst.onTimeRate) + ')입니다. ' + (worst.id === 'EXPORT' ? '선적 일정 분할과 서류 준비가 주된 원인이므로 바이어 PO 접수 즉시 서류 체크리스트와 선적 일정을 같이 잡습니다.' : '센터 입고 예약과 B2C 적체일의 출고 순서를 먼저 조정합니다.'));
+    return out;
+  }
+
+  /* ==================================================================
+   * 03 제품별 매출
+   * ================================================================== */
+  RENDER.sales = function () {
+    var sb = S.salesBySku(F), cat = S.salesByCategory(F), ms = S.salesMonthly(F);
+    var rows = sb.rows, tot = sb.total;
+    var b2cAmt = rows.reduce(function (a, r) { return a + r.b2cAmt; }, 0), b2bAmt = tot - b2cAmt;
+    var top = rows[0], oral = cat.filter(function (c) { return c.category === '구강케어'; })[0];
+    var prevTot = sb.hasPrev ? rows.reduce(function (a, r) { return a + (r.prevAmount || 0); }, 0) : null;
+    var h = section({
+      en: 'Sales Overview', ko: '매출 요약',
+      desc: '단가는 로로벨 공식몰 공개 가격(판매가·소비자가)이고, 판매 수량과 B2B 공급률은 가정이라 매출액은 가상 수치입니다. B2C는 주문일(취소 제외), B2B는 출고일 기준입니다. 세트는 세트 판매가로 집계합니다.',
+      body: '<div class="stat-row">' +
+        stat('매출 합계', Fm.wonShort(tot), '', prevTot ? '직전 같은 기간 대비 ' + Fm.pp(tot / prevTot - 1).replace('%p', '%') : '직전 기간 비교 불가') +
+        stat('B2C 매출', Fm.wonShort(b2cAmt), '', '비중 ' + pctTxt(tot ? b2cAmt / tot : null)) +
+        stat('B2B·수출 매출', Fm.wonShort(b2bAmt), '', '비중 ' + pctTxt(tot ? b2bAmt / tot : null) + ' · 공급가 기준') +
+        stat('구강케어(와와) 비중', oral ? pctTxt(oral.share) : '—', '', '세트 제외 단품 기준') +
+        stat('매출 1위 제품', top ? esc(top.sku !== undefined ? skuName(top.sku) : '—') : '—', '', top ? Fm.wonShort(top.amount) + ' · ' + pctTxt(top.share) : '') + '</div>'
+    });
+
+    h += section({
+      en: 'Revenue by Product', ko: '제품별 매출 (B2C · B2B)',
+      desc: '막대 길이는 매출, 진한 색은 B2C, 연한 색은 B2B·수출입니다. 필터에서 고른 채널·상품만 집계합니다.',
+      body: panel('제품별 매출', rows.length + '개 제품 · 합계 ' + Fm.wonShort(tot), chartBox('chSalesSku', 'xtall', '제품별 매출'))
+    });
+    h += section({
+      en: 'Category & Trend', ko: '카테고리 비중과 월별 추이',
+      body: '<div class="grid-2">' + panel('카테고리별 매출', '구강케어 · 스킨케어 · 세트', chartBox('chSalesCat', 'tall', '카테고리별 매출')) +
+        panel('월별 카테고리 매출', ms.length + '개월 · 기간이 걸친 달은 기간 안의 일자만', chartBox('chSalesMonthly', 'tall', '월별 카테고리 매출')) + '</div>'
+    });
+    hook(function () { drawSalesCharts(rows, cat, ms); });
+
+    h += section({
+      en: 'Product Table', ko: '제품별 매출표',
+      desc: '직전 대비는 선택 기간과 같은 길이의 바로 앞 기간 매출과 비교합니다.',
+      body: table('salesSku', {
+        columns: [
+          { label: '순위', type: 'int', value: function (r) { return r.rank; } },
+          skuCol('제품'),
+          { label: '카테고리', type: 'text', value: function (r) { return r.category; } },
+          { label: '공식몰 판매가', type: 'won', value: function (r) { return r.price; } },
+          { label: '소비자가', type: 'won', value: function (r) { return r.list; } },
+          { label: '판매·출고 수량', type: 'int', value: function (r) { return r.qty; } },
+          { label: 'B2C 매출', type: 'won', value: function (r) { return r.b2cAmt; } },
+          { label: 'B2B 매출', type: 'won', value: function (r) { return r.b2bAmt; } },
+          { label: '매출 합계', type: 'won', value: function (r) { return r.amount; }, cls: 'strong' },
+          { label: '매출 비중', type: 'pct', value: function (r) { return r.share; } },
+          { label: 'B2B 비중', type: 'pct', value: function (r) { return r.b2bShare; } },
+          { label: '직전 대비', type: 'pct', value: function (r) { return r.growth; } }
+        ], rows: rows, filename: fileName('제품별매출', '제품별매출표'), limit: 0, scroll: true
+      })
+    });
+
+    var chs = D.channels.b2c.map(function (c) { return { id: c.id, name: c.name }; }).concat(D.channels.b2b.map(function (c) { return { id: c.id, name: c.name }; }));
+    h += section({
+      en: 'Product × Channel', ko: '제품 × 채널 매출 (만원)',
+      desc: '어느 제품이 어느 채널에서 팔리는지 봅니다. 재고 배분·B2B 납품 계획을 세울 때 채널별 비중의 근거가 됩니다.',
+      body: table('salesMatrix', {
+        columns: [skuCol('제품')].concat(chs.map(function (c) {
+          return { label: c.name, type: 'int', value: function (r) { return r.byCh[c.id] ? r.byCh[c.id] / 1e4 : 0; } };
+        })).concat([{ label: '합계', type: 'int', value: function (r) { return r.amount / 1e4; }, cls: 'strong' }]),
+        rows: rows, filename: fileName('제품별매출', '제품x채널'), limit: 0, scroll: true
+      })
+    });
+    h += summary(salesSummary(rows, cat, tot, sb));
+    return h;
+  };
+  function drawSalesCharts(rows, cat, ms) {
+    var P = CH.palette();
+    CH.render('chSalesSku', { type: 'bar', data: { labels: rows.map(function (r) { return skuName(r.sku); }), datasets: [
+      { label: 'B2C', data: rows.map(function (r) { return r.b2cAmt; }), backgroundColor: P.primary, stack: 's', maxBarThickness: 18 },
+      { label: 'B2B · 수출', data: rows.map(function (r) { return r.b2bAmt; }), backgroundColor: P.soft, stack: 's', maxBarThickness: 18 }
+    ] }, options: { indexAxis: 'y', interaction: { mode: 'index', intersect: false },
+      scales: { x: { stacked: true, grid: { color: P.grid }, border: { display: false }, ticks: { callback: function (v) { return Math.round(v / 1e6) + '백만'; } } }, y: { stacked: true, grid: { display: false } } },
+      plugins: { tooltip: { callbacks: { label: function (c) { return c.dataset.label + ': ' + Fm.wonShort(c.parsed.x); }, footer: function (it) { var r = rows[it[0].dataIndex]; return '합계 ' + Fm.wonShort(r.amount) + ' · 비중 ' + Fm.pct(r.share) + ' · ' + Fm.int(r.qty) + '개'; } } } } } });
+    CH.render('chSalesCat', { type: 'doughnut', data: { labels: cat.map(function (c) { return c.category; }), datasets: [{ data: cat.map(function (c) { return c.amount; }), backgroundColor: cat.map(function (c, i) { return P.tone(i); }), borderColor: P.bg, borderWidth: 2 }] },
+      options: { cutout: '58%', plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: function (c) { var r = cat[c.dataIndex]; return r.category + ' ' + Fm.wonShort(r.amount) + ' (' + Fm.pct(r.share) + ') · B2B ' + Fm.pct(r.b2b / r.amount); } } } } } });
+    var cats = cat.map(function (c) { return c.category; });
+    CH.render('chSalesMonthly', { type: 'bar', data: { labels: ms.map(function (r) { return Fm.month(r.month); }), datasets: cats.map(function (c, i) {
+      return { label: c, data: ms.map(function (r) { return r.byCat[c] || 0; }), backgroundColor: P.tone(i), stack: 's', maxBarThickness: 40 };
+    }) }, options: { scales: CH.baseScales({ stacked: true, yFmt: function (v) { return Math.round(v / 1e6) + '백만'; } }), interaction: { mode: 'index', intersect: false },
+      plugins: { tooltip: { callbacks: { label: function (c) { return c.dataset.label + ': ' + Fm.wonShort(c.parsed.y); }, footer: function (it) { return '합계 ' + Fm.wonShort(ms[it[0].dataIndex].total); } } } } } });
+  }
+  function salesSummary(rows, cat, tot, sb) {
+    var out = [];
+    if (!tot) return ['선택한 조건에 매출이 없습니다.'];
+    var top3 = rows.slice(0, 3), top3Share = top3.reduce(function (a, r) { return a + (r.share || 0); }, 0);
+    out.push('<span class="flow-tag">지표</span>매출 상위 3개 제품(' + top3.map(function (r) { return esc(skuName(r.sku)); }).join(', ') + ')이 전체의 ' + b(pctTxt(top3Share)) + '를 차지합니다. 상위 제품은 품절 시 매출 영향이 크므로 안전 재고와 입고 일정을 우선 관리합니다.');
+    var hiB2B = rows.filter(function (r) { return r.amount >= tot * 0.02 && r.b2bShare !== null; }).sort(function (a, c) { return c.b2bShare - a.b2bShare; })[0];
+    if (hiB2B) out.push('<span class="flow-tag">지표 → 원인</span>' + b(esc(skuName(hiB2B.sku))) + '는 매출의 ' + b(pctTxt(hiB2B.b2bShare)) + '가 B2B·수출에서 나옵니다. 대형 발주 한 건이 재고를 크게 흔드는 품목이므로, B2B 확정 발주를 재고 소진 예측에 바로 반영해야 합니다.');
+    var grow = rows.filter(function (r) { return r.growth !== null && r.prevAmount >= tot * 0.01; }).sort(function (a, c) { return c.growth - a.growth; });
+    if (sb.hasPrev && grow.length) out.push('<span class="flow-tag">지표 → 조치</span>직전 같은 기간 대비 가장 많이 늘어난 제품은 ' + b(esc(skuName(grow[0].sku))) + '(' + Fm.pp(grow[0].growth).replace('%p', '%') + '), 가장 많이 줄어든 제품은 ' + b(esc(skuName(grow[grow.length - 1].sku))) + '(' + Fm.pp(grow[grow.length - 1].growth).replace('%p', '%') + ')입니다. 증감 원인(행사·B2B 발주 시점·품절)을 확인해 다음 달 입고 계획에 반영합니다.');
+    return out;
+  }
 
   /* ==================================================================
    * 01 종합 현황
@@ -330,12 +670,12 @@
       var open = ar.a.openMismatches;
       var setbom = open.filter(function (m) { return m.cause === 'SETBOM'; }).length;
       out.push('<span class="flow-tag">지표 → 원인 → 조치</span>시스템 재고 일치율은 ' + b(pctTxt(mr.value)) + '(' + mr.detail.num + '/' + mr.detail.den + ' SKU)입니다. 미해결 불일치 ' + b(open.length + '건') +
-        (open.length ? ' 중 ' + b(setbom + '건') + '이 세트 구성품 차감 누락으로, 아직 ERP BOM 매핑을 하지 않은 데일리 케어 세트 계열에서 반복됩니다. 실사 조정만으로는 다시 어긋나므로 BOM 매핑을 먼저 마치는 것이 정상화의 조건입니다.' : '이며, 원인 조치가 끝난 SKU는 일치 상태를 유지하고 있습니다.'));
+        (open.length ? ' 중 ' + b(setbom + '건') + '이 세트 구성품 차감 누락으로, 아직 ERP BOM 매핑을 하지 않은 와와 구강케어 세트 계열에서 반복됩니다. 실사 조정만으로는 다시 어긋나므로 BOM 매핑을 먼저 마치는 것이 정상화의 조건입니다.' : '이며, 원인 조치가 끝난 SKU는 일치 상태를 유지하고 있습니다.'));
     }
     var parts = [];
     if (!b2b.na && b2b.value !== null) parts.push('B2B 납기 준수율은 ' + b(pctTxt(b2b.value)) + (b2b.value < 0.95 ? '로, 라이브·공동구매 직후 B2C 물량이 몰린 날 B2B 출고가 뒤로 밀린 영향이 큽니다(B2B 화면의 주간 부하 비교 참고)' : '로 목표를 달성했습니다'));
     if (bd.value) parts.push('3PL 청구 검증에서 ' + b(Fm.won(bd.detail.over)) + '의 과다 청구 항목을 찾았습니다(' + bd.detail.lines + '개 항목)');
-    if (parts.length) out.push('<span class="flow-tag">지표 → 원인 → 조치</span>' + parts.join('. ') + '. 이 두 항목은 담당 업무 1·4(출고 일정 조율)와 담당 업무 6(정산 검증)에서 바로 회수·개선할 수 있는 금액과 건수입니다.');
+    if (parts.length) out.push('<span class="flow-tag">지표 → 원인 → 조치</span>' + parts.join('. ') + '. 이 두 항목은 공고 담당 업무 6(B2B 납품 일정 관리)과 2(3PL 운영 관리 · 정산 검증)에서 바로 회수·개선할 수 있는 금액과 건수입니다.');
     return out;
   }
 
@@ -508,9 +848,10 @@
    * 03 B2B 거래처 입출고
    * ================================================================== */
   RENDER.b2b = function () {
-    if (!F.b2b) return naBox('B2C 채널이 선택되어 있습니다. 이 화면은 약국·피부미용 의원·총판 B2B 발주 기준이므로 채널을 "전체" 또는 B2B 유형으로 바꾸면 표시됩니다.');
+    if (!F.b2b) return naBox('B2C 채널이 선택되어 있습니다. 이 화면은 쿠팡·컬리·올리브영·해외 수출 B2B 발주 기준이므로 채널을 "전체" 또는 B2B 채널로 바꾸면 표시됩니다.');
     var ot = S.b2bOnTime(F), vol = S.b2bVolume(F), shelf = S.shelfLife(F), inv = S.invoiceRecon(F), late = S.lateAccounts(F);
     var lateN = late.reduce(function (a, r) { return a + r.late; }, 0), openN = late.reduce(function (a, r) { return a + r.open; }, 0);
+    var rejected = D.b2b.filter(function (x) { return x.rejected && x.req >= F.from && x.req <= Math.min(F.to, END) && F.b2bType[x.type] && F.sku[x.sku]; });
     var h = section({
       en: 'B2B Summary', ko: 'B2B 납품 현황',
       desc: '납품 요청일이 선택 기간 안이면서 기준일 이전인 발주(만기 도래 건)를 기준으로 합니다. 발주 1건 = 1개 SKU 라인입니다.',
@@ -519,7 +860,8 @@
         stat('만기 도래 발주', Fm.int(vol.lines), '건', Fm.int(vol.qty) + '개') +
         stat('지연 납품', Fm.int(lateN), '건', '요청일 이후 납품') +
         stat('미납(현재)', Fm.int(openN), '건', '요청일 경과·미출고') +
-        stat('분할 납품', Fm.int(vol.split), '건', '적재 한도·재고 부족') +
+        stat('분할 납품', Fm.int(vol.split), '건', '선적 분할·재고 부족') +
+        stat('센터 입고 반려', Fm.int(rejected.length), '건', '바코드·적재·입수 표기·예약 시간') +
         stat('유통기한 기준 미달', Fm.int(shelf.below.length), '건', '잔여율 70% 미만 · ' + pctTxt(shelf.belowRate)) + '</div>'
     });
 
@@ -531,9 +873,9 @@
         columns: [
           { label: '출고 예정일', type: 'date', value: function (r) { return r.shipDay; }, cls: 'nowrap' },
           { label: '발주번호', type: 'text', value: function (r) { return r.id; }, cls: 'nowrap' },
-          { label: '거래처', type: 'text', value: function (r) { return r.account; } },
-          { label: '유형', type: 'text', value: function (r) { return chName(r.type); } },
-          { label: '지역', type: 'text', value: function (r) { return r.region; } },
+          { label: '납품처', type: 'text', value: function (r) { return r.account; } },
+          { label: '채널', type: 'text', value: function (r) { return chName(r.type); } },
+          { label: '권역·국가', type: 'text', value: function (r) { return r.region; } },
           skuCol('상품'),
           { label: '수량', type: 'int', value: function (r) { return r.qty; } },
           { label: '납품 요청일', type: 'date', value: function (r) { return r.req; }, cls: 'nowrap' },
@@ -546,10 +888,10 @@
     });
 
     h += section({
-      en: 'On-time Delivery', ko: '유형별 · 지역별 납기 준수율',
-      desc: '회색 점선은 목표 95%입니다.',
-      body: '<div class="grid-2">' + panel('거래처 유형별', '약국 · 피부미용 의원 · 총판', chartBox('chB2bType', 'short', '거래처 유형별 납기 준수율')) +
-        panel('지역별', '거래처 소재지 기준', chartBox('chB2bRegion', 'short', '지역별 납기 준수율')) + '</div>'
+      en: 'On-time Delivery', ko: '채널별 · 납품처별 납기 준수율',
+      desc: '회색 점선은 목표 95%입니다. 납품처(센터·바이어) 이름은 모두 가정입니다.',
+      body: '<div class="grid-2">' + panel('채널별', '쿠팡 · 컬리 · 올리브영 · 해외 수출', chartBox('chB2bType', 'short', '채널별 납기 준수율')) +
+        panel('납품처별', '센터 · 수출 바이어', chartBox('chB2bRegion', 'tall', '납품처별 납기 준수율')) + '</div>'
     });
     var wl = S.weeklyLoad(F);
     h += section({
@@ -560,13 +902,13 @@
     hook(function () { drawB2bCharts(wl); });
 
     h += section({
-      en: 'Late & Missed Accounts', ko: '납품 지연 · 미납 상위 거래처',
-      desc: '선택 기간 만기 도래 발주 중 지연 또는 미납이 있는 거래처를 지연·미납 건수 순으로 정렬했습니다.',
+      en: 'Late & Missed Accounts', ko: '납품 지연 · 미납 상위 납품처',
+      desc: '선택 기간 만기 도래 발주 중 지연 또는 미납이 있는 납품처를 지연·미납 건수 순으로 정렬했습니다.',
       body: table('lateAcc', {
         columns: [
-          { label: '거래처', type: 'text', value: function (r) { return r.name; } },
-          { label: '유형', type: 'text', value: function (r) { return chName(r.type); } },
-          { label: '지역', type: 'text', value: function (r) { return r.region; } },
+          { label: '납품처', type: 'text', value: function (r) { return r.name; } },
+          { label: '채널', type: 'text', value: function (r) { return chName(r.type); } },
+          { label: '권역·국가', type: 'text', value: function (r) { return r.region; } },
           { label: '발주 주기', type: 'text', value: function (r) { return r.cycle; } },
           { label: '희망 요일', type: 'text', value: function (r) { return r.pref; } },
           { label: '발주', type: 'int', value: function (r) { return r.n; } },
@@ -581,7 +923,7 @@
 
     h += section({
       en: 'Lot & Shelf Life', ko: '납품 로트와 유통기한 잔여율',
-      desc: '유통기한 잔여율 = 남은 유통기한 일수 ÷ 전체 유통기한 일수 (납품일 기준). 거래처 기준은 70% 이상입니다.',
+      desc: '유통기한 잔여율 = 남은 유통기한 일수 ÷ 전체 유통기한 일수 (납품일 기준). 납품처 입고 기준은 70% 이상으로 가정했습니다. 치약·가글은 로트 추적·선유통기한 출고(FEFO) 관리 대상으로 가정했습니다.',
       body: '<div class="grid-2">' + panel('납품 건 잔여율 분포', '선택 기간 납품 ' + Fm.int(shelf.total) + '건', chartBox('chShelf', 'short', '유통기한 잔여율 분포')) +
         panel('기준 미달 SKU', '잔여율 70% 미만 납품 건수', shelfSkuList(shelf)) + '</div><div style="margin-top:16px">' +
         table('shelf', {
@@ -595,12 +937,47 @@
             { label: '제조일', type: 'date', value: function (r) { return r.mfg; }, cls: 'nowrap' },
             { label: '유통기한', type: 'date', value: function (r) { return r.exp; }, cls: 'nowrap' },
             { label: '잔여율', type: 'pct', value: function (r) { return r.ratio; } },
-            { label: '거래처 기준', type: 'pct', value: function (r) { return r.min; } },
+            { label: '입고 기준(가정)', type: 'pct', value: function (r) { return r.min; } },
             statusCol('판정', function () { return 'risk'; }, function () { return '기준 미달'; })
           ], rows: shelf.below, filename: fileName('B2B', '유통기한기준미달'), limit: 15, caption: '기준 미달 납품', empty: '선택 기간에 기준 미달 납품이 없습니다.'
         }) + '</div>'
     });
     hook(function () { drawShelf(shelf); });
+
+    var ex = S.exportDocRows(F);
+    if (F.b2bType.EXPORT) {
+      var docOpen = 0, gapOver = 0;
+      ex.forEach(function (p) { docOpen += p.docs.filter(function (d) { return !d.ok; }).length; if (p.weightGap !== null && Math.abs(p.weightGap) > M.exportTolerance) gapOver++; });
+      h += section({
+        en: 'Export Shipments & Documents', ko: '수출 출고 · 서류 점검',
+        desc: '공고 담당 업무 7(해외 출고 대응 및 서류 관리)에 해당합니다. 수출 PO 단위로 상업송장(C/I)·포장명세서(P/L)·원산지 증명서(C/O) 준비 상태와 P/L 총중량 대비 3PL 실측 중량 차이(허용 ' + Fm.pct(M.exportTolerance, 1) + ')를 점검합니다. 카톤 입수·중량·CBM 기준과 바이어는 모두 가정입니다.',
+        body: '<div class="stat-row">' +
+          stat('수출 PO', Fm.int(ex.length), '건', '기간 내 요청 + 진행 중') +
+          stat('선적 완료', Fm.int(ex.filter(function (p) { return p.status === '선적 완료'; }).length), '건') +
+          stat('선적 준비·진행', Fm.int(ex.filter(function (p) { return p.status !== '선적 완료'; }).length), '건', '준비 · 부분 선적 · 지연') +
+          stat('미완료 서류', Fm.int(docOpen), '건', 'C/I · P/L · C/O · 성분표') +
+          stat('중량 차이 초과', Fm.int(gapOver), '건', '실측 vs P/L ' + Fm.pct(M.exportTolerance, 1) + ' 초과') + '</div><div style="margin-top:16px">' +
+          table('exportDocs', {
+            columns: [
+              { label: 'PO', type: 'text', value: function (r) { return r.po; }, cls: 'nowrap' },
+              { label: '바이어', type: 'text', value: function (r) { return r.buyer; } },
+              { label: '국가', type: 'text', value: function (r) { return r.country; } },
+              { label: '조건·운송', type: 'text', value: function (r) { return r.incoterms + ' · ' + r.ship; } },
+              { label: '납품 요청일', type: 'date', value: function (r) { return r.req; }, cls: 'nowrap' },
+              { label: '수량', type: 'int', value: function (r) { return r.qty; } },
+              { label: '카톤', type: 'int', value: function (r) { return r.cartons; } },
+              { label: 'CBM', type: 'num1', value: function (r) { return r.cbm; } },
+              { label: 'P/L 총중량(kg)', type: 'num1', value: function (r) { return r.grossKg; } },
+              { label: '3PL 실측(kg)', type: 'num1', value: function (r) { return r.measuredKg; } },
+              { label: '중량 차이', type: 'pct', value: function (r) { return r.weightGap; } },
+              { label: '서류 상태', type: 'text', value: function (r) { return r.docs.map(function (d) { return d.name.replace(/\(.*\)/, '') + ' ' + d.status; }).join(' · '); } },
+              { label: '비고', type: 'text', value: function (r) { return r.docIssue ? r.docIssue.reason + ' → ' + r.docIssue.action : ''; } },
+              statusCol('상태', function (r) { return r.status === '선적 지연' || (r.weightGap !== null && Math.abs(r.weightGap) > M.exportTolerance) ? 'risk' : r.status === '선적 완료' ? 'ok' : 'warn'; }, function (r) { return r.status; })
+            ], rows: ex, filename: fileName('B2B', '수출서류점검'), limit: 12, caption: '수출 PO', empty: '선택 기간에 수출 PO가 없습니다.',
+            rowClass: function (r) { return r.docIssue ? 'flag' : ''; }
+          }) + '</div>'
+      });
+    }
 
     h += section({
       en: 'Invoice Reconciliation', ko: '거래명세서와 실제 출고 수량 대사',
@@ -664,7 +1041,7 @@
   function drawB2bCharts(wl) {
     var P = CH.palette();
     var typ = S.complianceByType(F).filter(function (r) { return F.b2bType[r.key]; });
-    var reg = S.complianceByRegion(F);
+    var reg = S.complianceByAccount(F);
     var pctOpt = function (rows) {
       return {
         scales: CH.baseScales({ yFmt: function (v) { return Math.round(v * 100) + '%'; }, yMax: 1 }),
@@ -673,7 +1050,11 @@
       };
     };
     CH.render('chB2bType', { type: 'bar', data: { labels: typ.map(function (r) { return chName(r.key); }), datasets: [{ label: '납기 준수율', data: typ.map(function (r) { return r.rate; }), backgroundColor: P.primary, maxBarThickness: 48 }] }, options: pctOpt(typ) });
-    CH.render('chB2bRegion', { type: 'bar', data: { labels: reg.map(function (r) { return r.key; }), datasets: [{ label: '납기 준수율', data: reg.map(function (r) { return r.rate; }), backgroundColor: P.primary, maxBarThickness: 36 }] }, options: pctOpt(reg) });
+    CH.render('chB2bRegion', { type: 'bar', data: { labels: reg.map(function (r) { return r.key.replace(/ \((가정|가상)\)$/, ''); }), datasets: [{ label: '납기 준수율', data: reg.map(function (r) { return r.rate; }), backgroundColor: P.primary, maxBarThickness: 22 }] },
+      options: { indexAxis: 'y',
+        scales: { x: { grid: { color: P.grid }, border: { display: false }, min: 0, max: 1, ticks: { callback: function (v) { return Math.round(v * 100) + '%'; } } }, y: { grid: { display: false } } },
+        plugins: { legend: { display: false },
+          tooltip: { callbacks: { label: function (c) { var r = reg[c.dataIndex]; return '준수율 ' + Fm.pct(r.rate) + ' (' + r.ok + '/' + r.n + '건)'; } } } } } });
     var liveW = wl.filter(function (w) { return w.overtime > 0; }), normW = wl.filter(function (w) { return !w.overtime; });
     var pt = function (w) { return { x: w.load, y: w.rate, w: w }; };
     CH.render('chB2bLoad', { type: 'scatter', data: { datasets: [
@@ -693,7 +1074,7 @@
     CH.render('chShelf', { type: 'bar', data: { labels: shelf.buckets.map(function (x) { return x.label; }),
       datasets: [{ label: '납품 건수', data: shelf.buckets.map(function (x) { return x.n; }), backgroundColor: P.primary, maxBarThickness: 56 }] },
       options: { scales: CH.baseScales({ yFmt: function (v) { return Fm.int(v); } }), plugins: { legend: { display: false },
-        markers: { vlines: [{ index: 1.5, label: '거래처 기준 70%' }] },
+        markers: { vlines: [{ index: 1.5, label: '입고 기준 70%' }] },
         tooltip: { callbacks: { label: function (c) { return Fm.int(c.parsed.y) + '건'; } } } } } });
   }
   function b2bSummary(ot, wl, late, shelf, inv, sch) {
@@ -927,7 +1308,7 @@
       tools: '<div class="seg" role="group" aria-label="상태 필터">' + [['ALL', '전체'], ['접수', '접수'], ['처리 중', '처리 중'], ['완료', '완료'], ['OVERDUE', '기한 초과']].map(function (s) {
         return '<button type="button" data-issue-status="' + s[0] + '" aria-pressed="' + (state.local.issueStatus === s[0]) + '">' + s[1] + '</button>';
       }).join('') + '</div>',
-      desc: '미완료·기한 초과 건을 위로 정렬했습니다. 처리 기한은 유형별 SLA(오출고 2일, 출고 지연 1일, 파손 3일, 수량 차이 3일, 누락 2일)입니다.',
+      desc: '미완료·기한 초과 건을 위로 정렬했습니다. 처리 기한은 유형별 SLA(오출고 2일, 출고 지연 1일, 파손 3일, 수량 차이 3일, 누락 2일, 입고 반려 2일, 서류 보완 1일)입니다.',
       body: block('blk-issues', issueListHtml)
     });
 
@@ -1013,7 +1394,7 @@
     out.push('<span class="flow-tag">지표 → 조치</span>' + (tp ? '3PL 출고 정확도는 ' + b(Fm.pct(tp.accuracy, 2)) + ', 마감 준수율은 ' + b(pctTxt(tp.cutoff)) + '입니다. ' : '') +
       (slow ? '평균 처리 소요일이 가장 긴 부서는 ' + b(slow.key) + '(' + Fm.num1(slow.avgDays) + '일)이고 기한 초과 미결 이슈는 ' + b(od + '건') + '입니다. 영업 접수 건(B2B 지연·명세서 차이)은 SCM이 원인을 확인해 회신 기한을 정해 두고, 3PL 귀책 건은 주간 회의에서 건별 재발 방지 조치를 받습니다.' : ''));
     var c1 = cards[0].result[0], c2 = cards[1].result[0];
-    out.push('<span class="flow-tag">조치 → 결과</span>재발 방지 조치의 효과: 세트 사전 포장 후 세트 주문 누락률 ' + b(Fm.pct2(c1.before) + '→' + Fm.pct2(c1.after)) + ', 본품·미니 로케이션 분리 후 오출고율 ' + b(Fm.pct2(c2.before) + '→' + Fm.pct2(c2.after)) + '. 같은 방식으로 "원인 → 조치 → 결과"를 카드로 남기면 유관부서와 개선 효과를 숫자로 공유할 수 있습니다.');
+    out.push('<span class="flow-tag">조치 → 결과</span>재발 방지 조치의 효과: 세트 사전 포장 후 세트 주문 누락률 ' + b(Fm.pct2(c1.before) + '→' + Fm.pct2(c1.after)) + ', 와와 치약 5종 로케이션 분리 후 오출고율 ' + b(Fm.pct2(c2.before) + '→' + Fm.pct2(c2.after)) + '. 같은 방식으로 "원인 → 조치 → 결과"를 카드로 남기면 유관부서와 개선 효과를 숫자로 공유할 수 있습니다.');
     return out;
   }
 
@@ -1207,7 +1588,7 @@
       out.push('<span class="flow-tag">조치 → 결과</span>정기 실사·조정 직후 일치율은 ' + (e.length ? b(Fm.pct(e[0].before) + '→' + Fm.pct(e[0].at)) + '로 올랐다가 4주 뒤 ' + b(Fm.pct(e[0].after4w)) + '로 다시 떨어졌습니다' : '올랐습니다') +
         '. 실사 후 6주 안에 다시 어긋난 비율은 원인 조치 SKU ' + b(rr(fixed) === null ? '—' : pctTxt(rr(fixed))) + ', 미조치 SKU ' + b(rr(unfixed) === null ? '—' : pctTxt(rr(unfixed))) + '입니다. 실사로 숫자를 맞추는 것만으로는 정상화되지 않는다는 근거입니다.');
     } else out.push('<span class="flow-tag">조치 → 결과</span>선택 기간에는 정기 실사가 없습니다. 기간을 6개월 이상으로 넓히면 실사 후 일치율이 올랐다가 원인 미조치 SKU에서 다시 떨어지는 패턴을 볼 수 있습니다.');
-    out.push('<span class="flow-tag">조치</span>우선순위: ① 데일리 케어 세트 ERP BOM 매핑(세트 구성품 차감 누락 재발 차단) ② OMS 취소 → WMS 출고 지시 자동 회수 범위를 전 채널로 확대 ③ 반품 입고 D+1 마감 준수 여부를 검증 규칙 R1로 매일 점검. 규칙 위반 건은 다음 날 오전 대사 목록으로 자동 생성해 일일 대사 정정 비율을 높입니다.');
+    out.push('<span class="flow-tag">조치</span>우선순위: ① 와와 구강케어 세트 ERP BOM 매핑(세트 구성품 차감 누락 재발 차단) ② 사방넷 취소 → WMS 출고 지시 자동 회수 범위를 전 채널로 확대 ③ 반품 입고 D+1 마감 준수 여부를 검증 규칙 R1로 매일 점검. 규칙 위반 건은 다음 날 오전 대사 목록으로 자동 생성해 일일 대사 정정 비율을 높입니다.');
     return out;
   }
 
@@ -1384,7 +1765,7 @@
     h += section({
       en: 'Tier Impact', ko: '월별 구간 적용과 물류비 영향',
       desc: '막대는 월 택배 박스 수(파랑 = 구간 산정에 들어가는 B2C, 연한 파랑 = 산정에서 빠지는 B2B 택배), 점선은 구간 경계입니다. 같은 물량이라도 경계를 넘으면 그 달의 모든 박스 단가가 내려갑니다.',
-      body: panel('월 택배 박스 수와 구간 경계', 'A │ B 9,000 · B │ C 11,000 · C │ D 14,000', chartBox('chTier', '', '월 택배 박스 수와 구간 경계')) + '<div style="margin-top:16px">' +
+      body: panel('월 택배 박스 수와 구간 경계', tierBounds().map(function (t) { return t.label; }).join(' · '), chartBox('chTier', '', '월 택배 박스 수와 구간 경계')) + '<div style="margin-top:16px">' +
         table('tierMonths', {
           columns: [
             { label: '월', type: 'text', value: function (r) { return Fm.month(r.month); } },
@@ -1447,13 +1828,18 @@
     h += summary(ratecardSummary(tm, sc, pr, last));
     return h;
   };
+  // 견적 구간 경계(박스 수): 단가표 데이터에서 읽는다
+  function tierBounds() {
+    var t = S.rateCard().tiers;
+    return t.slice(0, -1).map(function (x, i) { return { y: x.max, label: x.id + ' │ ' + t[i + 1].id + '  ' + Fm.int(x.max) }; });
+  }
   function drawTier(tm) {
     var P = CH.palette();
     CH.render('chTier', { type: 'bar', data: { labels: tm.map(function (r) { return Fm.month(r.month); }), datasets: [
       { label: 'B2C 택배(구간 산정)', data: tm.map(function (r) { return r.basis; }), backgroundColor: P.primary, stack: 't', maxBarThickness: 36 },
       { label: 'B2B 택배(산정 제외)', data: tm.map(function (r) { return r.b2bParcels; }), backgroundColor: P.soft, stack: 't', maxBarThickness: 36 }
     ] }, options: { scales: CH.baseScales({ stacked: true, yFmt: function (v) { return Fm.int(v); } }), interaction: { mode: 'index', intersect: false },
-      plugins: { markers: { hlines: [{ y: 9000, label: 'A │ B  9,000' }, { y: 11000, label: 'B │ C  11,000' }, { y: 14000, label: 'C │ D  14,000' }] },
+      plugins: { markers: { hlines: tierBounds() },
         tooltip: { callbacks: { label: function (c) { return c.dataset.label + ': ' + Fm.int(c.parsed.y) + '박스'; },
           footer: function (it) { var r = tm[it[0].dataIndex]; return r.tier + '구간 적용' + (r.toNext !== null ? ' · 다음 구간까지 ' + Fm.int(r.toNext) + '박스' : '') + ' · B2B 포함 시 ' + r.tierIfB2B + '구간'; } } } } } });
   }
@@ -1482,7 +1868,7 @@
     var top = pr.items[0], low = pr.items[pr.items.length - 1];
     var small = sc.rows.filter(function (r) { return r.size === 'S'; })[0];
     if (top) out.push('<span class="flow-tag">지표 → 조치</span>단가 인하 1순위는 ' + b(top.label) + '입니다. 비교 견적과의 차이는 ' + Fm.int(top.gap) + '원으로 크지 않지만, 소형 박스가 전체의 ' + b(pctTxt(small.boxShare)) + '라 월 ' + b(Fm.won(top.monthlySave)) + '(우선순위 전체의 ' + pctTxt(top.share) + ')가 걸려 있습니다. 대형은 단가 차이가 같아도 물량이 적어 효과가 ' + Fm.won(low.monthlySave) + ' 수준입니다. 협상은 소형 택배비·소형 포장 단가부터, 근거는 비교 견적과 월 물량 추이로 준비합니다.');
-    out.push('<span class="flow-tag">조치</span>① 재계약 시 구간 산정 물량에 B2B 택배를 포함하거나 경계(11,000박스)를 낮추고, ② 소형 단가를 비교 견적 수준으로 협상하며, ③ 과대 박스로 상위 사이즈 단가가 붙은 ' + b(Fm.won(sc.overExtra)) + '는 박스 자동 추천으로 줄입니다. 합포장을 늘리면 박스 수가 줄어 구간이 내려갈 수 있으므로, 경계 근처 달에는 합포장 효과와 구간 단가 변화를 함께 계산해 결정합니다. 구간 단가가 실제 청구에 반영됐는지는 07 정산 검증의 "청구 단가 = 계약 단가" 대사로 매월 확인합니다.');
+    out.push('<span class="flow-tag">조치</span>① 재계약 시 구간 산정 물량에 B2B 택배를 포함하거나 경계(' + Fm.int(tierBounds()[1].y) + '박스)를 낮추고, ② 소형 단가를 비교 견적 수준으로 협상하며, ③ 과대 박스로 상위 사이즈 단가가 붙은 ' + b(Fm.won(sc.overExtra)) + '는 박스 자동 추천으로 줄입니다. 합포장을 늘리면 박스 수가 줄어 구간이 내려갈 수 있으므로, 경계 근처 달에는 합포장 효과와 구간 단가 변화를 함께 계산해 결정합니다. 구간 단가가 실제 청구에 반영됐는지는 07 정산 검증의 "청구 단가 = 계약 단가" 대사로 매월 확인합니다.');
     return out;
   }
 
@@ -1496,7 +1882,7 @@
     }).join('');
     document.getElementById('sidebarFoot').innerHTML =
       '<dt>기준 시각</dt><dd>' + M.nowLabel + '</dd><dt>데이터 기간</dt><dd>' + M.startIso + ' ~ ' + M.endIso + '</dd>' +
-      '<dt>3PL 센터 (가정)</dt><dd>일 ' + Fm.int(M.CAPACITY) + '건 · 마감 ' + D.center.cutoff + '</dd><dt>데이터</dt><dd>가상 데이터 (시드 ' + M.seed + ')</dd>';
+      '<dt>3PL 센터 (가정)</dt><dd>일 ' + Fm.int(M.CAPACITY) + '건 · 마감 ' + D.center.cutoff + '</dd><dt>제품·가격</dt><dd>공식몰 공개 정보 (' + D.brand.checked + ' 확인)</dd><dt>수치</dt><dd>주문·재고·매출 모두 가상 (시드 ' + M.seed + ')</dd>';
     var ch = document.getElementById('fChannel');
     ch.innerHTML = '<option value="ALL">전체 채널</option><optgroup label="B2C"><option value="B2C">B2C 전체</option>' +
       D.channels.b2c.map(function (c) { return '<option value="' + c.id + '">' + esc(c.name) + '</option>'; }).join('') + '</optgroup>' +
@@ -1621,7 +2007,7 @@
     document.getElementById('pageTitle').textContent = sc.ko;
     document.getElementById('pageDuty').textContent = sc.duty;
     document.getElementById('scopeLine').innerHTML = scopeLineHtml();
-    document.title = sc.ko + ' · K-Beauty Brand SCM Operations — Portfolio';
+    document.title = sc.ko + ' · ROROBELL SCM 운영 대시보드 — 지원용 포트폴리오';
     var view = document.getElementById('view');
     view.innerHTML = RENDER[sc.id]();
     runHooks();

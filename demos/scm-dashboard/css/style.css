@@ -1,5 +1,5 @@
 /* =====================================================================
- * K-Beauty Brand SCM Operations — Portfolio
+ * ROROBELL SCM 운영 대시보드 — 지원용 포트폴리오
  * 디자인 변수: 색상은 아래 변수만 사용합니다. (그라데이션·글로우 사용하지 않음)
  * ===================================================================== */
 :root {
@@ -381,4 +381,54 @@ table.data td.strong { font-weight: 700; }
 @media print {
   .sidebar, .topbar .filters, .btn { display: none; }
   .app { grid-template-columns: 1fr; }
+}
+
+/* ---------- 로로벨: 공고 매핑 · 채널 구조 · 제품별 매출 ---------- */
+.note-box { border-left: 3px solid var(--chart-1); background: var(--bg); padding: 12px 16px; font-size: 13px; line-height: 1.7; color: var(--text-sub); }
+.note-box b { color: var(--text); }
+.fit-list { display: grid; gap: 12px; }
+.fit-card { border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--bg); padding: 16px 18px; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) 180px; gap: 18px; align-items: start; }
+.fit-card .q { font-size: 12px; color: var(--text-sub); font-weight: 600; }
+.fit-card h3 { font-size: 15.5px; font-weight: 800; margin-top: 2px; }
+.fit-card p { font-size: 13.5px; line-height: 1.65; }
+.fit-card .link-btn { display: block; text-align: left; margin-bottom: 4px; }
+.case { border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--bg); padding: 18px 20px; }
+.case h3 { font-size: 15.5px; font-weight: 800; margin-top: 2px; }
+.case-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 12px; }
+.case-grid h4 { font-size: 12px; color: var(--text-sub); font-weight: 700; margin-bottom: 4px; }
+.case ol { margin: 0; padding-left: 18px; font-size: 13.5px; line-height: 1.7; }
+.lanes { display: grid; gap: 12px; }
+.lane { display: grid; grid-template-columns: 200px minmax(0, 1fr); border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--bg); }
+.lane-head { padding: 16px 18px; border-right: 1px solid var(--line); background: var(--bg-sub); }
+.lane-head h3 { font-size: 16px; font-weight: 800; }
+.lane-head p { font-size: 12px; color: var(--text-sub); margin-top: 4px; line-height: 1.5; }
+.lane-steps { display: flex; align-items: stretch; padding: 12px; min-width: 0; }
+.lane-step { flex: 1 1 0; min-width: 0; padding: 6px 10px; }
+.lane-step b { display: block; font-size: 13.5px; }
+.lane-step span { display: block; font-size: 12px; color: var(--text-sub); line-height: 1.5; margin-top: 2px; }
+.lane-arrow { flex: none; align-self: center; color: var(--text-sub); }
+.ch-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.ch-card { border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--bg); padding: 16px 18px; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.ch-card.off { opacity: 0.45; }
+.ch-card h3 { font-size: 15px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.ch-desc { font-size: 12px; color: var(--text-sub); line-height: 1.5; }
+.ch-card dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; margin: 4px 0 0; font-size: 13px; }
+.ch-card dt { color: var(--text-sub); }
+.ch-card dd { margin: 0; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+.share-bar { height: 6px; background: var(--bg-sub); border-radius: var(--radius); overflow: hidden; }
+.share-bar i { display: block; height: 100%; background: var(--chart-1); }
+@media (max-width: 1280px) {
+  .ch-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lane-steps { flex-wrap: wrap; }
+  .lane-step { flex: 1 1 30%; }
+  .lane-arrow { display: none; }
+}
+@media (max-width: 1080px) {
+  .fit-card, .case-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 900px) {
+  .lane { grid-template-columns: minmax(0, 1fr); }
+  .lane-head { border-right: 0; border-bottom: 1px solid var(--line); }
+  .lane-step { flex: 1 1 45%; }
+  .ch-cards { grid-template-columns: minmax(0, 1fr); }
 }

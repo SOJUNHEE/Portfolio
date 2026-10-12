@@ -1,8 +1,11 @@
 /* =====================================================================
  * js/data.js — 가상 데이터 생성
  * ---------------------------------------------------------------------
- * 본 파일의 모든 수치는 지원용 포트폴리오를 위한 가상 데이터입니다.
- * 특정 회사의 실제 주문·재고·정산 수치가 아닙니다.
+ * (주)로로벨(ROROBELL) SCM 물류·재고 관리 직무 지원용 포트폴리오 데이터입니다.
+ * - 실제 정보: 제품명·판매가·소비자가(로로벨 공식몰 rorobell.com, 2026-10-12 확인),
+ *              판매·납품 채널과 도구(채용공고: 카페24·스마트스토어·사방넷, 쿠팡·컬리·올리브영 B2B, 수출)
+ * - 가정·가상: 주문·발주·재고·매출·정산 등 모든 수치, 원가, 공급률, 유통기한, 센터·바이어 이름
+ *   → 로로벨의 실제 주문·재고·매출 수치가 아닙니다.
  *
  * - 시드 고정 난수(mulberry32)를 사용하므로 새로고침해도 값이 같습니다.
  * - 기간: 2025-10-01 ~ 2026-09-30 (365일), 기준 시각: 2026-09-30 18:00
@@ -86,54 +89,63 @@
   var COUNT_DAYS = ['2025-12-31', '2026-03-31', '2026-06-30', '2026-08-31'].map(dayOf); // 정기 실사일
 
   /* ------------------------------------------------------------------
-   * 3. 상품 마스터 (단품 6종 × 규격 3종 + 세트 3종 = 21 SKU)
+   * 3. 상품 마스터 — 로로벨 공식몰 공개 제품 17종 + 세트 3종 = 20 SKU
+   *    실제: 제품명, price(공식몰 판매가), list(소비자가)  — 2026-10-12 rorobell.com 확인
+   *    가정: costR(원가율), shelfM(유통기한 개월), vol(포장 부피 지수), unitG(개당 출고 중량 g),
+   *          b2c(B2C 판매 비중 가중치), vf(시스템 불일치 노출 가중치)
+   *    lotTrace: 로트 추적·선유통기한 출고(FEFO) 관리 대상(치약·가글, 의약외품 가정)
+   *    conf: 'WWTP' = 패키지가 비슷한 와와 치약 5종 (인접 로케이션 오출고 위험군)
    * ------------------------------------------------------------------ */
-  var BASES = [
-    { code: 'CR', name: 'PDRN 크림', category: '크림', price: 38000, cost: 9200, shelfM: 30, b2c: 1.0 },
-    { code: 'SE', name: 'PDRN 세럼', category: '세럼', price: 42000, cost: 10400, shelfM: 30, b2c: 1.25 },
-    { code: 'MS', name: 'PDRN 마스크', category: '마스크', price: 24000, cost: 5600, shelfM: 24, b2c: 0.7 },
-    { code: 'SN', name: '선 세럼', category: '선케어', price: 29000, cost: 7100, shelfM: 24, b2c: 0.8 },
-    { code: 'LP', name: '립 세럼', category: '립케어', price: 18000, cost: 4200, shelfM: 24, b2c: 0.5 },
-    { code: 'SC', name: '두피 세럼', category: '두피케어', price: 34000, cost: 8600, shelfM: 30, b2c: 0.55 }
-  ];
-  var SPECS = [
-    { code: 'STD', label: '본품', pm: 1, w: 1, vol: 1 },
-    { code: 'LRG', label: '대용량', pm: 1.65, w: 0.28, vol: 1.6 },
-    { code: 'MINI', label: '미니', pm: 0.38, w: 0.16, vol: 0.4 }
+  var CATALOG = [
+    { id: 'RB-WW-TP', name: '와와치약', category: '구강케어', list: 12500, price: 8800, costR: 0.27, shelfM: 36, vol: 0.5, unitG: 165, b2c: 3.4, vf: 1, lotTrace: true, conf: 'WWTP' },
+    { id: 'RB-WW-GUM', name: '와와 잇몸 케어 치약', category: '구강케어', list: 13500, price: 9800, costR: 0.28, shelfM: 36, vol: 0.5, unitG: 165, b2c: 0.9, vf: 0.6, lotTrace: true, conf: 'WWTP' },
+    { id: 'RB-WW-SNS', name: '와와 시린이 플러스 치약', category: '구강케어', list: 13500, price: 9800, costR: 0.28, shelfM: 36, vol: 0.5, unitG: 165, b2c: 0.65, vf: 0.5, lotTrace: true, conf: 'WWTP' },
+    { id: 'RB-WW-WHT', name: '와와 미백 치약', category: '구강케어', list: 13500, price: 9800, costR: 0.28, shelfM: 36, vol: 0.5, unitG: 165, b2c: 0.85, vf: 0.6, lotTrace: true, conf: 'WWTP' },
+    { id: 'RB-WW-KID', name: '와와 키즈 치약 (청포도향)', category: '구강케어', list: 12500, price: 8800, costR: 0.27, shelfM: 36, vol: 0.4, unitG: 95, b2c: 0.4, vf: 0.3, lotTrace: true, conf: 'WWTP' },
+    { id: 'RB-WW-SPR', name: '와와 센스 스프레이', category: '구강케어', list: 12000, price: 7800, costR: 0.3, shelfM: 30, vol: 0.3, unitG: 45, b2c: 0.8, vf: 0.6 },
+    { id: 'RB-WW-GRG', name: '와와 가글', category: '구강케어', list: 25500, price: 16800, costR: 0.26, shelfM: 30, vol: 1.1, unitG: 560, b2c: 0.55, vf: 0.5, lotTrace: true },
+    { id: 'RB-WW-BRS', name: '와와칫솔(테트라모) 12개입', category: '구강케어', list: 54000, price: 31000, costR: 0.3, shelfM: 60, vol: 1.3, unitG: 260, b2c: 0.3, vf: 0.3 },
+    { id: 'RB-WW-TCL', name: '와와 혀클리너', category: '구강케어', list: 5000, price: 2900, costR: 0.32, shelfM: 60, vol: 0.2, unitG: 30, b2c: 0.25, vf: 0.3 },
+    { id: 'RB-SK-AMP', name: '퍼스트 에이드 앰플', category: '스킨케어', list: 85000, price: 65000, costR: 0.22, shelfM: 30, vol: 0.5, unitG: 180, b2c: 0.32, vf: 0.6 },
+    { id: 'RB-SK-CRM', name: '워터 캐논 크림', category: '스킨케어', list: 58000, price: 48000, costR: 0.22, shelfM: 30, vol: 0.6, unitG: 220, b2c: 0.3, vf: 0.6 },
+    { id: 'RB-SK-MST', name: '트윙클 미스트', category: '스킨케어', list: 38000, price: 29000, costR: 0.24, shelfM: 30, vol: 0.6, unitG: 190, b2c: 0.2, vf: 0.4, season: true },
+    { id: 'RB-SK-CLN', name: '해바라기 클렌징 젤', category: '스킨케어', list: 35000, price: 28000, costR: 0.24, shelfM: 30, vol: 0.7, unitG: 250, b2c: 0.24, vf: 0.4 },
+    { id: 'RB-SK-PAD', name: '산수유 토너 패드', category: '스킨케어', list: 25000, price: 25000, costR: 0.25, shelfM: 24, vol: 0.9, unitG: 280, b2c: 0.3, vf: 0.5 },
+    { id: 'RB-SK-MSK', name: '김 마스크팩', category: '스킨케어', list: 20000, price: 20000, costR: 0.25, shelfM: 24, vol: 0.5, unitG: 160, b2c: 0.26, vf: 0.4 },
+    { id: 'RB-SK-SRM', name: '백구슬 세럼', category: '스킨케어', list: 38000, price: 38000, costR: 0.23, shelfM: 30, vol: 0.5, unitG: 150, b2c: 0.17, vf: 0.3 },
+    { id: 'RB-SK-BCR', name: '백도화지 크림', category: '스킨케어', list: 33000, price: 33000, costR: 0.23, shelfM: 30, vol: 0.6, unitG: 190, b2c: 0.13, vf: 0.3 }
   ];
   var skus = [];
   var skuById = {};
-  BASES.forEach(function (b) {
-    SPECS.forEach(function (sp) {
-      var s = {
-        idx: skus.length,
-        id: 'RJ-' + b.code + '-' + sp.code,
-        name: b.name + ' ' + sp.label,
-        base: b.code, spec: sp.code, specLabel: sp.label,
-        category: b.category,
-        price: Math.round(b.price * sp.pm / 100) * 100,
-        cost: Math.round(b.cost * sp.pm / 10) * 10,
-        shelfLifeDays: Math.round(b.shelfM * 30.4),
-        isSet: false, components: [], vol: sp.vol,
-        b2cWeight: b.b2c * sp.w
-      };
-      skus.push(s); skuById[s.id] = s;
-    });
+  CATALOG.forEach(function (c) {
+    var s = {
+      idx: skus.length, id: c.id, name: c.name,
+      base: c.id.split('-')[2], spec: 'STD', specLabel: '단품', line: c.id.indexOf('RB-WW') === 0 ? '와와 구강케어' : '스킨케어',
+      category: c.category, price: c.price, list: c.list,
+      cost: Math.round(c.price * c.costR / 10) * 10,
+      shelfLifeDays: Math.round(c.shelfM * 30.4),
+      isSet: false, components: [], vol: c.vol, unitG: c.unitG,
+      b2cWeight: c.b2c, vf: c.vf, lotTrace: !!c.lotTrace, conf: c.conf || null, season: !!c.season
+    };
+    skus.push(s); skuById[s.id] = s;
   });
   function sid(id) { return skuById[id].idx; }
+  // 세트: 앰플 + 크림 SET 은 공식몰 실제 구성, 나머지 2종은 라이브·공동구매용 기획 구성(가정)
   var SETS = [
-    { id: 'RJ-SET-HOME', name: 'PDRN 홈케어 세트', price: 72000, comps: [['RJ-CR-STD', 1], ['RJ-SE-STD', 1]], w: 0.42, liveW: 35, bomRisk: 0.006 },
-    { id: 'RJ-SET-INT', name: 'PDRN 집중 세트', price: 79000, comps: [['RJ-SE-STD', 1], ['RJ-MS-STD', 2]], w: 0.36, liveW: 25, bomRisk: 0.006 },
-    { id: 'RJ-SET-DAILY', name: '데일리 케어 세트', price: 52000, comps: [['RJ-SN-STD', 1], ['RJ-LP-STD', 1], ['RJ-CR-MINI', 1]], w: 0.28, liveW: 15, bomRisk: 0.03 }
+    { id: 'RB-SET-AC', name: '앰플 + 크림 SET', price: 111000, list: 143000, comps: [['RB-SK-AMP', 1], ['RB-SK-CRM', 1]], w: 0.1, liveW: 5, bomRisk: 0.006 },
+    { id: 'RB-SET-TP3', name: '와와치약 3개 묶음 (기획·가정)', price: 23900, list: 37500, comps: [['RB-WW-TP', 3]], w: 0.3, liveW: 46, bomRisk: 0.006 },
+    { id: 'RB-SET-ORAL', name: '와와 구강케어 세트 (기획·가정)', price: 26900, list: 43000, comps: [['RB-WW-TP', 1], ['RB-WW-GRG', 1], ['RB-WW-TCL', 1]], w: 0.16, liveW: 24, bomRisk: 0.03 }
   ];
   SETS.forEach(function (st) {
     var comps = st.comps.map(function (c) { return { idx: sid(c[0]), qty: c[1] }; });
     var s = {
-      idx: skus.length, id: st.id, name: st.name, base: 'SET', spec: 'SET', specLabel: '세트',
-      category: '세트', price: st.price,
+      idx: skus.length, id: st.id, name: st.name, base: 'SET', spec: 'SET', specLabel: '세트', line: '세트',
+      category: '세트', price: st.price, list: st.list,
       cost: comps.reduce(function (a, c) { return a + skus[c.idx].cost * c.qty; }, 0) + 600,
       shelfLifeDays: Math.min.apply(null, comps.map(function (c) { return skus[c.idx].shelfLifeDays; })),
-      isSet: true, components: comps, vol: 2.5, b2cWeight: st.w, liveWeight: st.liveW
+      isSet: true, components: comps, vol: comps.reduce(function (a, c) { return a + skus[c.idx].vol * c.qty; }, 0.4),
+      unitG: comps.reduce(function (a, c) { return a + skus[c.idx].unitG * c.qty; }, 40),
+      b2cWeight: st.w, liveWeight: st.liveW, vf: 1, lotTrace: false, conf: null, season: false
     };
     skus.push(s); skuById[s.id] = s;
   });
@@ -142,11 +154,11 @@
   var SET_IDX = skus.filter(function (s) { return s.isSet; }).map(function (s) { return s.idx; });
   var ALL_IDX = skus.map(function (s) { return s.idx; });
 
-  // 선케어 계절성 (5~8월 성수기)
-  var SUN_SEASON = { 1: 0.7, 2: 0.75, 3: 0.95, 4: 1.2, 5: 1.5, 6: 1.8, 7: 1.9, 8: 1.6, 9: 1.1, 10: 0.85, 11: 0.75, 12: 0.7 };
+  // 미스트 계절성 (5~8월 성수기, 가정)
+  var MIST_SEASON = { 1: 0.7, 2: 0.75, 3: 0.95, 4: 1.15, 5: 1.4, 6: 1.7, 7: 1.8, 8: 1.5, 9: 1.1, 10: 0.85, 11: 0.75, 12: 0.7 };
   function seasonFactor(s, day) {
-    if (skus[s].base !== 'SN') return 1;
-    return SUN_SEASON[+isoOf(day).slice(5, 7)];
+    if (!skus[s].season) return 1;
+    return MIST_SEASON[+isoOf(day).slice(5, 7)];
   }
   function b2cWeights(day) {
     return ALL_IDX.map(function (s) { return skus[s].b2cWeight * seasonFactor(s, day); });
@@ -154,85 +166,65 @@
   var LIVE_W = ALL_IDX.map(function (s) {
     var k = skus[s];
     if (k.isSet) return k.liveWeight;
-    return { 'RJ-SE-STD': 10, 'RJ-CR-STD': 8, 'RJ-MS-STD': 4, 'RJ-SN-STD': 3 }[k.id] || 0;
+    return { 'RB-WW-TP': 12, 'RB-SK-AMP': 4, 'RB-WW-GRG': 3, 'RB-WW-SPR': 3 }[k.id] || 0;
   });
 
   /* ------------------------------------------------------------------
    * 4. 채널, 3PL 센터
    * ------------------------------------------------------------------ */
+  // B2C: 채용공고의 '카페24, 스마트스토어, 사방넷 기반 주문·출고' — 모든 채널 주문은 사방넷(OMS)으로 수집(가정)
   var B2C_CHANNELS = [
-    { id: 'MALL', name: '자사몰' },
-    { id: 'OM_A', name: '오픈마켓A' },
-    { id: 'OM_B', name: '오픈마켓B' },
-    { id: 'LIVE', name: '라이브·공동구매' }
+    { id: 'CAFE24', name: '자사몰(카페24)', desc: '공식몰 rorobell.com · 카페24 기반', share: 0.38 },
+    { id: 'SMART', name: '스마트스토어', desc: '네이버 스마트스토어', share: 0.4 },
+    { id: 'OPEN', name: '기타 오픈마켓', desc: '사방넷으로 수집하는 기타 오픈마켓(가정)', share: 0.14 },
+    { id: 'LIVE', name: '라이브·공동구매', desc: '쇼핑라이브·인플루언서 공동구매(가정)', share: 0.08 }
   ];
+  // B2B: 채용공고의 '쿠팡, 컬리, 올리브영 등 B2B 주문·납품 일정 관리', '해외 출고(수출) 건 대응 및 서류 관리'
+  //  supplyRate = 소비자가 대비 공급가 비율(가정). 매출은 공급가 × 출고 수량으로 계산한다.
   var B2B_TYPES = [
-    { id: 'PHARM', name: '약국' },
-    { id: 'CLINIC', name: '피부미용 의원' },
-    { id: 'DIST', name: '총판' }
+    { id: 'COUPANG', name: '쿠팡(로켓배송)', supplyRate: 0.55, mode: '팔레트 화물(밀크런)', note: '센터별 입고 예약 · 물류 바코드·팔레트 규격 준수' },
+    { id: 'KURLY', name: '컬리', supplyRate: 0.58, mode: '박스 단위 택배', note: '입고 예약 시간 · 박스당 입수 표기' },
+    { id: 'OLIVE', name: '올리브영', supplyRate: 0.5, mode: '팔레트 화물', note: '행사(올영세일) 전 물량 선입고 · 바코드 검수' },
+    { id: 'EXPORT', name: '해외 수출', supplyRate: 0.42, mode: '해상·항공 수출(FOB)', note: 'C/I·P/L·원산지 증명 · 실측 중량·CBM' }
   ];
   var center = {
     name: '3PL A센터 (가정)',
     dailyCapacity: CAPACITY,
     overtimeCapacity: OVERTIME_CAPACITY,
     cutoff: '14:00',
-    releaseBatches: '10:00, 13:00 (발주 등록 → 출고 지시 수작업 업로드)'
+    releaseBatches: '10:00, 13:00 (사방넷 발주 등록 → 3PL WMS 출고 지시 수작업 업로드)'
   };
 
   /* ------------------------------------------------------------------
-   * 5. B2B 거래처 300곳
+   * 5. B2B 납품처 (센터·바이어 이름은 모두 가정)
+   *    region = 센터 소재 권역 또는 수출 국가
    * ------------------------------------------------------------------ */
-  var REGIONS = ['서울', '경기', '인천', '부산', '대구', '대전', '광주', '기타'];
-  var REGION_W = [30, 28, 6, 9, 6, 4, 4, 13];
-  var DISTRICTS = {
-    '서울': ['강남', '서초', '송파', '마포', '영등포', '성동', '용산', '종로', '강서', '노원'],
-    '경기': ['분당', '수원', '일산', '용인', '안양', '부천', '화성', '평택'],
-    '인천': ['송도', '부평', '남동'],
-    '부산': ['해운대', '서면', '동래', '수영'],
-    '대구': ['수성', '중구', '달서'],
-    '대전': ['둔산', '유성'],
-    '광주': ['상무', '첨단'],
-    '기타': ['청주', '천안', '전주', '창원', '원주', '제주']
-  };
-  var PHARM_NAMES = ['온누리', '새봄', '늘푸른', '하나', '미소', '바른', '열린', '중앙', '제일', '우리', '봄날', '해맑은', '건강한', '소망', '큰마음', '참좋은', '행복한', '다온', '한빛', '푸른숲'];
-  var CLINIC_NAMES = ['맑은', '고운', '라온', '더고운', '결', '리즈', '루미', '온유', '담은', '유어스', '디어', '세움'];
-  var DIST_NAMES = ['한결메디', '바른유통', '동방메디칼', '새길팜', '미래헬스', '청운메디', '해솔유통', '대한메디스'];
   var DOW_KO = ['일', '월', '화', '수', '목', '금', '토'];
-
-  var accounts = [];
-  var nameUsed = {};
-  function makeAccount(type) {
-    var region = pickW(REGIONS, REGION_W);
-    var district = pick(DISTRICTS[region]);
-    var name, guard = 0;
-    do {
-      if (type === 'PHARM') name = pick(PHARM_NAMES) + '약국(' + district + ')';
-      else if (type === 'CLINIC') name = pick(CLINIC_NAMES) + '피부과의원(' + district + ')';
-      else name = pick(DIST_NAMES) + ' ' + region + '지점';
-      guard++;
-      if (guard > 6) name += ' ' + (guard - 5);
-    } while (nameUsed[name]);
-    nameUsed[name] = true;
-    var cycle = type === 'PHARM' ? pickW([7, 14, 28], [10, 60, 30])
-      : type === 'CLINIC' ? pickW([7, 14, 28], [10, 40, 50])
-        : pickW([7, 14], [80, 20]);
-    var d1 = randInt(1, 5), d2 = randInt(1, 5);
-    var pref = chance(0.5) && d1 !== d2 ? [d1, d2].sort() : [d1];
-    accounts.push({
-      idx: accounts.length,
-      id: 'AC-' + pad(accounts.length + 1, 4),
-      name: name, type: type, region: region, district: district,
-      cycleDays: cycle,
-      cycleLabel: cycle === 7 ? '주 1회' : cycle === 14 ? '격주' : '월 1회',
-      preferredDays: pref,
-      preferredLabel: pref.map(function (x) { return DOW_KO[x]; }).join('·'),
-      minShelfLifeRatio: 0.70
-    });
-  }
-  var ai;
-  for (ai = 0; ai < 190; ai++) makeAccount('PHARM');
-  for (ai = 0; ai < 90; ai++) makeAccount('CLINIC');
-  for (ai = 0; ai < 20; ai++) makeAccount('DIST');
+  var ACCOUNT_DEFS = [
+    { type: 'COUPANG', name: '쿠팡 FC 경기 남부 (가정)', region: '경기', cycle: 7, pref: [1, 3] },
+    { type: 'COUPANG', name: '쿠팡 FC 경기 북부 (가정)', region: '경기', cycle: 7, pref: [2, 4] },
+    { type: 'COUPANG', name: '쿠팡 FC 충청 (가정)', region: '충청', cycle: 7, pref: [2] },
+    { type: 'COUPANG', name: '쿠팡 FC 영남 (가정)', region: '영남', cycle: 14, pref: [3] },
+    { type: 'KURLY', name: '컬리 수도권 A센터 (가정)', region: '경기', cycle: 7, pref: [1, 4] },
+    { type: 'KURLY', name: '컬리 수도권 B센터 (가정)', region: '경기', cycle: 14, pref: [2] },
+    { type: 'OLIVE', name: '올리브영 수도권 물류센터 (가정)', region: '경기', cycle: 7, pref: [2, 4] },
+    { type: 'OLIVE', name: '올리브영 영남 물류센터 (가정)', region: '영남', cycle: 14, pref: [3] },
+    { type: 'EXPORT', name: '일본 드럭스토어 벤더 A (가상)', region: '일본', cycle: 35, pref: [2], ship: '해상 · 부산항', incoterms: 'FOB 부산' },
+    { type: 'EXPORT', name: '대만 뷰티 유통사 B (가상)', region: '대만', cycle: 42, pref: [3], ship: '해상 · 부산항', incoterms: 'FOB 부산' },
+    { type: 'EXPORT', name: '미국 온라인 셀러 C (가상)', region: '미국', cycle: 49, pref: [4], ship: '항공 · 인천공항', incoterms: 'FOB 인천' }
+  ];
+  var accounts = ACCOUNT_DEFS.map(function (a, i) {
+    return {
+      idx: i, id: 'AC-' + pad(i + 1, 4),
+      name: a.name, type: a.type, region: a.region, district: a.region,
+      cycleDays: a.cycle,
+      cycleLabel: a.cycle === 7 ? '주 1회' : a.cycle === 14 ? '격주' : '약 ' + Math.round(a.cycle / 7) + '주 간격',
+      preferredDays: a.pref,
+      preferredLabel: a.pref.map(function (x) { return DOW_KO[x]; }).join('·'),
+      minShelfLifeRatio: 0.70,
+      ship: a.ship || null, incoterms: a.incoterms || null
+    };
+  });
 
   /* ------------------------------------------------------------------
    * 6. 라이브·공동구매 일정 (월 2회, 화·수·목)
@@ -326,7 +318,7 @@
       var biz = BIZ[d];
       var n = Math.round((biz ? 280 : 100) * growth * rand(0.92, 1.08));
       var live = !!liveSet[d];
-      var nLive = live ? Math.max(0, Math.round(CAPACITY * rand(3.0, 3.9)) - n) : 0;
+      var nLive = live ? Math.max(0, Math.round(CAPACITY * rand(2.0, 2.6)) - n) : 0;   // 라이브 당일 3PL 처리량의 2~2.6배 (가정)
       var weights = b2cWeights(d);
       var dayList = [];
       var i;
@@ -337,7 +329,7 @@
         });
       }
       for (i = 0; i < n; i++) {
-        var ch = pickW([0, 1, 2, 3], [0.32, 0.28, 0.22, 0.18]);
+        var ch = pickW([0, 1, 2, 3], B2C_CHANNELS.map(function (c) { return c.share; }));
         var mm = sampleMinute(d, false);
         // 동일 수취인 당일 복수 주문(합포장 대상) 약 2.5%
         if (chance(0.025)) {
@@ -459,11 +451,12 @@
     o.invoiceLinked = true;
     if (o.tS === null) return;
     var sd = Math.floor(o.tS / 1440);
-    var confusable = o.items.some(function (it) { return skus[it[0]].spec === 'STD' || skus[it[0]].spec === 'MINI'; });
+    // 와와 치약 5종은 패키지가 비슷해 인접 로케이션에서 혼동 → 05/01 로케이션 분리·바코드 검수 후 감소
+    var confusable = o.items.some(function (it) { return skus[it[0]].conf === 'WWTP' || (skus[it[0]].isSet && skus[it[0]].components.some(function (c) { return skus[c.idx].conf === 'WWTP'; })); });
     var pConf = confusable ? (sd < LOCATION_SPLIT_DAY ? 0.0016 : 0.00025) : 0;
     var pBase = 0.0011 * (o.overtimeShip ? 1.9 : 1);
     var r = rnd();
-    if (r < pConf) { o.mis = true; o.misCause = '유사 SKU 혼동(본품·미니 인접 로케이션)'; }
+    if (r < pConf) { o.mis = true; o.misCause = '유사 SKU 혼동(와와 치약 5종 인접 로케이션)'; }
     else if (r < pConf + pBase) { o.mis = true; o.misCause = o.overtimeShip ? '처리량 초과 시 검수 생략' : '피킹 오류'; }
     if (o.hasSet && chance(sd < PREPACK_DAY ? 0.004 : 0.0006)) o.missing = true;
     if (chance(0.0006)) o.damage = true;
@@ -483,20 +476,24 @@
   /* ------------------------------------------------------------------
    * 10. B2B 발주 생성 (발주 1건 = 1 SKU 라인)
    * ------------------------------------------------------------------ */
+  // 채널별 발주 품목 비중(가정): B2B는 와와 구강케어 중심, 올리브영·컬리는 스킨케어 일부 입점
   var B2B_W = {
-    PHARM: { 'RJ-CR-STD': 25, 'RJ-SE-STD': 22, 'RJ-SN-STD': 15, 'RJ-LP-STD': 10, 'RJ-SC-STD': 10, 'RJ-MS-STD': 8, 'RJ-MS-MINI': 7, 'RJ-SN-MINI': 6, 'RJ-CR-MINI': 3, 'RJ-SE-MINI': 3, 'RJ-CR-LRG': 3 },
-    CLINIC: { 'RJ-SE-STD': 25, 'RJ-CR-STD': 20, 'RJ-MS-STD': 20, 'RJ-CR-LRG': 10, 'RJ-SE-LRG': 10, 'RJ-SN-STD': 10, 'RJ-MS-MINI': 5, 'RJ-LP-LRG': 5, 'RJ-SC-STD': 4 },
-    DIST: { 'RJ-CR-STD': 25, 'RJ-SE-STD': 25, 'RJ-MS-STD': 15, 'RJ-SN-STD': 15, 'RJ-LP-STD': 10, 'RJ-SC-STD': 10 }
+    COUPANG: { 'RB-WW-TP': 30, 'RB-WW-GUM': 12, 'RB-WW-SNS': 10, 'RB-WW-WHT': 10, 'RB-WW-KID': 7, 'RB-WW-GRG': 9, 'RB-WW-BRS': 6, 'RB-WW-SPR': 6, 'RB-WW-TCL': 4 },
+    KURLY: { 'RB-WW-TP': 20, 'RB-WW-KID': 10, 'RB-WW-GRG': 8, 'RB-SK-CLN': 8, 'RB-SK-PAD': 8, 'RB-SK-CRM': 6, 'RB-SK-SRM': 5, 'RB-SK-MSK': 6, 'RB-SK-BCR': 4 },
+    OLIVE: { 'RB-WW-TP': 25, 'RB-WW-SPR': 10, 'RB-WW-GRG': 9, 'RB-WW-WHT': 8, 'RB-WW-GUM': 7, 'RB-WW-SNS': 6, 'RB-SK-AMP': 6, 'RB-SK-CRM': 6, 'RB-SK-MST': 5, 'RB-SK-PAD': 5, 'RB-SK-MSK': 5 },
+    EXPORT: { 'RB-WW-TP': 40, 'RB-WW-WHT': 14, 'RB-WW-GUM': 10, 'RB-WW-SPR': 14, 'RB-SK-MSK': 8, 'RB-SK-AMP': 6 }
   };
   var B2B_WARR = {};
   Object.keys(B2B_W).forEach(function (t) {
     B2B_WARR[t] = ALL_IDX.map(function (s) { return B2B_W[t][skus[s].id] || 0; });
   });
+  // 발주 수량(가정): 박스 입수 단위. 단가가 높은 스킨케어는 수량을 낮춘다
   function b2bQty(type, s) {
-    if (type === 'DIST') return randInt(2, 10) * 30;
-    if (skus[s].spec === 'MINI') return randInt(1, 5) * 10;
-    if (type === 'CLINIC') return randInt(2, 10) * 6;
-    return randInt(1, 5) * 6;
+    var premium = skus[s].price >= 25000;
+    if (type === 'EXPORT') return randInt(premium ? 4 : 10, premium ? 12 : 40) * 48;
+    if (type === 'COUPANG') return randInt(premium ? 2 : 4, premium ? 6 : 15) * 24;
+    if (type === 'OLIVE') return randInt(premium ? 2 : 3, premium ? 6 : 12) * 24;
+    return randInt(premium ? 1 : 2, premium ? 4 : 8) * 12;   // KURLY
   }
   var b2b = [];
   (function generateB2B() {
@@ -505,15 +502,16 @@
       var seq = 0;
       while (recv <= END_DAY) {
         seq++;
-        var leadMin = a.type === 'PHARM' ? 2 : a.type === 'CLINIC' ? 3 : 5;
-        var leadMax = a.type === 'PHARM' ? 5 : a.type === 'CLINIC' ? 8 : 10;
+        // 발주 접수 → 납품(입고) 요청일 리드타임(영업일, 가정)
+        var leadMin = { COUPANG: 3, KURLY: 2, OLIVE: 4, EXPORT: 10 }[a.type];
+        var leadMax = { COUPANG: 5, KURLY: 4, OLIVE: 7, EXPORT: 16 }[a.type];
         var req = addBiz(recv, randInt(leadMin, leadMax));
         for (var k = 0; k < 3; k++) {                       // 납품 희망 요일로 맞춤
           if (a.preferredDays.indexOf(dowOf(req)) >= 0) break;
           req = nextBiz(req);
         }
         var plan = Math.max(addBiz(req, -1), nextBiz(recv));
-        var nLines = a.type === 'DIST' ? pickW([1, 2, 3], [0.4, 0.4, 0.2]) : pickW([1, 2], [0.7, 0.3]);
+        var nLines = a.type === 'KURLY' ? randInt(2, 4) : randInt(3, 6);
         var used = {};
         var poNo = 'PO' + isoOf(recv).replace(/-/g, '').slice(2) + '-' + a.id.slice(3);
         for (var l = 0; l < nLines; l++) {
@@ -577,7 +575,7 @@
   function addLot(s, lot) { lotQ[s].push(lot); stock[s] += lot.qty; lotIndex[lot.lotNo] = lot; }
 
   // 초기 재고: 일반 SKU 50일분(로트 2개), 저회전 SKU는 대량 초기 생산 로트 1개
-  var SLOW = ['RJ-MS-MINI', 'RJ-SN-MINI', 'RJ-LP-LRG'];
+  var SLOW = ['RB-WW-KID', 'RB-WW-TCL', 'RB-SK-BCR'];
   SINGLE_IDX.forEach(function (s) {
     var D = expDemand[s];
     if (SLOW.indexOf(skus[s].id) >= 0) {
@@ -630,7 +628,7 @@
   var b2bQueue = [];
 
   // 리스크 SKU (이야기: 생산 지연에 따른 품절 위험)
-  var RISK_SE = sid('RJ-SE-STD');
+  var RISK_SE = sid('RB-WW-TP');
   var inboundSeq = 0;
   function placeInbound(s, d, qty) {
     inboundSeq++;
@@ -649,9 +647,9 @@
   // 이야기: 공급 차질 — 8/1부터 기준일까지 받을 수 있는 입고 총량(budget)을 제한
   //  budget = 8/1~기준일 예상 출고량 × 보정계수 + 기준일 이후 목표 재고일수분 − 8/1 재고
   //  한도를 넘는 입고분은 잔량으로 분리해 10월 입고로 지연 → 기준일 재고가 목표 재고일수 수준
-  //  - PDRN 세럼 본품: 원료 수급 지연 (기준일 재고 약 7일분 → 품절 위험)
+  //  - 와와치약: OEM 생산 일정 지연 (기준일 재고 약 7일분 → B2C·B2B 재고 배분 충돌, 품절 위험)
   var RISK_RULES = [
-    { sku: RISK_SE, from: dayOf('2026-08-01'), coverDays: 7, factor: 1.0, restDay: dayOf('2026-10-19'), reason: '원료 수급 지연', budget: null }
+    { sku: RISK_SE, from: dayOf('2026-08-01'), coverDays: 7, factor: 1.0, restDay: dayOf('2026-10-19'), reason: 'OEM 생산 일정 지연', budget: null }
   ];
   function riskActivate(d) {
     RISK_RULES.forEach(function (rule) {
@@ -687,8 +685,8 @@
   }
 
   var OLD_LOT_RULES = [
-    { sku: sid('RJ-MS-MINI'), from: dayOf('2026-06-01'), done: false },
-    { sku: sid('RJ-SN-MINI'), from: dayOf('2026-07-01'), done: false }
+    { sku: sid('RB-WW-KID'), from: dayOf('2026-06-01'), done: false },
+    { sku: sid('RB-WW-SNS'), from: dayOf('2026-07-01'), done: false }
   ];
   function futureDemand(s, from, to) {
     var sum = 0, d2, j;
@@ -707,11 +705,12 @@
     if (d < 28) return expDemand[s];
     var sum = 0;
     for (var k = d - 28; k < d; k++) sum += consDaily[s][k] || 0;
-    // 확정 B2B 발주(향후 21일)도 반영
-    return Math.max(sum / 28, expDemand[s]);
+    // B2B 대량 발주로 28일 평균이 튀는 것을 막기 위해 연평균의 1~1.5배 범위로 제한
+    return Math.min(Math.max(sum / 28, expDemand[s]), expDemand[s] * 1.5);
   }
 
   var kitTotalByDay = [];
+  var lastPlaced = {};
   (function simulateInventory() {
     for (var d = 0; d <= END_DAY; d++) {
       var s, k;
@@ -788,11 +787,13 @@
       if (b2bByPlan[d]) b2bQueue = b2bQueue.concat(b2bByPlan[d]);
       if (BIZ[d]) {
         var remain = [];
+        var poPostponed = {};   // B2C 적체일의 후순위 판단은 발주(PO) 단위로 한 번만
         b2bQueue.forEach(function (x) {
           if (x.waitUntil > d) { remain.push(x); return; }
           if (!x.attempted) {
             x.attempted = true;
-            if (shipLog.overtime[d] && chance(0.5)) {
+            if (shipLog.overtime[d] && poPostponed[x.po] === undefined) poPostponed[x.po] = chance(0.3);
+            if (shipLog.overtime[d] && poPostponed[x.po]) {
               x.waitUntil = addBiz(d, randInt(1, 2)); x.delayReason = 'B2C 물량 집중으로 B2B 출고 후순위';
               remain.push(x); return;
             }
@@ -803,9 +804,9 @@
           }
           var rem = x.qty - x.shippedQty;
           var lim = rem;
-          // 총판 대량 발주는 출고 차량 적재 한도로 일부 분할 납품
-          if (!x.ships.length && x.type === 'DIST' && x.qty >= 240 && chance(0.25)) {
-            lim = Math.round(x.qty * 0.6 / 30) * 30; x.loadSplit = true;
+          // 수출 대량 발주는 선적 일정(선복·컨테이너 적재)에 맞춰 일부를 1차 선적으로 분할
+          if (!x.ships.length && x.type === 'EXPORT' && x.qty >= 960 && chance(0.3)) {
+            lim = Math.round(x.qty * 0.6 / 48) * 48; x.loadSplit = true;
           }
           var q = Math.min(lim, stock[x.sku]);
           if (q > 0) {
@@ -822,7 +823,7 @@
             if (x.shippedQty > 0) x.split = true;
             if (x.loadSplit && x.ships.length === 1 && q === lim) {
               x.waitUntil = nextBiz(d);
-              if (!x.delayReason) x.delayReason = '출고 차량 적재 한도(분할 납품)';
+              if (!x.delayReason) x.delayReason = '선적 일정 분할(1차 선적 후 잔량 출고)';
             } else if (!x.delayReason || x.delayReason.indexOf('재고') < 0) {
               x.delayReason = x.shippedQty > 0 ? '재고 부족(분할 납품)' : '재고 부족(입고 대기)';
             }
@@ -837,9 +838,10 @@
       // (6) 입고 발주 (영업일, 단품만): 재고 + 입고 예정 < 30일분이면 45일분 발주
       if (BIZ[d]) {
         SINGLE_IDX.forEach(function (s2) {
+          if (lastPlaced[s2] !== undefined && d - lastPlaced[s2] < 7) return;   // B2B 대량 발주로 수요가 튀어도 중복 발주하지 않음
           var D = demandEstimate(s2, d);
           var pos = stock[s2] + pipeline[s2] - deficit[s2];
-          if (pos < D * 34) placeInbound(s2, d, Math.max(300, Math.ceil(D * 45 / 100) * 100));
+          if (pos < D * 34) { placeInbound(s2, d, Math.max(300, Math.ceil(D * 45 / 100) * 100)); lastPlaced[s2] = d; }
         });
       }
       // (7) 일 마감 재고 기록
@@ -855,6 +857,25 @@
   });
   inbounds.sort(function (a, b) { return a.planned - b.planned || a.sku - b.sku; });
   inbounds.forEach(function (ib, i) { ib.idx = i; });
+
+  // B2B 센터 입고 반려 (쿠팡·컬리·올리브영): 물류 바코드·팔레트 규격·입수 표기·입고 예약 시간
+  //  06/01 'B2B 채널별 입고 체크리스트 + D-1 사전 검수' 도입 후 반려 확률 감소 → 반려 시 재입고 2영업일 소요
+  var B2B_CHECK_DAY = dayOf('2026-06-01');
+  var REJECT_REASONS = {
+    COUPANG: ['외박스 물류 바코드 미부착·오부착', '팔레트 적재 높이 초과', '입고 예약 시간 미준수'],
+    KURLY: ['박스당 입수 표기 오류', '입고 예약 시간 미준수'],
+    OLIVE: ['외박스 물류 바코드 미부착·오부착', '팔레트 적재 높이 초과', '박스당 입수 표기 오류']
+  };
+  b2b.forEach(function (x) {
+    x.rejected = null;
+    if (!REJECT_REASONS[x.type] || !x.ships.length) return;
+    var first = x.ships[0];
+    if (!chance(first.day < B2B_CHECK_DAY ? 0.035 : 0.006)) return;
+    x.rejected = { day: first.deliver, reason: pick(REJECT_REASONS[x.type]) };
+    x.ships.forEach(function (s) { s.deliver = addBiz(s.deliver, 2); });   // 반송 후 재입고
+    if (x.delivered !== null) x.delivered = x.ships[x.ships.length - 1].deliver;
+    if (!x.delayReason) x.delayReason = '센터 입고 반려 후 재입고(' + x.rejected.reason + ')';
+  });
 
   // B2B 상태·로트·유통기한·거래명세서 대사
   b2b.forEach(function (x) {
@@ -888,10 +909,65 @@
     }
   });
 
+  /* 수출 출고 서류 (PO 단위, 모두 가정)
+   *  - 카톤: 48개입, 카톤당 0.042㎥, 포장재 0.6kg / 총중량 = 순중량 × 1.08 + 카톤 수 × 0.6kg
+   *  - 서류: 상업송장(C/I), 포장명세서(P/L), 원산지 증명서(C/O), 성분표·제조 증명(일본 바이어 요청)
+   *  - 3PL 실측 중량과 P/L 기재 중량 차이 허용 범위 0.5% */
+  var EXPORT_TOLERANCE = 0.005;
+  var exportDocs = [];
+  (function buildExportDocs() {
+    var byPo = {};
+    b2b.forEach(function (x) {
+      if (x.type !== 'EXPORT') return;
+      var p = byPo[x.po];
+      if (!p) {
+        p = byPo[x.po] = { po: x.po, acc: x.acc, recv: x.recv, req: x.req, lines: [], qty: 0, cartons: 0, netKg: 0, shipped: 0 };
+        exportDocs.push(p);
+      }
+      p.lines.push(x);
+      p.qty += x.qty;
+      p.cartons += Math.ceil(x.qty / 48);
+      p.netKg += x.qty * skus[x.sku].unitG / 1000;
+      p.shipped += x.shippedQty;
+      p.req = Math.max(p.req, x.req);
+    });
+    exportDocs.forEach(function (p) {
+      var acc = accounts[p.acc];
+      p.buyer = acc.name; p.country = acc.region; p.ship = acc.ship; p.incoterms = acc.incoterms;
+      p.netKg = Math.round(p.netKg * 10) / 10;
+      p.grossKg = Math.round((p.netKg * 1.08 + p.cartons * 0.6) * 10) / 10;
+      p.cbm = Math.round(p.cartons * 0.042 * 100) / 100;
+      p.pallets = Math.ceil(p.cartons / 40);
+      var allDone = p.lines.every(function (x) { return x.delivered !== null; });
+      var firstShip = Math.min.apply(null, p.lines.filter(function (x) { return x.ships.length; }).map(function (x) { return x.ships[0].day; }).concat([Infinity]));
+      p.shipDay = isFinite(firstShip) ? firstShip : null;
+      p.status = allDone ? '선적 완료' : p.shipped > 0 ? '부분 선적' : p.req <= END_DAY ? '선적 지연' : '선적 준비';
+      var dueIn = p.req - END_DAY;
+      var ready = p.shipDay !== null;
+      p.docs = [
+        { key: 'CI', name: '상업송장(C/I)', ok: ready || dueIn <= 10, status: ready ? '발행 완료' : dueIn <= 10 ? '작성 완료' : '작성 전' },
+        { key: 'PL', name: '포장명세서(P/L)', ok: ready, status: ready ? '실측 반영 발행' : '3PL 실측 대기' },
+        { key: 'CO', name: '원산지 증명서(C/O)', ok: ready, status: ready ? '발급 완료' : dueIn <= 5 ? '발급 신청' : '신청 전' }
+      ];
+      if (p.country === '일본') p.docs.push({ key: 'SPEC', name: '성분표·제조 증명(바이어 요청)', ok: ready || dueIn <= 7, status: ready || dueIn <= 7 ? '제출 완료' : '제조사 요청 중' });
+      p.measuredKg = ready ? Math.round(p.grossKg * (1 + rand(-0.002, 0.002)) * 10) / 10 : null;
+      p.weightGap = null; p.docIssue = null;
+    });
+    // 이야기: 일본 바이어 최근 선적 PO 1건에서 P/L 기재 총중량이 실측과 2.4% 차이 → 정정 재발행(통관 보류 방지)
+    var jp = exportDocs.filter(function (p) { return p.country === '일본' && p.shipDay !== null; }).sort(function (a, b) { return b.shipDay - a.shipDay; })[0];
+    if (jp) {
+      jp.measuredKg = Math.round(jp.grossKg * 1.024 * 10) / 10;
+      jp.docIssue = { day: jp.shipDay, reason: 'P/L 총중량 실측 차이 2.4%(허용 0.5% 초과) — 카톤 중량 표준값 미갱신', action: '실측값으로 P/L 정정 재발행 · SKU 제원 마스터 갱신' };
+      jp.docs.filter(function (d) { return d.key === 'PL'; })[0].status = '정정 재발행';
+    }
+    exportDocs.forEach(function (p) { if (p.measuredKg !== null) p.weightGap = (p.measuredKg - p.grossKg) / p.grossKg; });
+    exportDocs.sort(function (a, b) { return b.req - a.req; });
+  })();
+
   /* ------------------------------------------------------------------
    * 12. 재고 상태 (기준일): 가용 / 보류 / 불량 / 반품 대기
    * ------------------------------------------------------------------ */
-  var HOLD_LOTS = { 'RJ-SE-LRG': { qty: 240, reason: '품질 재검사(점도 편차)' }, 'RJ-CR-MINI': { qty: 120, reason: '라벨 인쇄 확인' } };
+  var HOLD_LOTS = { 'RB-WW-GRG': { qty: 240, reason: '품질 재검사(용기 누액 확인)' }, 'RB-SK-SRM': { qty: 120, reason: '라벨 인쇄 확인' } };
   var stockStatus = skus.map(function (k) {
     var onHand = stockDaily[k.idx][END_DAY];
     var hold = HOLD_LOTS[k.id] ? Math.min(HOLD_LOTS[k.id].qty, Math.floor(onHand * 0.5)) : 0;
@@ -910,7 +986,7 @@
    *     이야기 5: 실사·조정 후 일치율 상승 → 원인 조치 없는 SKU는 수 주 뒤 재발
    * ------------------------------------------------------------------ */
   var CAUSES = {
-    CANCEL: { label: '주문 취소·변경 미반영', pattern: 'OMS ≠ WMS·ERP', action: 'WMS 출고 지시 취소 처리 후 OMS 재고 재동기화, 취소 주문 자동 회수 규칙 적용' },
+    CANCEL: { label: '주문 취소·변경 미반영', pattern: 'OMS ≠ WMS·ERP', action: 'WMS 출고 지시 취소 처리 후 사방넷(OMS) 재고 재동기화, 취소 주문 자동 회수 규칙 적용' },
     SETBOM: { label: '세트 구성품 차감 누락', pattern: 'ERP ≠ OMS·WMS', action: 'ERP 세트 BOM(구성품) 매핑 등록 후 누락분 구성품 차감 전표 발행' },
     RETURN: { label: '반품 입고 미처리', pattern: 'WMS·ERP < 실물', action: '반품 대기 구역 실물 확인 후 WMS 반품 입고 처리, 반품 D+1 처리 마감 규칙 적용' },
     INBOUND: { label: '입고 검수 수량 미반영', pattern: 'ERP ≠ OMS·WMS', action: 'ERP 입고 전표를 검수 수량 기준으로 정정, 검수 결과 연동 확인' },
@@ -918,15 +994,15 @@
   };
   // 원인 조치(재발 방지) 이력
   var FIXES = [
-    { day: dayOf('2026-06-30'), cause: 'SETBOM', set: 'RJ-SET-HOME', label: 'ERP 세트 BOM 매핑 — PDRN 홈케어 세트' },
-    { day: dayOf('2026-08-31'), cause: 'SETBOM', set: 'RJ-SET-INT', label: 'ERP 세트 BOM 매핑 — PDRN 집중 세트' },
+    { day: dayOf('2026-06-30'), cause: 'SETBOM', set: 'RB-SET-AC', label: 'ERP 세트 BOM 매핑 — 앰플 + 크림 SET' },
+    { day: dayOf('2026-08-31'), cause: 'SETBOM', set: 'RB-SET-TP3', label: 'ERP 세트 BOM 매핑 — 와와치약 3개 묶음' },
     { day: dayOf('2026-08-31'), cause: 'RETURN', set: null, label: '반품 입고 D+1 처리 마감 규칙' },
-    { day: dayOf('2026-08-31'), cause: 'CANCEL', set: null, label: '오픈마켓 취소 주문 출고 지시 자동 회수' }
+    { day: dayOf('2026-08-31'), cause: 'CANCEL', set: null, label: '사방넷 취소 주문 → WMS 출고 지시 자동 회수' }
   ];
   // SKU별 원인 노출 (일 발생 확률)
   var exposures = [];   // {sku, cause, set, h}
   skus.forEach(function (k) {
-    var vf = k.spec === 'STD' || k.isSet ? 1 : k.spec === 'LRG' ? 0.5 : 0.3;
+    var vf = k.vf;   // 판매량이 많은 SKU일수록 취소·반품으로 어긋날 기회가 많다(가정)
     exposures.push({ sku: k.idx, cause: 'CANCEL', set: null, h: 0.0055 * vf });
     if (!k.isSet) exposures.push({ sku: k.idx, cause: 'RETURN', set: null, h: 0.0045 * vf });
     exposures.push({ sku: k.idx, cause: k.isSet ? 'SCAN' : (chance(0.5) ? 'INBOUND' : 'SCAN'), set: null, h: 0.0008 });
@@ -1075,17 +1151,19 @@
    * 14. 물류 이슈
    * ------------------------------------------------------------------ */
   var issues = [];
-  var ISSUE_SLA = { '오출고': 2, '출고 지연': 1, '파손': 3, '수량 차이': 3, '누락': 2 };
+  var ISSUE_SLA = { '오출고': 2, '출고 지연': 1, '파손': 3, '수량 차이': 3, '누락': 2, '입고 반려': 2, '서류 보완': 1 };
   var NEXT_ACTION = {
     '오출고': ['회수 송장 발행 및 정상품 재발송', '회수품 입고 확인 후 재고 반영'],
     '출고 지연': ['출고 예정일 회신(CS·영업)', '우선 출고 지시 및 송장 회신'],
     '파손': ['택배사 사고 접수 및 교환 발송', '택배사 보상 청구 진행 확인'],
     '수량 차이': ['실물·전산 수량 재확인', '거래명세서 정정 발행 또는 추가 출고'],
-    '누락': ['누락 구성품 추가 발송', '세트 작업 지시서 재점검']
+    '누락': ['누락 구성품 추가 발송', '세트 작업 지시서 재점검'],
+    '입고 반려': ['반송 물량 회수·재작업 지시(라벨·적재)', '센터 재입고 예약 확정 및 체크리스트 보완'],
+    '서류 보완': ['3PL 실측값으로 서류 정정', '정정 서류 바이어·관세사 재송부']
   };
   function addIssue(day, type, channel, cause, source, dept, ref) {
     if (day > END_DAY) return;
-    var base = { '오출고': [1, 4], '출고 지연': [0, 2], '파손': [1, 6], '수량 차이': [1, 7], '누락': [1, 3] }[type];
+    var base = { '오출고': [1, 4], '출고 지연': [0, 2], '파손': [1, 6], '수량 차이': [1, 7], '누락': [1, 3], '입고 반려': [1, 4], '서류 보완': [0, 2] }[type];
     var days = randInt(base[0], base[1]);
     if (chance(0.06)) days += randInt(4, 10);
     var resolvedDay = day + days;
@@ -1135,6 +1213,10 @@
     if (x.ships.length && !x.invoiceMatch && chance(0.7)) {
       addIssue(x.ships[0].deliver + randInt(0, 2), '수량 차이', x.type, x.invoiceReason, '영업', x.invoiceReason.indexOf('수기') >= 0 ? '영업' : 'SCM', x.id);
     }
+    if (x.rejected) addIssue(x.rejected.day, '입고 반려', x.type, x.rejected.reason, '영업', '3PL', x.id);
+  });
+  exportDocs.forEach(function (p) {
+    if (p.docIssue) addIssue(p.docIssue.day, '서류 보완', 'EXPORT', p.docIssue.reason, '3PL', 'SCM', p.lines[0].id);
   });
   inbounds.forEach(function (ib) {
     if (ib.arrived && ib.diffReason) addIssue(ib.actual, '수량 차이', 'CENTER', ib.shortQty ? '입고 수량 부족(공급사)' : '입고 검수 불량', '3PL', 'SCM', ib.id);
@@ -1150,7 +1232,7 @@
   for (var md = 0; md <= END_DAY; md++) { var mo = monthOf(md); if (months.indexOf(mo) < 0) months.push(mo); }
   var workLogs = {};
   months.forEach(function (m) {
-    workLogs[m] = { month: m, stockUnitDays: 0, days: 0, inboundQty: 0, b2cShipped: 0, b2bShipments: 0, distShipments: 0,
+    workLogs[m] = { month: m, stockUnitDays: 0, days: 0, inboundQty: 0, b2cShipped: 0, b2bShipments: 0, freightShipments: 0,
       boxes: [0, 0, 0, 0], b2bParcels: 0, returns: 0, kitted: 0 };
   });
   for (var wd = 0; wd <= END_DAY; wd++) {
@@ -1172,24 +1254,24 @@
     x.ships.forEach(function (sp) {
       var wl3 = workLogs[monthOf(sp.day)];
       wl3.b2bShipments++;
-      if (x.type === 'DIST') wl3.distShipments++;
+      if (x.type !== 'KURLY') wl3.freightShipments++;   // 쿠팡·올리브영·수출은 팔레트 화물, 컬리는 박스 택배
       else { wl3.boxes[3]++; wl3.b2bParcels++; }
     });
   });
   /* 3PL 견적 단가표 (Rate Card)
    *  - 구간: 월 B2C 택배 출고 박스 수(합포장 후 박스 기준). B2B 택배는 같은 구간 단가를 적용하되 구간 산정에서 제외
-   *  - 사이즈: 소형(극소·소 박스) / 중형(중 박스) / 대형(대 박스, B2B 약국·의원 택배 포함)
+   *  - 사이즈: 소형(극소·소 박스) / 중형(중 박스) / 대형(대 박스, B2B 컬리 박스 택배 포함)
    *  - 일반 포장 단가 = 피킹·검수·포장 작업 + 박스·완충재 (박스 1개당)
    *  - 택배비 단가 = 택배 운임 (박스 1개당, 전국 동일)
    *  - 비교 견적 = 동일 물량 기준 타 3PL 2곳 견적 평균(가상), 단가 협상 기준선 */
   var RATE_CARD = {
     basis: '월 B2C 택배 출고 박스 수 (합포장 후 박스 기준)',
-    excluded: 'B2B 택배(약국·의원)는 구간 산정에서 제외, 단가는 해당 월 구간 단가 적용',
+    excluded: 'B2B 택배(컬리 박스 납품)는 구간 산정에서 제외, 단가는 해당 월 구간 단가 적용',
     tiers: [
-      { id: 'A', label: 'A구간', min: 0, max: 9000 },
-      { id: 'B', label: 'B구간', min: 9001, max: 11000 },
-      { id: 'C', label: 'C구간', min: 11001, max: 14000 },
-      { id: 'D', label: 'D구간', min: 14001, max: null }
+      { id: 'A', label: 'A구간', min: 0, max: 8000 },
+      { id: 'B', label: 'B구간', min: 8001, max: 10000 },
+      { id: 'C', label: 'C구간', min: 10001, max: 12500 },
+      { id: 'D', label: 'D구간', min: 12501, max: null }
     ],
     sizes: [
       { id: 'S', label: '소형', spec: '세 변 합 80cm 이하 · 2kg 이하', boxes: [0, 1], boxLabel: '극소·소 박스' },
@@ -1214,7 +1296,7 @@
       { item: '입고 작업비', unit: '개', price: 40 },
       { item: '반품 처리비', unit: '건', price: 1500 },
       { item: '세트 사전 포장 작업비', unit: '세트', price: 350 },
-      { item: '총판 화물 운송비', unit: '건', price: 42000 }
+      { item: 'B2B 화물 운송비(팔레트)', unit: '건', price: 42000 }
     ]
   };
   function tierOf(boxes) {
@@ -1250,7 +1332,7 @@
     { key: 'parcelL', cat: '택배비', item: '택배비(대형)', unit: '박스', size: 'L', price: parcelPrice('L'), actual: function (w) { return w.sizeBoxes.L; } },
     { key: 'returns', cat: '기타', item: '반품 처리비', unit: '건', price: fixed(1500), actual: function (w) { return w.returns; } },
     { key: 'kitting', cat: '기타', item: '세트 사전 포장 작업비', unit: '세트', price: fixed(350), actual: function (w) { return w.kitted; } },
-    { key: 'freight', cat: '기타', item: '총판 화물 운송비', unit: '건', price: fixed(42000), actual: function (w) { return w.distShipments; } }
+    { key: 'freight', cat: '기타', item: 'B2B 화물 운송비(팔레트)', unit: '건', price: fixed(42000), actual: function (w) { return w.freightShipments; } }
   ];
   // 수량 차이(rate/add) 또는 단가 차이(tier: 청구서에 적용된 구간)
   var BILL_DIFF = {
@@ -1300,8 +1382,15 @@
       CAPACITY: CAPACITY, OVERTIME_CAPACITY: OVERTIME_CAPACITY,
       PREPACK_DAY: PREPACK_DAY, LOCATION_SPLIT_DAY: LOCATION_SPLIT_DAY,
       COUNT_DAYS: COUNT_DAYS, months: months, liveDays: liveDays, fixes: FIXES,
-      stages: STAGES, causes: CAUSES, issueSla: ISSUE_SLA, minShelfLifeRatio: 0.70
+      stages: STAGES, causes: CAUSES, issueSla: ISSUE_SLA, minShelfLifeRatio: 0.70,
+      B2B_CHECK_DAY: B2B_CHECK_DAY, exportTolerance: EXPORT_TOLERANCE, riskSku: RISK_SE, riskReason: RISK_RULES[0].reason, riskRestIso: isoOf(RISK_RULES[0].restDay)
     },
+    brand: {
+      name: '로로벨', en: 'ROROBELL', company: '(주)로로벨', site: 'rorobell.com', checked: '2026-10-12',
+      categories: ['스킨케어', '메이크업', '선케어', '오랄케어'],
+      hq: '서울 성동구 성수동', mall: '카페24 기반 공식몰'
+    },
+    exportDocs: exportDocs,
     cal: { BIZ: BIZ, isoOf: isoOf, dayOf: dayOf, dowOf: dowOf, monthOf: monthOf, addBiz: addBiz, nextBiz: nextBiz, DOW_KO: DOW_KO },
     skus: skus, skuById: skuById,
     channels: { b2c: B2C_CHANNELS, b2b: B2B_TYPES },

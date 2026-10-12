@@ -526,8 +526,10 @@
     return keys.map(function (k) { var r = map[k]; r.rate = ratio(r.ok, r.n); return r; });
   }
   function complianceByType(F) { return complianceBy(F, function (x) { return x.type; }, B2B_IDS); }
-  function complianceByRegion(F) {
-    return complianceBy(F, function (x) { return x.region; }, ['서울', '경기', '인천', '부산', '대구', '대전', '광주', '기타']);
+  function complianceByAccount(F) {
+    var accs = D.accounts.filter(function (a) { return F.b2bType[a.type]; });
+    return complianceBy(F, function (x) { return D.accounts[x.acc].name; }, accs.map(function (a) { return a.name; }))
+      .filter(function (r) { return r.n > 0; });
   }
   function weeklyLoad(F) {
     // 주별 B2C 주문 부하(주문 건 / (일 처리량 × 영업일))와 B2B 납기 준수율
@@ -797,7 +799,7 @@
   function issuesInPeriod(F) {
     return D.issues.filter(function (it) { return it.day >= F.from && it.day <= F.to && issueInScope(it, F); });
   }
-  var ISSUE_TYPES = ['출고 지연', '오출고', '누락', '수량 차이', '파손'];
+  var ISSUE_TYPES = ['출고 지연', '오출고', '누락', '수량 차이', '파손', '입고 반려', '서류 보완'];
   function pareto(F) {
     var list = issuesInPeriod(F);
     var map = {};
@@ -852,7 +854,7 @@
       g.n++; if (o.missing) g.miss++;
     });
     var pc = prepackCompare(all);
-    // (2) 본품·미니 로케이션 분리
+    // (2) 와와 치약 5종 로케이션 분리
     var locB = { n: 0, m: 0 }, locA = { n: 0, m: 0 };
     eachShipped(all, function (o) {
       var g = Math.floor(o.tS / 1440) >= M.LOCATION_SPLIT_DAY ? locA : locB;
@@ -876,9 +878,9 @@
         ]
       },
       {
-        title: '유사 SKU 오출고 (본품·미니)',
-        cause: '본품과 미니가 인접 로케이션에 같은 외관으로 보관 → 피킹 혼동',
-        action: '2026-05-01 본품·미니 로케이션 분리 및 미니 전용 선반 라벨',
+        title: '유사 SKU 오출고 (와와 치약 5종)',
+        cause: '패키지가 비슷한 와와 치약 5종(일반·잇몸·시린이·미백·키즈)을 인접 로케이션에 보관 → 피킹 혼동',
+        action: '2026-05-01 치약 5종 로케이션 분리 · 선반 색상 라벨 · 출고 검수 바코드 스캔 의무화',
         result: [
           { label: '오출고율', before: ratio(locB.m, locB.n), after: ratio(locA.m, locA.n), unit: 'pct2' }
         ]
@@ -886,7 +888,7 @@
       {
         title: '세트 구성품 차감 누락 (ERP)',
         cause: 'ERP에 세트 BOM이 없어 세트 판매 시 구성품 재고가 차감되지 않음',
-        action: '2026-06-30 홈케어 세트, 2026-08-31 집중 세트 BOM 매핑 (데일리 케어 세트는 미조치)',
+        action: '2026-06-30 앰플 + 크림 SET, 2026-08-31 와와치약 3개 묶음 BOM 매핑 (와와 구강케어 세트는 미조치)',
         result: [
           { label: '실사 후 6주 내 재발률(원인 조치 SKU)', before: null, after: ratio(fixedRec.r, fixedRec.n), unit: 'pct', note: fixedRec.n + '건 중 ' + fixedRec.r + '건' },
           { label: '실사 후 6주 내 재발률(미조치 SKU)', before: null, after: ratio(openRec.r, openRec.n), unit: 'pct', note: openRec.n + '건 중 ' + openRec.r + '건' }
@@ -1190,7 +1192,7 @@
     var n = ms.length;
     var levers = [
       { id: 'nego', name: '단가 협상', how: '현재 ' + cur + '구간 단가를 비교 견적 수준으로 인하', monthly: totSave },
-      { id: 'tier', name: '구간 산정 기준 변경', how: 'B2B 택배(약국·의원)를 구간 산정 물량에 포함', monthly: tm.reduce(function (a, r) { return a + r.saveIfB2B; }, 0) / n,
+      { id: 'tier', name: '구간 산정 기준 변경', how: 'B2B 택배(컬리 박스 납품)를 구간 산정 물량에 포함', monthly: tm.reduce(function (a, r) { return a + r.saveIfB2B; }, 0) / n,
         months: tm.filter(function (r) { return r.saveIfB2B > 0; }).length },
       { id: 'size', name: '박스 규격 하향', how: '필요 규격보다 큰 박스 사용을 줄여 소형·중형 단가 적용', monthly: sc.overExtra / n },
       { id: 'merge', name: '합포장 확대', how: '동일 수취인 당일 주문 합포장 80% 달성', monthly: op.mergeSave / Math.max(1, eff.length) }
@@ -1201,6 +1203,124 @@
   }
 
   /* ------------------------------------------------------------------
+   * 9-2. 매출·채널 (로로벨 지원용 추가)
+   *  B2C 매출 = 공식몰 판매가 × 주문 수량 (주문일 기준, 취소 제외)
+   *  B2B 매출 = 소비자가 × 채널 공급률(가정) × 출고 수량 (출고일 기준)
+   *  ※ 판매가·소비자가는 공식몰 공개 가격, 수량·공급률은 가정 → 매출액은 가상 수치
+   * ------------------------------------------------------------------ */
+  var TYPE_BY_ID = {};
+  D.channels.b2b.forEach(function (c) { TYPE_BY_ID[c.id] = c; });
+  function supplyPrice(sku, type) { return Math.round(SK[sku].list * TYPE_BY_ID[type].supplyRate / 10) * 10; }
+  // 기간 안의 판매 이벤트를 하나씩 넘긴다: fn(sku, qty, amount, channelId, isB2B, day)
+  function eachSale(F, fn) {
+    if (F.b2c) {
+      for (var d = F.from; d <= F.to; d++) {
+        D.ordersByDay[d].forEach(function (o) {
+          if (o.tC !== null || !F.b2cCh[o.ch]) return;
+          o.items.forEach(function (it) {
+            if (F.sku[it[0]]) fn(it[0], it[1], SK[it[0]].price * it[1], B2C_IDS[o.ch], false, d);
+          });
+        });
+      }
+    }
+    if (F.b2b) {
+      D.b2b.forEach(function (x) {
+        if (!b2bInScope(x, F)) return;
+        x.ships.forEach(function (s) {
+          if (s.day >= F.from && s.day <= F.to) fn(x.sku, s.qty, supplyPrice(x.sku, x.type) * s.qty, x.type, true, s.day);
+        });
+      });
+    }
+  }
+  function salesBySku(F) {
+    var rows = SK.map(function (k) {
+      var r = { sku: k.idx, category: k.category, price: k.price, list: k.list, b2cQty: 0, b2cAmt: 0, b2bQty: 0, b2bAmt: 0, byCh: {} };
+      B2C_IDS.concat(B2B_IDS).forEach(function (id) { r.byCh[id] = 0; });
+      return r;
+    });
+    eachSale(F, function (s, q, amt, ch, isB2B) {
+      var r = rows[s];
+      if (isB2B) { r.b2bQty += q; r.b2bAmt += amt; } else { r.b2cQty += q; r.b2cAmt += amt; }
+      r.byCh[ch] += amt;
+    });
+    var total = 0;
+    rows.forEach(function (r) { r.qty = r.b2cQty + r.b2bQty; r.amount = r.b2cAmt + r.b2bAmt; total += r.amount; });
+    rows = rows.filter(function (r) { return F.sku[r.sku] && r.amount > 0; });
+    rows.sort(function (a, b) { return b.amount - a.amount; });
+    rows.forEach(function (r, i) { r.rank = i + 1; r.share = ratio(r.amount, total); r.b2bShare = ratio(r.b2bAmt, r.amount); });
+    // 직전 같은 길이 기간 대비
+    var prevTo = F.from - 1, prevFrom = F.from - F.days;
+    var prev = {};
+    if (prevFrom >= 0) eachSale(withPeriod(F, prevFrom, prevTo), function (s, q, amt) { prev[s] = (prev[s] || 0) + amt; });
+    rows.forEach(function (r) { r.prevAmount = prevFrom >= 0 ? (prev[r.sku] || 0) : null; r.growth = r.prevAmount ? r.amount / r.prevAmount - 1 : null; });
+    return { rows: rows, total: total, hasPrev: prevFrom >= 0 };
+  }
+  function salesByCategory(F) {
+    var map = {};
+    eachSale(F, function (s, q, amt, ch, isB2B) {
+      var c = SK[s].category;
+      var r = map[c] || (map[c] = { category: c, amount: 0, b2c: 0, b2b: 0, qty: 0 });
+      r.amount += amt; r.qty += q; if (isB2B) r.b2b += amt; else r.b2c += amt;
+    });
+    var tot = 0;
+    Object.keys(map).forEach(function (k) { tot += map[k].amount; });
+    return Object.keys(map).map(function (k) { var r = map[k]; r.share = ratio(r.amount, tot); return r; })
+      .sort(function (a, b) { return b.amount - a.amount; });
+  }
+  function salesMonthly(F) {
+    // 기간과 겹치는 달별 매출(구간 안의 일자만 합산)
+    var months = [], map = {};
+    eachSale(F, function (s, q, amt, ch, isB2B, day) {
+      var m = C.monthOf(day);
+      var r = map[m];
+      if (!r) { r = map[m] = { month: m, b2c: 0, b2b: 0, byCat: {} }; months.push(m); }
+      if (isB2B) r.b2b += amt; else r.b2c += amt;
+      r.byCat[SK[s].category] = (r.byCat[SK[s].category] || 0) + amt;
+    });
+    months.sort();
+    return months.map(function (m) { var r = map[m]; r.total = r.b2c + r.b2b; return r; });
+  }
+  function channelSummary(F) {
+    // 채널별 주문(발주)·수량·매출·속도 지표
+    var rows = D.channels.b2c.map(function (c, i) {
+      return { id: c.id, name: c.name, desc: c.desc, kind: 'B2C', orders: 0, qty: 0, amount: 0, leadSum: 0, leadN: 0, sd: 0, sdN: 0, idx: i };
+    }).concat(D.channels.b2b.map(function (c) {
+      return { id: c.id, name: c.name, desc: c.note, mode: c.mode, supplyRate: c.supplyRate, kind: 'B2B', orders: 0, qty: 0, amount: 0, due: 0, onTime: 0, pos: {}, accounts: D.accounts.filter(function (a) { return a.type === c.id; }).length };
+    }));
+    var byId = {};
+    rows.forEach(function (r) { byId[r.id] = r; });
+    if (F.b2c) {
+      for (var d = F.from; d <= F.to; d++) {
+        D.ordersByDay[d].forEach(function (o) {
+          if (o.tC !== null || !orderInScope(o, F)) return;
+          var r = byId[B2C_IDS[o.ch]];
+          r.orders++;
+          if (o.tS !== null) { r.leadSum += (o.tS - o.tO) / 60; r.leadN++; }
+          if (isSameDayEligible(o)) { r.sdN++; if (isSameDay(o)) r.sd++; }
+        });
+      }
+    }
+    b2bDue(F).forEach(function (x) { var r = byId[x.type]; r.due++; if (x.onTime) r.onTime++; r.pos[x.po] = 1; });
+    eachSale(F, function (s, q, amt, ch) { byId[ch].qty += q; byId[ch].amount += amt; });
+    var tot = rows.reduce(function (a, r) { return a + r.amount; }, 0);
+    rows.forEach(function (r) {
+      r.share = ratio(r.amount, tot);
+      if (r.kind === 'B2C') { r.lead = r.leadN ? r.leadSum / r.leadN : null; r.sameDay = ratio(r.sd, r.sdN); }
+      else { r.orders = Object.keys(r.pos).length; r.onTimeRate = ratio(r.onTime, r.due); }
+      r.active = r.kind === 'B2C' ? (F.b2c && F.b2cCh[r.idx]) : (F.b2b && F.b2bType[r.id]);
+    });
+    return { rows: rows, total: tot };
+  }
+  function exportDocRows(F) {
+    // 납품 요청일이 기간 안이거나 아직 선적 전인 수출 PO
+    return D.exportDocs.filter(function (p) {
+      if (!F.b2b || !F.b2bType.EXPORT) return false;
+      if (!F.allSku && !p.lines.some(function (x) { return F.sku[x.sku]; })) return false;
+      return (p.req >= F.from && p.req <= F.to) || p.status === '선적 준비' || p.status === '선적 지연' || p.status === '부분 선적';
+    });
+  }
+
+  /* ------------------------------------------------------------------
    * 10. 공개 API
    * ------------------------------------------------------------------ */
   global.SCMMetrics = {
@@ -1208,7 +1328,8 @@
     kpis: kpis, kpiValues: kpiValues, actionList: actionList,
     sameDayRate: sameDayRate, avgLead: avgLead, b2bOnTime: b2bOnTime, misRate: misRate, matchRate: matchRate, billDiff: billDiff,
     funnel: funnel, dailyVsCapacity: dailyVsCapacity, hourlySameDay: hourlySameDay, pendingOrders: pendingOrders, prepackCompare: prepackCompare,
-    b2bSchedule: b2bSchedule, complianceByType: complianceByType, complianceByRegion: complianceByRegion, weeklyLoad: weeklyLoad,
+    b2bSchedule: b2bSchedule, complianceByType: complianceByType, complianceByAccount: complianceByAccount, weeklyLoad: weeklyLoad,
+    salesBySku: salesBySku, salesByCategory: salesByCategory, salesMonthly: salesMonthly, channelSummary: channelSummary, exportDocRows: exportDocRows, supplyPrice: supplyPrice,
     lateAccounts: lateAccounts, shelfLife: shelfLife, invoiceRecon: invoiceRecon, b2bVolume: b2bVolume,
     stockStatusRows: stockStatusRows, sellable: sellable, inboundRows: inboundRows, inboundMonthly: inboundMonthly,
     stockoutRisk: stockoutRisk, stockProjection: stockProjection, simulate: simulate,
