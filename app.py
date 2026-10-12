@@ -1,4 +1,4 @@
-﻿"""소준희 포트폴리오 — JSON을 수정하면 다음 요청부터 반영됩니다."""
+"""소준희 포트폴리오 — JSON을 수정하면 다음 요청부터 반영됩니다."""
 import json
 import logging
 import os
