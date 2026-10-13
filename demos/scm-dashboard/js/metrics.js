@@ -854,7 +854,7 @@
       g.n++; if (o.missing) g.miss++;
     });
     var pc = prepackCompare(all);
-    // (2) 와와 치약 5종 로케이션 분리
+    // (2) 데일리 치약 5종 로케이션 분리
     var locB = { n: 0, m: 0 }, locA = { n: 0, m: 0 };
     eachShipped(all, function (o) {
       var g = Math.floor(o.tS / 1440) >= M.LOCATION_SPLIT_DAY ? locA : locB;
@@ -878,8 +878,8 @@
         ]
       },
       {
-        title: '유사 SKU 오출고 (와와 치약 5종)',
-        cause: '패키지가 비슷한 와와 치약 5종(일반·잇몸·시린이·미백·키즈)을 인접 로케이션에 보관 → 피킹 혼동',
+        title: '유사 SKU 오출고 (데일리 치약 5종)',
+        cause: '패키지가 비슷한 데일리 치약 5종(일반·잇몸·시린이·미백·키즈)을 인접 로케이션에 보관 → 피킹 혼동',
         action: '2026-05-01 치약 5종 로케이션 분리 · 선반 색상 라벨 · 출고 검수 바코드 스캔 의무화',
         result: [
           { label: '오출고율', before: ratio(locB.m, locB.n), after: ratio(locA.m, locA.n), unit: 'pct2' }
@@ -888,7 +888,7 @@
       {
         title: '세트 구성품 차감 누락 (ERP)',
         cause: 'ERP에 세트 BOM이 없어 세트 판매 시 구성품 재고가 차감되지 않음',
-        action: '2026-06-30 앰플 + 크림 SET, 2026-08-31 와와치약 3개 묶음 BOM 매핑 (와와 구강케어 세트는 미조치)',
+        action: '2026-06-30 앰플 + 크림 SET, 2026-08-31 데일리 치약 3개 묶음 BOM 매핑 (데일리 구강케어 세트는 미조치)',
         result: [
           { label: '실사 후 6주 내 재발률(원인 조치 SKU)', before: null, after: ratio(fixedRec.r, fixedRec.n), unit: 'pct', note: fixedRec.n + '건 중 ' + fixedRec.r + '건' },
           { label: '실사 후 6주 내 재발률(미조치 SKU)', before: null, after: ratio(openRec.r, openRec.n), unit: 'pct', note: openRec.n + '건 중 ' + openRec.r + '건' }
@@ -1203,10 +1203,10 @@
   }
 
   /* ------------------------------------------------------------------
-   * 9-2. 매출·채널 (로로벨 지원용 추가)
-   *  B2C 매출 = 공식몰 판매가 × 주문 수량 (주문일 기준, 취소 제외)
+   * 9-2. 매출·채널
+   *  B2C 매출 = 판매가 × 주문 수량 (주문일 기준, 취소 제외)
    *  B2B 매출 = 소비자가 × 채널 공급률(가정) × 출고 수량 (출고일 기준)
-   *  ※ 판매가·소비자가는 공식몰 공개 가격, 수량·공급률은 가정 → 매출액은 가상 수치
+   *  ※ 판매가·소비자가·수량·공급률 모두 가정 → 매출액은 가상 수치
    * ------------------------------------------------------------------ */
   var TYPE_BY_ID = {};
   D.channels.b2b.forEach(function (c) { TYPE_BY_ID[c.id] = c; });

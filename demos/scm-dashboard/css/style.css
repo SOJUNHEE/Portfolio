@@ -1,9 +1,9 @@
 /* =====================================================================
- * ROROBELL SCM 운영 대시보드 — 지원용 포트폴리오
+ * K-Beauty Brand SCM 운영 대시보드 — 포트폴리오 (가상 브랜드)
  * 디자인 변수: 색상은 아래 변수만 사용합니다. (그라데이션·글로우 사용하지 않음)
  * ===================================================================== */
 :root {
-  /* 브랜드 — 공식몰 확인 값이 없으면 기본값 #111111 */
+  /* 브랜드 색 — 가상 브랜드 기본값 #111111 */
   --brand-primary: #111111;
   --brand-accent: #111111;
 
@@ -383,7 +383,7 @@ table.data td.strong { font-weight: 700; }
   .app { grid-template-columns: 1fr; }
 }
 
-/* ---------- 로로벨: 공고 매핑 · 채널 구조 · 제품별 매출 ---------- */
+/* ---------- 담당 업무 매핑 · 채널 구조 · 제품별 매출 ---------- */
 .note-box { border-left: 3px solid var(--chart-1); background: var(--bg); padding: 12px 16px; font-size: 13px; line-height: 1.7; color: var(--text-sub); }
 .note-box b { color: var(--text); }
 .fit-list { display: grid; gap: 12px; }

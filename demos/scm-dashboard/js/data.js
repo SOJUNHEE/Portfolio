@@ -1,11 +1,12 @@
 /* =====================================================================
  * js/data.js — 가상 데이터 생성
  * ---------------------------------------------------------------------
- * (주)로로벨(ROROBELL) SCM 물류·재고 관리 직무 지원용 포트폴리오 데이터입니다.
- * - 실제 정보: 제품명·판매가·소비자가(로로벨 공식몰 rorobell.com, 2026-10-12 확인),
- *              판매·납품 채널과 도구(채용공고: 카페24·스마트스토어·사방넷, 쿠팡·컬리·올리브영 B2B, 수출)
- * - 가정·가상: 주문·발주·재고·매출·정산 등 모든 수치, 원가, 공급률, 유통기한, 센터·바이어 이름
- *   → 로로벨의 실제 주문·재고·매출 수치가 아닙니다.
+ * 가상 화장품 브랜드(K-Beauty Brand)의 SCM 물류·재고 관리 포트폴리오 데이터입니다.
+ * - 참고한 공개 정보: 화장품 브랜드 SCM 직무 채용공고에 적힌 판매·납품 채널과 도구
+ *              (카페24·스마트스토어·사방넷, 쿠팡·컬리·올리브영 B2B, 수출)
+ * - 가정·가상: 브랜드·제품명·가격, 주문·발주·재고·매출·정산 등 모든 수치, 원가, 공급률,
+ *              유통기한, 센터·바이어 이름
+ *   → 특정 회사의 실제 제품·주문·재고·매출 수치가 아닙니다.
  *
  * - 시드 고정 난수(mulberry32)를 사용하므로 새로고침해도 값이 같습니다.
  * - 기간: 2025-10-01 ~ 2026-09-30 (365일), 기준 시각: 2026-09-30 18:00
@@ -89,38 +90,37 @@
   var COUNT_DAYS = ['2025-12-31', '2026-03-31', '2026-06-30', '2026-08-31'].map(dayOf); // 정기 실사일
 
   /* ------------------------------------------------------------------
-   * 3. 상품 마스터 — 로로벨 공식몰 공개 제품 17종 + 세트 3종 = 20 SKU
-   *    실제: 제품명, price(공식몰 판매가), list(소비자가)  — 2026-10-12 rorobell.com 확인
-   *    가정: costR(원가율), shelfM(유통기한 개월), vol(포장 부피 지수), unitG(개당 출고 중량 g),
+   * 3. 상품 마스터 — 가상 브랜드 단품 17종 + 세트 3종 = 20 SKU (모두 가정)
+   *    가정: 제품명, price(판매가), list(소비자가), costR(원가율), shelfM(유통기한 개월), vol(포장 부피 지수), unitG(개당 출고 중량 g),
    *          b2c(B2C 판매 비중 가중치), vf(시스템 불일치 노출 가중치)
    *    lotTrace: 로트 추적·선유통기한 출고(FEFO) 관리 대상(치약·가글, 의약외품 가정)
-   *    conf: 'WWTP' = 패키지가 비슷한 와와 치약 5종 (인접 로케이션 오출고 위험군)
+   *    conf: 'WWTP' = 패키지가 비슷한 데일리 치약 5종 (인접 로케이션 오출고 위험군)
    * ------------------------------------------------------------------ */
   var CATALOG = [
-    { id: 'RB-WW-TP', name: '와와치약', category: '구강케어', list: 12500, price: 8800, costR: 0.27, shelfM: 36, vol: 0.5, unitG: 165, b2c: 3.4, vf: 1, lotTrace: true, conf: 'WWTP' },
-    { id: 'RB-WW-GUM', name: '와와 잇몸 케어 치약', category: '구강케어', list: 13500, price: 9800, costR: 0.28, shelfM: 36, vol: 0.5, unitG: 165, b2c: 0.9, vf: 0.6, lotTrace: true, conf: 'WWTP' },
-    { id: 'RB-WW-SNS', name: '와와 시린이 플러스 치약', category: '구강케어', list: 13500, price: 9800, costR: 0.28, shelfM: 36, vol: 0.5, unitG: 165, b2c: 0.65, vf: 0.5, lotTrace: true, conf: 'WWTP' },
-    { id: 'RB-WW-WHT', name: '와와 미백 치약', category: '구강케어', list: 13500, price: 9800, costR: 0.28, shelfM: 36, vol: 0.5, unitG: 165, b2c: 0.85, vf: 0.6, lotTrace: true, conf: 'WWTP' },
-    { id: 'RB-WW-KID', name: '와와 키즈 치약 (청포도향)', category: '구강케어', list: 12500, price: 8800, costR: 0.27, shelfM: 36, vol: 0.4, unitG: 95, b2c: 0.4, vf: 0.3, lotTrace: true, conf: 'WWTP' },
-    { id: 'RB-WW-SPR', name: '와와 센스 스프레이', category: '구강케어', list: 12000, price: 7800, costR: 0.3, shelfM: 30, vol: 0.3, unitG: 45, b2c: 0.8, vf: 0.6 },
-    { id: 'RB-WW-GRG', name: '와와 가글', category: '구강케어', list: 25500, price: 16800, costR: 0.26, shelfM: 30, vol: 1.1, unitG: 560, b2c: 0.55, vf: 0.5, lotTrace: true },
-    { id: 'RB-WW-BRS', name: '와와칫솔(테트라모) 12개입', category: '구강케어', list: 54000, price: 31000, costR: 0.3, shelfM: 60, vol: 1.3, unitG: 260, b2c: 0.3, vf: 0.3 },
-    { id: 'RB-WW-TCL', name: '와와 혀클리너', category: '구강케어', list: 5000, price: 2900, costR: 0.32, shelfM: 60, vol: 0.2, unitG: 30, b2c: 0.25, vf: 0.3 },
-    { id: 'RB-SK-AMP', name: '퍼스트 에이드 앰플', category: '스킨케어', list: 85000, price: 65000, costR: 0.22, shelfM: 30, vol: 0.5, unitG: 180, b2c: 0.32, vf: 0.6 },
-    { id: 'RB-SK-CRM', name: '워터 캐논 크림', category: '스킨케어', list: 58000, price: 48000, costR: 0.22, shelfM: 30, vol: 0.6, unitG: 220, b2c: 0.3, vf: 0.6 },
-    { id: 'RB-SK-MST', name: '트윙클 미스트', category: '스킨케어', list: 38000, price: 29000, costR: 0.24, shelfM: 30, vol: 0.6, unitG: 190, b2c: 0.2, vf: 0.4, season: true },
-    { id: 'RB-SK-CLN', name: '해바라기 클렌징 젤', category: '스킨케어', list: 35000, price: 28000, costR: 0.24, shelfM: 30, vol: 0.7, unitG: 250, b2c: 0.24, vf: 0.4 },
-    { id: 'RB-SK-PAD', name: '산수유 토너 패드', category: '스킨케어', list: 25000, price: 25000, costR: 0.25, shelfM: 24, vol: 0.9, unitG: 280, b2c: 0.3, vf: 0.5 },
-    { id: 'RB-SK-MSK', name: '김 마스크팩', category: '스킨케어', list: 20000, price: 20000, costR: 0.25, shelfM: 24, vol: 0.5, unitG: 160, b2c: 0.26, vf: 0.4 },
-    { id: 'RB-SK-SRM', name: '백구슬 세럼', category: '스킨케어', list: 38000, price: 38000, costR: 0.23, shelfM: 30, vol: 0.5, unitG: 150, b2c: 0.17, vf: 0.3 },
-    { id: 'RB-SK-BCR', name: '백도화지 크림', category: '스킨케어', list: 33000, price: 33000, costR: 0.23, shelfM: 30, vol: 0.6, unitG: 190, b2c: 0.13, vf: 0.3 }
+    { id: 'KB-DL-TP', name: '데일리 치약', category: '구강케어', list: 12500, price: 8800, costR: 0.27, shelfM: 36, vol: 0.5, unitG: 165, b2c: 3.4, vf: 1, lotTrace: true, conf: 'WWTP' },
+    { id: 'KB-DL-GUM', name: '데일리 잇몸 케어 치약', category: '구강케어', list: 13500, price: 9800, costR: 0.28, shelfM: 36, vol: 0.5, unitG: 165, b2c: 0.9, vf: 0.6, lotTrace: true, conf: 'WWTP' },
+    { id: 'KB-DL-SNS', name: '데일리 시린이 치약', category: '구강케어', list: 13500, price: 9800, costR: 0.28, shelfM: 36, vol: 0.5, unitG: 165, b2c: 0.65, vf: 0.5, lotTrace: true, conf: 'WWTP' },
+    { id: 'KB-DL-WHT', name: '데일리 미백 치약', category: '구강케어', list: 13500, price: 9800, costR: 0.28, shelfM: 36, vol: 0.5, unitG: 165, b2c: 0.85, vf: 0.6, lotTrace: true, conf: 'WWTP' },
+    { id: 'KB-DL-KID', name: '데일리 키즈 치약', category: '구강케어', list: 12500, price: 8800, costR: 0.27, shelfM: 36, vol: 0.4, unitG: 95, b2c: 0.4, vf: 0.3, lotTrace: true, conf: 'WWTP' },
+    { id: 'KB-DL-SPR', name: '데일리 구강 스프레이', category: '구강케어', list: 12000, price: 7800, costR: 0.3, shelfM: 30, vol: 0.3, unitG: 45, b2c: 0.8, vf: 0.6 },
+    { id: 'KB-DL-GRG', name: '데일리 가글', category: '구강케어', list: 25500, price: 16800, costR: 0.26, shelfM: 30, vol: 1.1, unitG: 560, b2c: 0.55, vf: 0.5, lotTrace: true },
+    { id: 'KB-DL-BRS', name: '데일리 칫솔 12개입', category: '구강케어', list: 54000, price: 31000, costR: 0.3, shelfM: 60, vol: 1.3, unitG: 260, b2c: 0.3, vf: 0.3 },
+    { id: 'KB-DL-TCL', name: '데일리 혀클리너', category: '구강케어', list: 5000, price: 2900, costR: 0.32, shelfM: 60, vol: 0.2, unitG: 30, b2c: 0.25, vf: 0.3 },
+    { id: 'KB-SK-AMP', name: '리페어 앰플', category: '스킨케어', list: 85000, price: 65000, costR: 0.22, shelfM: 30, vol: 0.5, unitG: 180, b2c: 0.32, vf: 0.6 },
+    { id: 'KB-SK-CRM', name: '수분 크림', category: '스킨케어', list: 58000, price: 48000, costR: 0.22, shelfM: 30, vol: 0.6, unitG: 220, b2c: 0.3, vf: 0.6 },
+    { id: 'KB-SK-MST', name: '수분 미스트', category: '스킨케어', list: 38000, price: 29000, costR: 0.24, shelfM: 30, vol: 0.6, unitG: 190, b2c: 0.2, vf: 0.4, season: true },
+    { id: 'KB-SK-CLN', name: '약산성 클렌징 젤', category: '스킨케어', list: 35000, price: 28000, costR: 0.24, shelfM: 30, vol: 0.7, unitG: 250, b2c: 0.24, vf: 0.4 },
+    { id: 'KB-SK-PAD', name: '진정 토너 패드', category: '스킨케어', list: 25000, price: 25000, costR: 0.25, shelfM: 24, vol: 0.9, unitG: 280, b2c: 0.3, vf: 0.5 },
+    { id: 'KB-SK-MSK', name: '시트 마스크팩', category: '스킨케어', list: 20000, price: 20000, costR: 0.25, shelfM: 24, vol: 0.5, unitG: 160, b2c: 0.26, vf: 0.4 },
+    { id: 'KB-SK-SRM', name: '브라이트닝 세럼', category: '스킨케어', list: 38000, price: 38000, costR: 0.23, shelfM: 30, vol: 0.5, unitG: 150, b2c: 0.17, vf: 0.3 },
+    { id: 'KB-SK-BCR', name: '브라이트닝 크림', category: '스킨케어', list: 33000, price: 33000, costR: 0.23, shelfM: 30, vol: 0.6, unitG: 190, b2c: 0.13, vf: 0.3 }
   ];
   var skus = [];
   var skuById = {};
   CATALOG.forEach(function (c) {
     var s = {
       idx: skus.length, id: c.id, name: c.name,
-      base: c.id.split('-')[2], spec: 'STD', specLabel: '단품', line: c.id.indexOf('RB-WW') === 0 ? '와와 구강케어' : '스킨케어',
+      base: c.id.split('-')[2], spec: 'STD', specLabel: '단품', line: c.id.indexOf('KB-DL') === 0 ? '데일리 구강케어' : '스킨케어',
       category: c.category, price: c.price, list: c.list,
       cost: Math.round(c.price * c.costR / 10) * 10,
       shelfLifeDays: Math.round(c.shelfM * 30.4),
@@ -130,11 +130,11 @@
     skus.push(s); skuById[s.id] = s;
   });
   function sid(id) { return skuById[id].idx; }
-  // 세트: 앰플 + 크림 SET 은 공식몰 실제 구성, 나머지 2종은 라이브·공동구매용 기획 구성(가정)
+  // 세트: 3종 모두 라이브·공동구매·기획전용 구성(가정)
   var SETS = [
-    { id: 'RB-SET-AC', name: '앰플 + 크림 SET', price: 111000, list: 143000, comps: [['RB-SK-AMP', 1], ['RB-SK-CRM', 1]], w: 0.1, liveW: 5, bomRisk: 0.006 },
-    { id: 'RB-SET-TP3', name: '와와치약 3개 묶음 (기획·가정)', price: 23900, list: 37500, comps: [['RB-WW-TP', 3]], w: 0.3, liveW: 46, bomRisk: 0.006 },
-    { id: 'RB-SET-ORAL', name: '와와 구강케어 세트 (기획·가정)', price: 26900, list: 43000, comps: [['RB-WW-TP', 1], ['RB-WW-GRG', 1], ['RB-WW-TCL', 1]], w: 0.16, liveW: 24, bomRisk: 0.03 }
+    { id: 'KB-SET-AC', name: '앰플 + 크림 SET', price: 111000, list: 143000, comps: [['KB-SK-AMP', 1], ['KB-SK-CRM', 1]], w: 0.1, liveW: 5, bomRisk: 0.006 },
+    { id: 'KB-SET-TP3', name: '데일리 치약 3개 묶음', price: 23900, list: 37500, comps: [['KB-DL-TP', 3]], w: 0.3, liveW: 46, bomRisk: 0.006 },
+    { id: 'KB-SET-ORAL', name: '데일리 구강케어 세트', price: 26900, list: 43000, comps: [['KB-DL-TP', 1], ['KB-DL-GRG', 1], ['KB-DL-TCL', 1]], w: 0.16, liveW: 24, bomRisk: 0.03 }
   ];
   SETS.forEach(function (st) {
     var comps = st.comps.map(function (c) { return { idx: sid(c[0]), qty: c[1] }; });
@@ -166,20 +166,20 @@
   var LIVE_W = ALL_IDX.map(function (s) {
     var k = skus[s];
     if (k.isSet) return k.liveWeight;
-    return { 'RB-WW-TP': 12, 'RB-SK-AMP': 4, 'RB-WW-GRG': 3, 'RB-WW-SPR': 3 }[k.id] || 0;
+    return { 'KB-DL-TP': 12, 'KB-SK-AMP': 4, 'KB-DL-GRG': 3, 'KB-DL-SPR': 3 }[k.id] || 0;
   });
 
   /* ------------------------------------------------------------------
    * 4. 채널, 3PL 센터
    * ------------------------------------------------------------------ */
-  // B2C: 채용공고의 '카페24, 스마트스토어, 사방넷 기반 주문·출고' — 모든 채널 주문은 사방넷(OMS)으로 수집(가정)
+  // B2C: SCM 직무 채용공고에 적힌 '카페24, 스마트스토어, 사방넷 기반 주문·출고' — 모든 채널 주문은 사방넷(OMS)으로 수집(가정)
   var B2C_CHANNELS = [
-    { id: 'CAFE24', name: '자사몰(카페24)', desc: '공식몰 rorobell.com · 카페24 기반', share: 0.38 },
+    { id: 'CAFE24', name: '자사몰(카페24)', desc: '브랜드 공식몰 · 카페24 기반(가정)', share: 0.38 },
     { id: 'SMART', name: '스마트스토어', desc: '네이버 스마트스토어', share: 0.4 },
     { id: 'OPEN', name: '기타 오픈마켓', desc: '사방넷으로 수집하는 기타 오픈마켓(가정)', share: 0.14 },
     { id: 'LIVE', name: '라이브·공동구매', desc: '쇼핑라이브·인플루언서 공동구매(가정)', share: 0.08 }
   ];
-  // B2B: 채용공고의 '쿠팡, 컬리, 올리브영 등 B2B 주문·납품 일정 관리', '해외 출고(수출) 건 대응 및 서류 관리'
+  // B2B: SCM 직무 채용공고에 적힌 '쿠팡, 컬리, 올리브영 등 B2B 주문·납품 일정 관리', '해외 출고(수출) 건 대응 및 서류 관리'
   //  supplyRate = 소비자가 대비 공급가 비율(가정). 매출은 공급가 × 출고 수량으로 계산한다.
   var B2B_TYPES = [
     { id: 'COUPANG', name: '쿠팡(로켓배송)', supplyRate: 0.55, mode: '팔레트 화물(밀크런)', note: '센터별 입고 예약 · 물류 바코드·팔레트 규격 준수' },
@@ -451,12 +451,12 @@
     o.invoiceLinked = true;
     if (o.tS === null) return;
     var sd = Math.floor(o.tS / 1440);
-    // 와와 치약 5종은 패키지가 비슷해 인접 로케이션에서 혼동 → 05/01 로케이션 분리·바코드 검수 후 감소
+    // 데일리 치약 5종은 패키지가 비슷해 인접 로케이션에서 혼동 → 05/01 로케이션 분리·바코드 검수 후 감소
     var confusable = o.items.some(function (it) { return skus[it[0]].conf === 'WWTP' || (skus[it[0]].isSet && skus[it[0]].components.some(function (c) { return skus[c.idx].conf === 'WWTP'; })); });
     var pConf = confusable ? (sd < LOCATION_SPLIT_DAY ? 0.0016 : 0.00025) : 0;
     var pBase = 0.0011 * (o.overtimeShip ? 1.9 : 1);
     var r = rnd();
-    if (r < pConf) { o.mis = true; o.misCause = '유사 SKU 혼동(와와 치약 5종 인접 로케이션)'; }
+    if (r < pConf) { o.mis = true; o.misCause = '유사 SKU 혼동(데일리 치약 5종 인접 로케이션)'; }
     else if (r < pConf + pBase) { o.mis = true; o.misCause = o.overtimeShip ? '처리량 초과 시 검수 생략' : '피킹 오류'; }
     if (o.hasSet && chance(sd < PREPACK_DAY ? 0.004 : 0.0006)) o.missing = true;
     if (chance(0.0006)) o.damage = true;
@@ -476,12 +476,12 @@
   /* ------------------------------------------------------------------
    * 10. B2B 발주 생성 (발주 1건 = 1 SKU 라인)
    * ------------------------------------------------------------------ */
-  // 채널별 발주 품목 비중(가정): B2B는 와와 구강케어 중심, 올리브영·컬리는 스킨케어 일부 입점
+  // 채널별 발주 품목 비중(가정): B2B는 데일리 구강케어 중심, 올리브영·컬리는 스킨케어 일부 입점
   var B2B_W = {
-    COUPANG: { 'RB-WW-TP': 30, 'RB-WW-GUM': 12, 'RB-WW-SNS': 10, 'RB-WW-WHT': 10, 'RB-WW-KID': 7, 'RB-WW-GRG': 9, 'RB-WW-BRS': 6, 'RB-WW-SPR': 6, 'RB-WW-TCL': 4 },
-    KURLY: { 'RB-WW-TP': 20, 'RB-WW-KID': 10, 'RB-WW-GRG': 8, 'RB-SK-CLN': 8, 'RB-SK-PAD': 8, 'RB-SK-CRM': 6, 'RB-SK-SRM': 5, 'RB-SK-MSK': 6, 'RB-SK-BCR': 4 },
-    OLIVE: { 'RB-WW-TP': 25, 'RB-WW-SPR': 10, 'RB-WW-GRG': 9, 'RB-WW-WHT': 8, 'RB-WW-GUM': 7, 'RB-WW-SNS': 6, 'RB-SK-AMP': 6, 'RB-SK-CRM': 6, 'RB-SK-MST': 5, 'RB-SK-PAD': 5, 'RB-SK-MSK': 5 },
-    EXPORT: { 'RB-WW-TP': 40, 'RB-WW-WHT': 14, 'RB-WW-GUM': 10, 'RB-WW-SPR': 14, 'RB-SK-MSK': 8, 'RB-SK-AMP': 6 }
+    COUPANG: { 'KB-DL-TP': 30, 'KB-DL-GUM': 12, 'KB-DL-SNS': 10, 'KB-DL-WHT': 10, 'KB-DL-KID': 7, 'KB-DL-GRG': 9, 'KB-DL-BRS': 6, 'KB-DL-SPR': 6, 'KB-DL-TCL': 4 },
+    KURLY: { 'KB-DL-TP': 20, 'KB-DL-KID': 10, 'KB-DL-GRG': 8, 'KB-SK-CLN': 8, 'KB-SK-PAD': 8, 'KB-SK-CRM': 6, 'KB-SK-SRM': 5, 'KB-SK-MSK': 6, 'KB-SK-BCR': 4 },
+    OLIVE: { 'KB-DL-TP': 25, 'KB-DL-SPR': 10, 'KB-DL-GRG': 9, 'KB-DL-WHT': 8, 'KB-DL-GUM': 7, 'KB-DL-SNS': 6, 'KB-SK-AMP': 6, 'KB-SK-CRM': 6, 'KB-SK-MST': 5, 'KB-SK-PAD': 5, 'KB-SK-MSK': 5 },
+    EXPORT: { 'KB-DL-TP': 40, 'KB-DL-WHT': 14, 'KB-DL-GUM': 10, 'KB-DL-SPR': 14, 'KB-SK-MSK': 8, 'KB-SK-AMP': 6 }
   };
   var B2B_WARR = {};
   Object.keys(B2B_W).forEach(function (t) {
@@ -575,7 +575,7 @@
   function addLot(s, lot) { lotQ[s].push(lot); stock[s] += lot.qty; lotIndex[lot.lotNo] = lot; }
 
   // 초기 재고: 일반 SKU 50일분(로트 2개), 저회전 SKU는 대량 초기 생산 로트 1개
-  var SLOW = ['RB-WW-KID', 'RB-WW-TCL', 'RB-SK-BCR'];
+  var SLOW = ['KB-DL-KID', 'KB-DL-TCL', 'KB-SK-BCR'];
   SINGLE_IDX.forEach(function (s) {
     var D = expDemand[s];
     if (SLOW.indexOf(skus[s].id) >= 0) {
@@ -628,7 +628,7 @@
   var b2bQueue = [];
 
   // 리스크 SKU (이야기: 생산 지연에 따른 품절 위험)
-  var RISK_SE = sid('RB-WW-TP');
+  var RISK_SE = sid('KB-DL-TP');
   var inboundSeq = 0;
   function placeInbound(s, d, qty) {
     inboundSeq++;
@@ -647,7 +647,7 @@
   // 이야기: 공급 차질 — 8/1부터 기준일까지 받을 수 있는 입고 총량(budget)을 제한
   //  budget = 8/1~기준일 예상 출고량 × 보정계수 + 기준일 이후 목표 재고일수분 − 8/1 재고
   //  한도를 넘는 입고분은 잔량으로 분리해 10월 입고로 지연 → 기준일 재고가 목표 재고일수 수준
-  //  - 와와치약: OEM 생산 일정 지연 (기준일 재고 약 7일분 → B2C·B2B 재고 배분 충돌, 품절 위험)
+  //  - 데일리 치약: OEM 생산 일정 지연 (기준일 재고 약 7일분 → B2C·B2B 재고 배분 충돌, 품절 위험)
   var RISK_RULES = [
     { sku: RISK_SE, from: dayOf('2026-08-01'), coverDays: 7, factor: 1.0, restDay: dayOf('2026-10-19'), reason: 'OEM 생산 일정 지연', budget: null }
   ];
@@ -685,8 +685,8 @@
   }
 
   var OLD_LOT_RULES = [
-    { sku: sid('RB-WW-KID'), from: dayOf('2026-06-01'), done: false },
-    { sku: sid('RB-WW-SNS'), from: dayOf('2026-07-01'), done: false }
+    { sku: sid('KB-DL-KID'), from: dayOf('2026-06-01'), done: false },
+    { sku: sid('KB-DL-SNS'), from: dayOf('2026-07-01'), done: false }
   ];
   function futureDemand(s, from, to) {
     var sum = 0, d2, j;
@@ -967,7 +967,7 @@
   /* ------------------------------------------------------------------
    * 12. 재고 상태 (기준일): 가용 / 보류 / 불량 / 반품 대기
    * ------------------------------------------------------------------ */
-  var HOLD_LOTS = { 'RB-WW-GRG': { qty: 240, reason: '품질 재검사(용기 누액 확인)' }, 'RB-SK-SRM': { qty: 120, reason: '라벨 인쇄 확인' } };
+  var HOLD_LOTS = { 'KB-DL-GRG': { qty: 240, reason: '품질 재검사(용기 누액 확인)' }, 'KB-SK-SRM': { qty: 120, reason: '라벨 인쇄 확인' } };
   var stockStatus = skus.map(function (k) {
     var onHand = stockDaily[k.idx][END_DAY];
     var hold = HOLD_LOTS[k.id] ? Math.min(HOLD_LOTS[k.id].qty, Math.floor(onHand * 0.5)) : 0;
@@ -994,8 +994,8 @@
   };
   // 원인 조치(재발 방지) 이력
   var FIXES = [
-    { day: dayOf('2026-06-30'), cause: 'SETBOM', set: 'RB-SET-AC', label: 'ERP 세트 BOM 매핑 — 앰플 + 크림 SET' },
-    { day: dayOf('2026-08-31'), cause: 'SETBOM', set: 'RB-SET-TP3', label: 'ERP 세트 BOM 매핑 — 와와치약 3개 묶음' },
+    { day: dayOf('2026-06-30'), cause: 'SETBOM', set: 'KB-SET-AC', label: 'ERP 세트 BOM 매핑 — 앰플 + 크림 SET' },
+    { day: dayOf('2026-08-31'), cause: 'SETBOM', set: 'KB-SET-TP3', label: 'ERP 세트 BOM 매핑 — 데일리 치약 3개 묶음' },
     { day: dayOf('2026-08-31'), cause: 'RETURN', set: null, label: '반품 입고 D+1 처리 마감 규칙' },
     { day: dayOf('2026-08-31'), cause: 'CANCEL', set: null, label: '사방넷 취소 주문 → WMS 출고 지시 자동 회수' }
   ];
@@ -1386,9 +1386,8 @@
       B2B_CHECK_DAY: B2B_CHECK_DAY, exportTolerance: EXPORT_TOLERANCE, riskSku: RISK_SE, riskReason: RISK_RULES[0].reason, riskRestIso: isoOf(RISK_RULES[0].restDay)
     },
     brand: {
-      name: '로로벨', en: 'ROROBELL', company: '(주)로로벨', site: 'rorobell.com', checked: '2026-10-12',
-      categories: ['스킨케어', '메이크업', '선케어', '오랄케어'],
-      hq: '서울 성동구 성수동', mall: '카페24 기반 공식몰'
+      name: '가상 화장품 브랜드', en: 'K-Beauty Brand', virtual: true,
+      categories: ['구강케어', '스킨케어'], mall: '카페24 기반 공식몰(가정)'
     },
     exportDocs: exportDocs,
     cal: { BIZ: BIZ, isoOf: isoOf, dayOf: dayOf, dowOf: dowOf, monthOf: monthOf, addBiz: addBiz, nextBiz: nextBiz, DOW_KO: DOW_KO },
