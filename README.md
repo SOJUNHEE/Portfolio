@@ -45,7 +45,7 @@ waitress-serve --host=127.0.0.1 --port=5000 app:app
 
 `projects.json`에는 화면 표시용 선택 필드를 둘 수 있습니다(없어도 정상 표시). `card_label`(카드의 팀/개인 구분, 없으면 `program`), `card_summary`(카드 요약, 없으면 `description`), `card_role`(카드·상세 헤더의 한 줄 역할, 없으면 80자 이하인 `role`), `my_contribution` / `team_contribution`(상세의 "내 기여와 팀의 역할" 목록, 없으면 `role` 원문 표시). 홈 Hero의 대표 작업은 `is_featured: true`인 공개 프로젝트이며, 없으면 `sort_order`가 가장 앞선 공개 프로젝트입니다.
 
-정적 프로젝트 데모는 `demos/<slug>/index.html`(`static/` 밖)에 두고, 공개 프로젝트의 `live_url`에 `"/demo/<slug>/"`를 적으면 `/demo/<slug>/` 경로로 열리며 상세 페이지의 Live Demo 버튼으로 연결됩니다. 파일이 없거나 연결된 프로젝트가 비공개면 링크도 경로도 열리지 않습니다. `/demo/` 응답만 데모 화면의 인라인 스타일을 위해 CSP `style-src`에 `'unsafe-inline'`을 추가하며, 스크립트는 사이트 자체 파일만 허용합니다. 현재 `demos/scm-dashboard/`는 SCM 운영 대시보드(Neo) 복사본으로, Chart.js 4.4.1을 로컬로 포함하고 인라인 `onsubmit` 대신 `js/embed.js`를 씁니다.
+정적 프로젝트 데모는 `demos/<slug>/index.html`(`static/` 밖)에 두고, 공개 프로젝트의 `live_url`에 `"/demo/<slug>/"`를 적으면 `/demo/<slug>/` 경로로 열리며 상세 페이지의 Live Demo 버튼으로 연결됩니다. 파일이 없거나 연결된 프로젝트가 비공개면 링크도 경로도 열리지 않습니다. `/demo/` 응답만 데모 화면의 인라인 스타일을 위해 CSP `style-src`에 `'unsafe-inline'`을 추가하며, 스크립트는 사이트 자체 파일만 허용합니다. 현재 `demos/scm-dashboard/`는 Fashion 3PL Control Tower(패션 다화주 3PL·풀필먼트 운영 대시보드, 가상 데이터)로, Chart.js 4.4.1을 로컬로 포함하고 인라인 `onsubmit` 대신 `js/embed.js`를 씁니다. 계산 점검은 `node tests/fashion3pl/check_consistency.js`, 화면 숫자 점검은 `python tests/fashion3pl/check_screen_numbers.py http://127.0.0.1:5000/demo/scm-dashboard/`(Playwright)로 실행합니다. 13페이지 PDF 원본은 `docs/portfolio-pdf/deck.html`이고 `capture.py` → `build_pdf.py` 순서로 다시 만듭니다.
 
 ## 테스트
 

@@ -41,7 +41,8 @@ def get_profile():
     text = lambda v: v if isinstance(v, str) else ''
     fallback['skills'] = [{'category': text(s.get('category')), 'state': text(s.get('state')), 'items': text_list(s.get('items'))}
                           for s in fallback['skills'] if isinstance(s, dict)]
-    fallback['competencies'] = [{'title': text(c.get('title')), 'subtitle': text(c.get('subtitle')), 'items': text_list(c.get('items'))}
+    fallback['competencies'] = [{'title': text(c.get('title')), 'subtitle': text(c.get('subtitle')), 'items': text_list(c.get('items')),
+                                 'letter': text(c.get('letter')), 'learning': text_list(c.get('learning'))}
                                 for c in fallback['competencies'] if isinstance(c, dict)]
     fallback['metrics'] = [{k: text(m.get(k)) for k in ('value', 'label', 'source')} for m in fallback['metrics'] if isinstance(m, dict)]
     fallback['certifications'] = text_list(fallback['certifications'])
@@ -59,7 +60,7 @@ def get_experiences():
     for raw in load_json('experiences.json', []):
         if not isinstance(raw, dict):
             continue
-        item = {key: raw.get(key, '') for key in ('company', 'period', 'department', 'position', 'environment', 'scale')}
+        item = {key: raw.get(key, '') for key in ('company', 'period', 'department', 'position', 'environment', 'scale', 'focus')}
         for key in ('roles', 'achievements', 'tools'):
             item[key] = text_list(raw.get(key))
         result.append(item)

@@ -3,6 +3,7 @@
     <div class="experience-main">
         <h3>{{ experience.company }}</h3>
         <p class="experience-dept">{{ experience.department }}{% if experience.environment and experience.environment != experience.department %} · {{ experience.environment }}{% endif %}</p>
+        {% if experience.focus %}<p class="experience-focus">{{ experience.focus }}</p>{% endif %}
         {% if experience.scale %}<p class="experience-scale"><span class="tiny-label">운영 규모</span>{{ experience.scale }}</p>{% endif %}
     </div>
     {% if experience.achievements %}<div class="experience-achievements"><h4 class="tiny-label">대표 성과</h4><ul>{% for achievement in experience.achievements %}<li>{{ achievement }}</li>{% endfor %}</ul></div>{% endif %}

@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>소준희 포트폴리오</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
+<style>
+  /* 13페이지 PDF 원본 — python docs/portfolio-pdf/build_pdf.py 로 출력 (1280×720px = 960×540pt)
+     색상: 기존 네이비·화이트 유지, 강조색을 민트 → 골드로 변경. 골드 글자는 네이비 배경에서만, 밝은 배경에서는 --ink 사용 */
+  @page { size: 1280px 720px; margin: 0; }
+  :root {
+    --navy: #13293D; --navy-2: #1B3550; --line-dark: #2A4560;
+    --gold: #FDBF57; --gold-soft: #F4B955; --gold-deep: #D4A14C; --ink: #7A5A12; --wash: #FFF4DE;
+    --bg: #F5F6F8; --card: #FFFFFF; --line: #E2E5EA; --text: #343B45; --head: #13293D; --mute: #66707C;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #fff; font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif; color: var(--text); word-break: keep-all; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { width: 1280px; height: 720px; position: relative; overflow: hidden; background: var(--bg); padding: 46px 56px 0; page-break-after: always; break-after: page; }
+  .page:last-child { page-break-after: auto; break-after: auto; }
+  .page.dark { background: var(--navy); color: #E6EBF0; }
+  .eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .18em; color: var(--ink); }
+  .dark .eyebrow { color: var(--gold); }
+  h1.t { font-size: 31px; font-weight: 800; color: var(--head); letter-spacing: -.02em; margin-top: 6px; line-height: 1.3; }
+  .sub { margin-top: 8px; font-size: 14px; color: var(--mute); }
+  .foot { position: absolute; left: 56px; right: 56px; bottom: 22px; display: flex; justify-content: space-between; font-size: 12px; color: var(--mute); }
+  .foot b { color: var(--head); letter-spacing: .04em; }
+  .dark .foot { color: #9FB0C2; }
+  .dark .foot b { color: #fff; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+  .tag { display: inline-block; font-size: 11.5px; font-weight: 500; padding: 2px 9px; border-radius: 6px; background: #EEF1F4; color: var(--text); margin: 0 4px 4px 0; }
+  .tag.gold { background: var(--wash); color: var(--ink); border: 1px solid var(--gold-deep); }
+  .shot { display: block; width: 100%; border-radius: 10px; border: 1px solid var(--line); box-shadow: 0 2px 10px rgba(19,41,61,.08); }
+  .cap { font-size: 11.5px; color: var(--mute); margin-top: 6px; }
+  ul.dots { list-style: none; }
+  ul.dots li { position: relative; padding-left: 14px; font-size: 13px; line-height: 1.65; }
+  ul.dots li:before { content: ''; position: absolute; left: 2px; top: .62em; width: 5px; height: 5px; border-radius: 50%; background: var(--gold-deep); }
+  a { color: inherit; text-decoration: none; }
+  .links a { display: inline-block; font-size: 14px; font-weight: 700; color: var(--head); border-bottom: 3px solid var(--gold); margin-right: 22px; padding-bottom: 1px; }
+
+  /* 1 표지 */
+  .cover .mark { position: absolute; left: 56px; top: 50px; width: 46px; height: 46px; border-radius: 10px; border: 1px solid var(--line-dark); background: var(--navy-2); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; font-size: 16px; }
+  .cover .mark:after { content: ''; position: absolute; right: -4px; top: -4px; width: 9px; height: 9px; border-radius: 50%; background: var(--gold); }
+  .cover .who { position: absolute; right: 56px; top: 58px; text-align: right; }
+  .cover .who small { display: block; font-size: 13px; letter-spacing: .3em; color: #9FB0C2; }
+  .cover .who b { font-size: 26px; color: #fff; }
+  .cover .ring { position: absolute; border: 1px solid #22405E; border-radius: 50%; }
+  .cover .main { position: absolute; left: 56px; top: 180px; width: 860px; }
+  .cover h1 { margin-top: 18px; font-size: 56px; line-height: 1.28; font-weight: 800; color: #fff; letter-spacing: -.025em; }
+  .cover h1 em { font-style: normal; color: var(--gold); }
+  .cover p.lead { margin-top: 26px; font-size: 17px; line-height: 1.75; color: #C8D3DE; width: 720px; }
+  .cover .bottom { position: absolute; left: 56px; right: 56px; bottom: 40px; border-top: 1px solid var(--line-dark); padding-top: 20px; display: flex; justify-content: space-between; font-size: 14px; color: #C8D3DE; }
+  .cover .bottom span { margin-right: 26px; }
+
+  /* 2 지표 */
+  .kgrid { margin-top: 28px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .k { padding: 26px 26px 22px; height: 162px; position: relative; }
+  .k .v { font-size: 46px; font-weight: 800; color: var(--head); letter-spacing: -.02em; line-height: 1.1; }
+  .k .v small { font-size: 18px; font-weight: 700; color: var(--ink); margin-left: 3px; }
+  .k .l { margin-top: 14px; font-size: 15px; font-weight: 700; color: var(--head); }
+  .k .s { margin-top: 3px; font-size: 12.5px; color: var(--mute); }
+  .k:before { content: ''; position: absolute; left: 0; top: 22px; bottom: 22px; width: 4px; background: var(--gold); border-radius: 0 3px 3px 0; }
+  .k.hero { background: var(--navy); border-color: var(--navy); }
+  .k.hero .v, .k.hero .l { color: #fff; }
+  .k.hero .s { color: #B7C4D1; }
+  .note { margin-top: 16px; font-size: 12.5px; color: var(--mute); }
+  .note b { color: var(--head); }
+
+  /* 3 소개 */
+  .about { display: grid; grid-template-columns: 1fr 1.08fr; gap: 40px; margin-top: 28px; }
+  .about p { font-size: 15.5px; line-height: 1.85; margin-bottom: 16px; }
+  .about p strong { color: var(--head); background: var(--wash); }
+  .edu { padding: 18px 22px; font-size: 13.5px; line-height: 2; }
+  .edu b { color: var(--ink); margin-right: 18px; }
+  .comp { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .comp .card { padding: 16px 18px 14px; }
+  .comp .lt { display: inline-flex; width: 24px; height: 24px; border-radius: 6px; background: var(--gold); color: #1C1C1C; font-size: 12px; font-weight: 800; align-items: center; justify-content: center; margin-right: 8px; vertical-align: 1px; }
+  .comp h3 { display: inline; font-size: 16px; color: var(--head); }
+  .comp .en { display: block; margin-top: 6px; font-size: 10.5px; font-weight: 700; letter-spacing: .12em; color: var(--ink); }
+  .comp ul { margin-top: 6px; }
+  .comp ul.dots li { font-size: 12.5px; line-height: 1.6; }
+  .comp .learn { margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--line); font-size: 12px; color: var(--mute); }
+
+  /* 4 타임라인 */
+  .tl { position: relative; margin-top: 34px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .tl:before { content: ''; position: absolute; left: 8px; right: 0; top: 8px; height: 2px; background: #CBD3DC; }
+  .tl .n { position: relative; }
+  .tl .dot { width: 18px; height: 18px; border-radius: 50%; border: 3px solid var(--head); background: var(--bg); position: relative; z-index: 1; }
+  .tl .dot.g { border-color: var(--gold-deep); background: var(--gold); }
+  .tl .p { margin-top: 14px; font-size: 12.5px; font-weight: 700; color: var(--ink); }
+  .tl h3 { font-size: 21px; color: var(--head); margin-top: 2px; }
+  .tl .pos { font-size: 13px; font-weight: 700; color: var(--text); }
+  .tl .env { font-size: 12px; color: var(--mute); margin-top: 2px; height: 36px; }
+  .tl .focus { font-size: 12px; font-weight: 500; color: var(--head); margin-top: 6px; line-height: 1.55; height: 56px; }
+  .tl .sc { margin-top: 10px; padding: 14px 16px; }
+  .tl .sc b { font-size: 21px; color: var(--head); }
+  .tl .sc span { display: block; font-size: 12px; color: var(--mute); margin-top: 2px; }
+  .bands { margin-top: 18px; display: grid; grid-template-columns: 3fr 1fr; gap: 16px; }
+  .band { padding: 11px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; color: var(--head); background: #E8ECF1; }
+  .band.g { background: var(--wash); border-left: 4px solid var(--gold); }
+
+  /* 5·6 회사 카드 */
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 22px; }
+  .co { padding: 20px 22px; height: 548px; position: relative; }
+  .co .hd { display: flex; justify-content: space-between; align-items: baseline; }
+  .co h3 { font-size: 22px; color: var(--head); }
+  .co .pd { font-size: 13px; font-weight: 700; color: var(--ink); }
+  .co .meta { font-size: 12.5px; color: var(--mute); margin-top: 2px; }
+  .co .fc { margin-top: 8px; font-size: 12.5px; font-weight: 700; color: var(--head); }
+  .co .fc:before { content: ''; display: inline-block; width: 10px; height: 3px; background: var(--gold); margin-right: 7px; vertical-align: middle; }
+  .co .scale { margin-top: 10px; padding: 9px 14px; background: #F0F2F5; border-radius: 8px; font-size: 13px; }
+  .co .scale b { margin-right: 10px; color: var(--head); }
+  .co .lbl { margin-top: 14px; font-size: 12px; font-weight: 700; color: var(--ink); }
+  .ach { display: grid; gap: 8px; margin-top: 6px; }
+  .ach.c3 { grid-template-columns: repeat(3, 1fr); }
+  .ach.c4 { grid-template-columns: repeat(4, 1fr); }
+  .ach div { background: var(--wash); border: 1px solid #F1D9A6; border-radius: 8px; padding: 10px 11px; min-height: 76px; }
+  .ach b { display: block; font-size: 19px; color: var(--head); letter-spacing: -.01em; }
+  .ach span { display: block; font-size: 11.5px; color: var(--text); margin-top: 2px; line-height: 1.45; }
+  .co ul.dots { margin-top: 6px; }
+  .co ul.dots li { font-size: 12.5px; line-height: 1.7; }
+  .co .tools { position: absolute; left: 22px; bottom: 16px; }
+  .co .story { margin-top: 12px; padding: 12px 14px; background: var(--wash); border-radius: 8px; font-size: 12.5px; line-height: 1.7; }
+  .co .story b { display: block; color: var(--head); }
+
+  /* 7~9 프로젝트 */
+  .p7 { display: grid; grid-template-columns: 1fr 1.18fr; gap: 34px; margin-top: 8px; }
+  .p7 h1.big { font-size: 38px; font-weight: 800; color: var(--head); letter-spacing: -.02em; margin-top: 8px; }
+  .p7 .kr { font-size: 17px; font-weight: 700; color: var(--head); margin-top: 4px; }
+  .p7 .kr:before { content: ''; display: inline-block; width: 22px; height: 4px; background: var(--gold); margin-right: 8px; vertical-align: middle; }
+  .p7 .desc { margin-top: 12px; font-size: 14px; line-height: 1.75; }
+  .p7 dl { margin-top: 12px; display: grid; grid-template-columns: 48px 1fr; gap: 6px 10px; font-size: 13px; }
+  .p7 dt { font-weight: 700; color: var(--ink); }
+  .p7 .prob { margin-top: 12px; }
+  .p7 .prob h4 { font-size: 13.5px; color: var(--head); margin-bottom: 4px; }
+  .p7 .prob li { font-size: 12.8px; }
+  .steps { display: grid; gap: 12px; }
+  .step { display: grid; grid-template-columns: 30px 1fr; gap: 10px; }
+  .step .no { width: 28px; height: 28px; border-radius: 8px; background: var(--navy); color: var(--gold); font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+  .step h4 { font-size: 14.5px; color: var(--head); }
+  .step p { font-size: 12.3px; line-height: 1.6; color: var(--text); margin-top: 2px; }
+  .vbox { padding: 14px 16px; border-radius: 10px; }
+  .vbox h4 { font-size: 13px; color: var(--head); margin-bottom: 4px; }
+  .vbox.ok { background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--gold); }
+  .vbox.no { background: #EEF1F4; }
+  .vbox li { font-size: 12px; }
+  .disc { margin-top: 10px; padding: 10px 14px; border-radius: 8px; background: var(--navy); color: #E6EBF0; font-size: 12px; line-height: 1.6; }
+  .disc b { color: var(--gold); }
+  .feat { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 18px; }
+  .feat li { font-size: 12.3px; }
+
+  /* 10·11 AXPORT */
+  .ax { display: grid; grid-template-columns: 1fr 1.05fr; gap: 30px; margin-top: 8px; }
+  .ax h1.big { font-size: 36px; font-weight: 800; color: var(--head); margin-top: 8px; }
+  .ax .kr { font-size: 16px; font-weight: 700; color: var(--ink); }
+  .ax .desc { margin-top: 10px; font-size: 14px; line-height: 1.75; }
+  .ax dl { margin-top: 10px; display: grid; grid-template-columns: 40px 1fr; gap: 6px 10px; font-size: 13px; }
+  .ax dt { font-weight: 700; color: var(--ink); }
+  .roles { display: grid; grid-template-columns: 1.2fr 1fr; gap: 12px; margin-top: 14px; }
+  .roles .card { padding: 14px 16px; }
+  .roles .mine { border: 2px solid var(--gold-deep); }
+  .roles h4 { font-size: 13px; color: var(--head); margin-bottom: 4px; }
+  .roles li { font-size: 12.3px; }
+  .pipe { display: grid; grid-template-columns: 1fr 22px 1fr 22px 1fr 22px 1fr; align-items: center; margin-top: 10px; }
+  .pipe .s { text-align: center; padding: 12px 8px; border-radius: 10px; background: #fff; border: 1px solid var(--line); font-size: 13px; font-weight: 700; color: var(--head); }
+  .pipe .s small { display: block; font-size: 11px; font-weight: 400; color: var(--mute); margin-top: 3px; }
+  .pipe .s.d { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .pipe .s.d small { color: #B7C4D1; }
+  .pipe .ar { text-align: center; color: var(--gold-deep); font-weight: 800; }
+  .wbar { display: flex; height: 34px; border-radius: 8px; overflow: hidden; margin-top: 8px; font-size: 13px; font-weight: 700; }
+  .wbar div { display: flex; align-items: center; justify-content: center; color: #fff; }
+  .num { padding: 16px 18px; }
+  .num .big { font-size: 40px; font-weight: 800; color: var(--head); letter-spacing: -.02em; }
+  .num .big small { font-size: 16px; color: var(--ink); }
+  .num p { font-size: 12.3px; line-height: 1.6; margin-top: 4px; }
+
+  /* 12 스킬 */
+  .sk { display: grid; grid-template-columns: 1.45fr 1fr; gap: 30px; margin-top: 22px; }
+  .srow { display: grid; grid-template-columns: 170px 1fr; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--line); }
+  .srow h3 { font-size: 15.5px; color: var(--head); }
+  .srow .st { font-size: 11.5px; font-weight: 700; margin-top: 3px; display: inline-block; padding: 1px 8px; border-radius: 99px; }
+  .st.prac { background: #E8ECF1; color: var(--head); }
+  .st.mix { background: #fff; border: 1px solid var(--gold-deep); color: var(--ink); }
+  .st.learn { background: var(--wash); border: 1px solid var(--gold-deep); color: var(--ink); }
+  .jr { display: grid; gap: 12px; }
+  .jr .card { padding: 16px 18px; }
+  .jr small { font-size: 11.5px; font-weight: 700; letter-spacing: .1em; color: var(--ink); }
+  .jr h4 { font-size: 15px; color: var(--head); margin-top: 3px; }
+  .jr p { font-size: 12.5px; color: var(--mute); margin-top: 2px; }
+  .jr .card.dk { background: var(--navy); border-color: var(--navy); }
+  .jr .card.dk small { color: var(--gold); }
+  .jr .card.dk h4 { color: #fff; }
+  .jr .card.dk p { color: #B7C4D1; }
+
+  /* 13 연락처 */
+  .contact .main { position: absolute; left: 56px; top: 150px; }
+  .contact .eyebrow { letter-spacing: .1em; font-size: 15px; }
+  .contact h1 { font-size: 46px; line-height: 1.35; font-weight: 800; color: #fff; margin-top: 18px; letter-spacing: -.02em; }
+  .contact h1 em { font-style: normal; color: var(--gold); }
+  .contact p { margin-top: 22px; font-size: 16px; color: #C8D3DE; }
+  .contact .info { margin-top: 40px; display: flex; gap: 60px; }
+  .contact .info small { display: block; font-size: 12px; letter-spacing: .2em; font-weight: 700; color: var(--gold); }
+  .contact .info a, .contact .info span { font-size: 17px; color: #fff; display: block; margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<!-- 01 COVER -->
+<section class="page dark cover">
+  <div class="ring" style="width:560px;height:560px;right:-150px;top:150px"></div>
+  <div class="ring" style="width:400px;height:400px;right:-70px;top:230px"></div>
+  <div class="mark">JH</div>
+  <div class="who"><small>SO JUN HEE</small><b>소준희</b></div>
+  <div class="main">
+    <p class="eyebrow">3PL·풀필먼트 · 물류 운영 · 데이터·자동화</p>
+    <h1>현장을 이해하고,<br><em>데이터로 물류 운영을</em> 개선합니다.</h1>
+    <p class="lead">3PL·풀필먼트 센터에서 입출고, 재고, 인력, 화주사 및 정산 업무를 경험했습니다. 현장에서 쌓은 운영 경험에 데이터 분석과 자동화 역량을 더해 실질적인 업무 개선을 고민하고 있습니다.</p>
+  </div>
+  <div class="bottom"><div><span><a href="mailto:sojh90@naver.com">sojh90@naver.com</a></span><span>010-7769-3557</span><span>Seoul, Republic of Korea</span></div><a href="https://portfolio-sojunhee.vercel.app">portfolio-sojunhee.vercel.app</a></div>
+</section>
+
+<!-- 02 CAREER HIGHLIGHTS -->
+<section class="page">
+  <p class="eyebrow">CAREER HIGHLIGHTS</p>
+  <h1 class="t">숫자로 보는 4년 8개월의 물류·무역 실무</h1>
+  <p class="sub">핵심 경력 지표는 회사별 수치이며 서로 합산하지 않았습니다.</p>
+  <div class="kgrid">
+    <div class="card k hero"><div class="v">4Y 8M</div><div class="l">물류·무역 실무 경험</div><div class="s">전체 경력 · 약 4년 8개월 (3PL·풀필먼트 센터 약 2년 7개월)</div></div>
+    <div class="card k"><div class="v">50K<small>+</small></div><div class="l">월 출고 운영 경험</div><div class="s">굿앤파트너스 · 월 50,000건 이상</div></div>
+    <div class="card k"><div class="v">15<small>개사</small></div><div class="l">화주사 대응</div><div class="s">굿앤파트너스 · 약 15개사</div></div>
+    <div class="card k"><div class="v">99<small>%</small></div><div class="l">재고 정확도</div><div class="s">제이아이로지스</div></div>
+    <div class="card k"><div class="v">7 → 3<small>일</small></div><div class="l">월 마감 소요일 단축</div><div class="s">두잇로지스 · 7일 → 3일</div></div>
+    <div class="card k"><div class="v">−10<small>%</small></div><div class="l">장기 적치 보관비 감소</div><div class="s">젠미코리아 · 보세창고 약 10%</div></div>
+  </div>
+  <p class="note">재고 정확도(99%)와 오출고율(월 1% 미만)은 서로 다른 지표이며, 둘 다 <b>제이아이로지스</b> 재직 기간의 성과입니다. 오출고율은 6페이지에 따로 적었습니다.</p>
+  <div class="foot"><span><b>SO JUN HEE</b> · Portfolio</span><span>02</span></div>
+</section>
+
+<!-- 03 ABOUT & COMPETENCIES -->
+<section class="page">
+  <p class="eyebrow">01 / ABOUT</p>
+  <h1 class="t">현장에서 쌓은 이해가 개선의 출발점입니다.</h1>
+  <div class="about">
+    <div>
+      <p>3PL과 풀필먼트 센터에서 입출고, 재고, 작업 인력과 출고 일정을 관리했습니다. WMS와 Excel로 운영 데이터를 확인하고, 화주사와 소통하며 정산과 마감, 작업 동선 같은 현장의 문제를 개선해 왔습니다.</p>
+      <p>이후 수입식품 통관 서류와 보세창고 일정을 다루며 물류의 앞단까지 경험을 넓혔습니다. 지금은 <strong>한국무역아카데미 무역 AX 2기</strong>에서 데이터 분석, AI, Python과 웹 기반 시스템을 배우고 있습니다.</p>
+      <div class="card edu"><div><b>학력</b>수원과학대학교 · 건축학과</div><div><b>자격</b>新 JLPT N5 · 건설기계조종면허 · 1종 보통 운전면허</div></div>
+    </div>
+    <div class="comp">
+      <div class="card"><span class="lt">A</span><h3>3PL·풀필먼트 운영</h3><span class="en">3PL · FULFILLMENT OPERATIONS</span><ul class="dots"><li>입출고 관리</li><li>B2C · B2B 출고 운영</li><li>화주사 대응 (약 15개사)</li><li>출고 일정 · 채널별 작업계획</li></ul></div>
+      <div class="card"><span class="lt">B</span><h3>재고·시스템 관리</h3><span class="en">INVENTORY &amp; SYSTEMS</span><ul class="dots"><li>WMS · DAS</li><li>Excel 전산관리</li><li>월간 재고 마감 · 재고 실사</li><li>재고 정확도 관리</li></ul></div>
+      <div class="card"><span class="lt">C</span><h3>현장 생산성·정산</h3><span class="en">PRODUCTIVITY &amp; SETTLEMENT</span><ul class="dots"><li>작업 인력 · 하역 인력 배치</li><li>생산성 데이터 확인</li><li>작업 동선 · 입출고 레이아웃 개선</li><li>화주사별 물류비 정산 · 운영 단가 검토</li></ul></div>
+      <div class="card"><span class="lt">D</span><h3>수입통관·업무 자동화</h3><span class="en">CUSTOMS &amp; AUTOMATION</span><ul class="dots"><li>수입 서류 검토 (Invoice · B/L · P/L)</li><li>UNI-PASS · 보세창고 일정 관리</li><li>사방넷 D2C · B2B 출고 데이터</li></ul><div class="learn"><span class="tag gold">학습·적용 중</span>Python · AI 활용 업무 자동화</div></div>
+    </div>
+  </div>
+  <div class="foot"><span><b>SO JUN HEE</b> · Portfolio &nbsp;·&nbsp; A~C와 D의 앞 세 항목은 재직 중 수행한 실무, <span class="tag gold" style="margin:0">학습·적용 중</span>은 교육 과정·개인 프로젝트에서 익히는 역량</span><span>03</span></div>
+</section>
+
+<!-- 04 EXPERIENCE TIMELINE -->
+<section class="page">
+  <p class="eyebrow">02 / EXPERIENCE</p>
+  <h1 class="t">3PL·풀필먼트 센터 운영에서 수입통관까지</h1>
+  <p class="sub">회사별 운영 규모이며 서로 합산하지 않았습니다. 각 성과는 해당 재직 기간의 업무 경험 기준입니다.</p>
+  <div class="tl">
+    <div class="n"><div class="dot g"></div><p class="p">2021.09 — 2022.03</p><h3>굿앤파트너스</h3><p class="pos">주임 / 계장</p><p class="env">메쉬코리아 김포 풀필먼트</p><p class="focus">다화주 풀필먼트 운영 · B2C·B2B 출고 · WMS · 화주사 대응</p><div class="card sc"><b>월 50,000건+</b><span>출고 · 약 15개 화주사 대응</span></div></div>
+    <div class="n"><div class="dot g"></div><p class="p">2022.04 — 2023.09</p><h3>제이아이로지스</h3><p class="pos">대리 / 센터장</p><p class="env">운영3팀 · 다품종 소형가전 3PL 센터</p><p class="focus">센터 운영 · 재고 정확도 · 작업 생산성 · 인력 및 출고 관리</p><div class="card sc"><b>월 20,000건+</b><span>출고</span></div></div>
+    <div class="n"><div class="dot g"></div><p class="p">2023.12 — 2024.05</p><h3>두잇로지스</h3><p class="pos">대리 / 팀장</p><p class="env">물류운영부 · 인터지스 남동센터 · 상온 3PL</p><p class="focus">신규 운영 환경 구축 · WMS 초기 설정 · 작업 레이아웃 · 화주사 정산 · 마감 기간 단축</p><div class="card sc"><b>월 10,000건+</b><span>출고</span></div></div>
+    <div class="n"><div class="dot"></div><p class="p">2024.06 — 2026.06</p><h3>젠미코리아</h3><p class="pos">대리 / 팀원</p><p class="env">경영지원실 무역행정팀 · 일본 수입식품 · 통관 및 출고 데이터 운영</p><p class="focus">수입통관 서류 검토 · 보세창고 운영 일정 · 라벨 작업 · D2C·B2B 출고 데이터</p><div class="card sc"><b>월 약 6,000건</b><span>D2C / B2B 출고 데이터 처리</span></div></div>
+  </div>
+  <div class="bands"><div class="band g">3PL·풀필먼트 센터 운영 3곳 · 약 2년 7개월 — 입출고 · 재고 · 인력 · 정산</div><div class="band">수입통관 · 보세창고 · 출고 데이터 · 약 2년 1개월</div></div>
+  <div class="foot"><span><b>SO JUN HEE</b> · Portfolio</span><span>04</span></div>
+</section>
+
+<!-- 05 EXPERIENCE — CENTER OPERATIONS -->
+<section class="page">
+  <p class="eyebrow">02 / EXPERIENCE — 센터 운영</p>
+  <h1 class="t">센터장·팀장으로 맡은 재고·생산성·정산</h1>
+  <div class="two">
+    <div class="card co">
+      <div class="hd"><h3>제이아이로지스</h3><span class="pd">2022.04 — 2023.09</span></div>
+      <p class="meta">대리 / 센터장 · 운영3팀 · 다품종 소형가전 3PL 센터</p>
+      <p class="fc">센터 운영 · 재고 정확도 · 작업 생산성 · 인력 및 출고 관리</p>
+      <div class="scale"><b>운영 규모</b>월 20,000건 이상 출고</div>
+      <p class="lbl">대표 성과</p>
+      <div class="ach c4"><div><b>99%</b><span>재고 정확도</span></div><div><b>월 1% 미만</b><span>오출고율</span></div><div><b>약 5%↑</b><span>현장 생산성 향상</span></div><div><b>약 10%↓</b><span>불필요한 연장근로 및 인건비</span></div></div>
+      <p class="lbl">주요 역할</p>
+      <ul class="dots"><li>재고관리 · 피킹 / 패킹 작업관리 · 작업동선 개선</li><li>D2C 택배 · B2B 대량 출고 및 Excel 전산관리</li><li>FCL 일정관리 및 화주 커뮤니케이션</li><li>물류 운영 단가 관리와 정산</li></ul>
+      <div class="tools"><span class="tag">Excel</span><span class="tag">재고관리</span><span class="tag">물류 정산</span></div>
+    </div>
+    <div class="card co">
+      <div class="hd"><h3>두잇로지스</h3><span class="pd">2023.12 — 2024.05</span></div>
+      <p class="meta">대리 / 팀장 · 물류운영부 · 인터지스 남동센터 · 상온 3PL</p>
+      <p class="fc">신규 운영 환경 구축 · WMS 초기 설정 · 작업 레이아웃 · 화주사 정산 · 마감 기간 단축</p>
+      <div class="scale"><b>운영 규모</b>월 10,000건 이상 출고</div>
+      <p class="lbl">대표 성과</p>
+      <div class="ach c3"><div><b>약 28%↑</b><span>센터 보관 효율 개선</span></div><div><b>약 95%</b><span>고객사 클레임 당일 처리율</span></div><div><b>7일 → 3일</b><span>월 마감 소요기간 단축</span></div></div>
+      <p class="lbl">주요 역할</p>
+      <ul class="dots"><li>WMS 초기 데이터 세팅 및 신규 센터 입출고 작업 레이아웃 구성</li><li>FCL 컨테이너 입출고와 하역 인력 배치</li><li>B2C / B2B 일정 관리 및 배차 일정 조율</li><li>화주사별 정산 · 생산성 데이터 확인 · 운영 단가 검토</li></ul>
+      <div class="tools"><span class="tag">WMS</span><span class="tag">생산성 데이터</span><span class="tag">화주사별 정산</span></div>
+    </div>
+  </div>
+  <div class="foot"><span><b>SO JUN HEE</b> · Portfolio</span><span>05</span></div>
+</section>
+
+<!-- 06 EXPERIENCE — FULFILLMENT & CUSTOMS -->
+<section class="page">
+  <p class="eyebrow">02 / EXPERIENCE — 풀필먼트 · 수입통관</p>
+  <h1 class="t">다화주 풀필먼트에서 시작해 물류의 앞단까지</h1>
+  <div class="two">
+    <div class="card co">
+      <div class="hd"><h3>굿앤파트너스</h3><span class="pd">2021.09 — 2022.03</span></div>
+      <p class="meta">주임 / 계장 · 메쉬코리아 김포 풀필먼트</p>
+      <p class="fc">다화주 풀필먼트 운영 · B2C·B2B 출고 · WMS · 화주사 대응</p>
+      <div class="scale"><b>운영 규모</b>월 50,000건 이상 출고 · 약 15개 화주사 대응</div>
+      <p class="lbl">주요 역할</p>
+      <ul class="dots"><li>B2C 출고 및 B2B 대량 출고</li><li>WMS 운영 및 채널별 출고 작업계획</li><li>출고 피크타임 분석과 생산성 모니터링</li><li>화주 커뮤니케이션 및 월간 재고 마감</li></ul>
+      <div class="story"><b>경력의 출발점</b>여러 화주사의 물량을 동시에 다루는 풀필먼트 현장에서 채널별 작업계획과 피크타임 생산성 관리를 익혔습니다.</div>
+      <div class="tools"><span class="tag">WMS</span><span class="tag">생산성 모니터링</span><span class="tag">월간 재고 마감</span></div>
+    </div>
+    <div class="card co">
+      <div class="hd"><h3>젠미코리아</h3><span class="pd">2024.06 — 2026.06</span></div>
+      <p class="meta">대리 / 팀원 · 경영지원실 무역행정팀 · 일본 수입식품</p>
+      <p class="fc">수입통관 서류 검토 · 보세창고 운영 일정 · 라벨 작업 · D2C·B2B 출고 데이터</p>
+      <div class="scale"><b>운영 규모</b>월 약 6,000건 D2C / B2B 출고 데이터 처리</div>
+      <p class="lbl">대표 성과</p>
+      <div class="ach c3"><div><b>약 10%↓</b><span>보세창고 장기 적치 보관비</span></div><div><b>100%</b><span>프리타임 준수율</span></div><div><b>통관 지연↓</b><span>업무 휴먼 에러 최소화</span></div></div>
+      <p class="lbl">주요 역할</p>
+      <ul class="dots"><li>일본 수입 식품 통관 서류 및 Invoice · B/L · Packing List 검토</li><li>UNI-PASS 관련 업무 및 보세창고 입출고 일정 관리</li><li>라벨 작업 일정 관리와 창고 일정 조율</li><li>사방넷 기반 D2C / B2B 출고 데이터 처리</li></ul>
+      <div class="tools"><span class="tag">UNI-PASS</span><span class="tag">사방넷</span><span class="tag">Invoice / B/L / Packing List</span></div>
+    </div>
+  </div>
+  <div class="foot"><span><b>SO JUN HEE</b> · Portfolio</span><span>06</span></div>
+</section>
+
+<!-- 07 PROJECT 01 — OVERVIEW -->
+<section class="page">
+  <p class="eyebrow">03 / PROJECT 01 · 개인 프로젝트</p>
+  <div class="p7">
+    <div>
+      <h1 class="big">Fashion 3PL Control Tower</h1>
+      <p class="kr">패션 3PL·풀필먼트 운영 대시보드</p>
+      <p class="desc">다수의 패션 브랜드를 운영하는 3PL 물류센터를 가정하고, 입출고·재고·화주사·인력·반품·정산 현황을 한곳에서 확인할 수 있도록 설계한 운영 대시보드입니다. 물류센터 운영 실무 경험을 바탕으로 주요 KPI와 운영 시나리오를 정의하고 가상 데이터를 통해 구현했습니다.</p>
+      <dl>
+        <dt>기간</dt><dd>2026.10.20 구현 · 이전 화장품 SCM 대시보드를 대체</dd>
+        <dt>역할</dt><dd>운영 문제 정의 · KPI 기준 · 시나리오 설계 (개인) · 구현에 AI 코딩 도구(Claude Code) 활용</dd>
+        <dt>범위</dt><dd>12개 화면 · 화주사 4곳 · 102 SKU(의류·신발·잡화) · 6개월 가상 운영 데이터</dd>
+        <dt>기술</dt><dd><span class="tag">HTML/CSS</span><span class="tag">Vanilla JavaScript</span><span class="tag">Chart.js</span><span class="tag">CSV</span><span class="tag">Node.js·Playwright 점검</span></dd>
+      </dl>
+      <div class="prob"><h4>문제 정의</h4><ul class="dots">
+        <li>다화주 환경에서는 화주사별 출고 마감·SLA·납기·단가가 달라 운영 현황을 동시에 파악하기 어렵다.</li>
+        <li>B2C와 B2B 물량이 집중되면 인력·공간·출고 일정에 병목이 생긴다.</li>
+        <li>재고·출고·반품·정산 데이터가 분리되어 있으면 원인 분석과 대응이 늦어진다.</li></ul></div>
+    </div>
+    <div>
+      <img class="shot" src="img/p7-overview.png" alt="운영 종합 현황 화면">
+      <p class="cap">운영 종합 현황 — 9/30 15:30 기준 출고 대상·완료·마감 위험·작업 인원과 화주사별 진행률 (가상 데이터)</p>
+      <p class="links" style="margin-top:14px"><a href="https://portfolio-sojunhee.vercel.app/demo/scm-dashboard/">Live Demo ↗</a><a href="https://portfolio-sojunhee.vercel.app/projects/scm-operations-dashboard">상세 보기 ↗</a></p>
+      <p class="cap" style="margin-top:10px">과거에 패션 3PL 센터에서 근무했다는 뜻이 아니라, 기존 센터 운영 경험을 패션 다화주 환경에 적용해 본 개인 프로젝트입니다.</p>
+    </div>
+  </div>
+  <div class="foot"><span><b>SO JUN HEE</b> · Portfolio</span><span>07</span></div>
+</section>
+
+<!-- 08 PROJECT 01 — SOLUTION -->
+<section class="page">
+  <p class="eyebrow">03 / PROJECT 01 · 해결 방법</p>
+  <h1 class="t">출고부터 정산까지, 센터 운영 흐름을 하나로 연결하다</h1>
+  <div style="display:grid;grid-template-columns:1.05fr 1fr;gap:28px;margin-top:16px">
+    <div>
+      <img class="shot" src="img/p8-kpis.png" alt="표준 운영 KPI 7개">
+      <p class="cap">표준 KPI 7개 — 목표·직전 기간 대비·상태 표시, ‘원인 보기’로 상세 화면 연결 (가상 데이터)</p>
+      <div class="card" style="margin-top:10px;padding:12px 16px"><h4 style="font-size:13px;color:var(--head)">가상 데이터 설계</h4><p style="font-size:12.3px;line-height:1.65;margin-top:3px">시드 고정 난수로 2026.04 ~ 09 (183일) — B2C 주문 <b>164,001건</b>, B2B 발주 360건, 입고 142건, 반품 11,863건. 하루 단위로 입고 → 적치 → 출고 → 반품 검수 → 재고 반영을 계산해, 결품·인력 결원이 SLA·재고·생산성 수치에 함께 나타나도록 했습니다.</p></div>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="no">1</span><div><h4>다화주 데이터 구조 설계</h4><p>화주사별 계약 조건(B2C 마감 시각 · SLA 목표 · B2B 납기 · 단가표 · 보관 존), 색상·사이즈 SKU와 로케이션, B2C·B2B 출고 구분을 하나의 데이터에서 연결</p></div></div>
+      <div class="step"><span class="no">2</span><div><h4>물류 운영 KPI 표준화</h4><p>출고 SLA · B2B 납기 준수율 · 재고 정확도(실사 일치율) · 오출고율 · 작업 생산성 · 반품 처리시간 · 정산 차이를 분자·분모·기준일까지 정의하고 metrics.js 한 곳에서 계산</p></div></div>
+      <div class="step"><span class="no">3</span><div><h4>실제 발생 가능한 시나리오 구현</h4><p>프로모션 주문 급증 · 특정 사이즈 결품 · 반품 적체 · B2B 납기 지연 · 작업 인력 부족을 하루 단위 계산에 반영</p></div></div>
+      <div class="step"><span class="no">4</span><div><h4>운영 조치 연결</h4><p>위험 KPI 확인 → 화주사별 상세 → 원인(지연 원인 · 결품 구간 · 필요 시간 대비 투입 시간 · 청구 차이) → 우선 처리 업무·이슈 로그</p></div></div>
+      <img class="shot" src="img/p8-todo.png" alt="우선 처리 업무" style="margin-top:2px">
+    </div>
+  </div>
+  <div class="foot"><span><b>SO JUN HEE</b> · Portfolio</span><span>08</span></div>
+</section>
+
+<!-- 09 PROJECT 01 — FEATURES & VERIFICATION -->
+<section class="page">
+  <p class="eyebrow">03 / PROJECT 01 · 주요 기능과 검증</p>
+  <h1 class="t">물량·재고·인력·비용을 함께 보는 운영 시스템</h1>
+  <div style="display:grid;grid-template-columns:1.12fr 1fr;gap:26px;margin-top:14px">
+    <div>
+      <img class="shot" src="img/p9-b2c.png" alt="B2C 지연 원인과 시간대별 주문">
+      <p class="cap">B2C 주문·출고 — 납기 지연 원인 분해와 시간대별 주문 접수</p>
+      <img class="shot" src="img/p9-labor.png" alt="필요 작업 시간과 투입 시간" style="margin-top:8px">
+      <p class="cap">인력·생산성 — 일별 필요 작업 시간 대비 투입 시간 (가상 데이터)</p>
+    </div>
+    <div>
+      <h4 style="font-size:13.5px;color:var(--head);margin-bottom:4px">주요 기능 (12개 화면 중)</h4>
+      <ul class="dots feat">
+        <li>센터 운영 종합 현황</li><li>화주사별 출고 SLA</li><li>SKU·로케이션 재고</li><li>B2C·B2B 출고관리</li>
+        <li>반품·교환</li><li>인력·생산성</li><li>3PL 물류비 정산</li><li>입고 · 공간 · 이슈 보고서</li></ul>
+      <div class="vbox ok" style="margin-top:12px"><h4>검증한 것 (2026-10-20 실행)</h4><ul class="dots">
+        <li>계산 일치 점검 <b>1,146,140개</b> 항목 일치 — 재고 수불 · SLA·B2B·반품 합계 · 정산 재계산 · KPI (기간 4 × 화주사 5 × 출고 유형 3)</li>
+        <li>화면 숫자 점검 <b>196개</b> 항목 통과 — KPI 카드 · 차트 · 표 · CSV · 검색 · 페이지</li>
+        <li>12개 화면 × 1440 · 768 · 390px — 콘솔 오류 <b>0건</b>, 가로 넘침 <b>0건</b></li></ul></div>
+      <div class="vbox no" style="margin-top:10px"><h4>아직 검증하지 않은 것</h4><ul class="dots">
+        <li>실제 센터 데이터 적용과 업무 시간 단축·비용 절감 효과</li><li>WMS·OMS·ERP 연동, 로그인·권한, DB (현재 브라우저 계산)</li></ul></div>
+      <p class="disc"><b>본 프로젝트는 개인 학습 및 포트폴리오 목적으로 설계한 시연용 시스템이며, 주문·재고·브랜드·물류비 데이터는 가상 데이터입니다.</b> 실제 물류센터의 운영 성과를 검증한 것은 아닙니다.</p>
+    </div>
+  </div>
+  <div class="foot"><span><b>SO JUN HEE</b> · Portfolio</span><span>09</span></div>
+</section>
+
+<!-- 10 PROJECT 02 — AXPORT -->
+<section class="page">
+  <p class="eyebrow">03 / PROJECT 02 · 5인 팀 프로젝트</p>
+  <div class="ax">
+    <div>
+      <h1 class="big">AXPORT</h1>
+      <p class="kr">수출 적합도 분석 플랫폼</p>
+      <p class="desc">반도체 수출을 준비하는 기업의 엑셀 자료를 바탕으로 어느 나라에 팔기 좋은지, 가격·운송·규제·환율 안정성을 한 화면에서 비교하는 웹 서비스입니다.</p>
+      <dl>
+        <dt>과정</dt><dd>한국무역아카데미 무역 AX 2기 · 미니프로젝트 1차 (6조)</dd>
+        <dt>기간</dt><dd>2026.09.23 ~ 09.29 (약 1주, git 커밋 기록 기준)</dd>
+        <dt>기술</dt><dd><span class="tag">Python</span><span class="tag">Flask</span><span class="tag">Jinja2</span><span class="tag">SQLite</span><span class="tag">Supabase</span><span class="tag">Chart.js</span><span class="tag">Playwright</span><span class="tag">Render</span></dd>
+      </dl>
+      <div class="roles">
+        <div class="card mine"><h4>내가 담당한 부분</h4><ul class="dots"><li>공공데이터 수집·가공 파이프라인 설계</li><li>분석 엔진(5개 영역, 13개+ 모듈) 서버 통합·연결</li><li>로그인·계정·워크스페이스 백엔드 (Supabase)</li><li>문의하기 백엔드 · 대시보드 데이터 연결</li></ul></div>
+        <div class="card"><h4>다른 팀원 담당</h4><ul class="dots"><li>분석 엔진 개발</li><li>홈 화면 디자인</li><li>대시보드 초기 시안</li><li>챗봇 위젯 연동</li></ul></div>
+      </div>
+    </div>
+    <div>
+      <img class="shot" src="../../static/images/projects/axport-mini1-thumb.png" alt="AXPORT 대표 화면">
+      <p class="cap">AXPORT 대표 화면 · 3개 가상 기업 데이터를 고정 시드로 생성한 시연용 샘플 사용</p>
+      <p class="links" style="margin-top:12px"><a href="https://portfolio-axport.onrender.com">Live Demo ↗</a><a href="https://portfolio-sojunhee.vercel.app/projects/axport-mini1">상세 보기 ↗</a></p>
+      <div class="card" style="margin-top:14px;padding:12px 16px;font-size:12.8px;line-height:1.65"><b style="color:var(--head)">문제 정의</b> — 시장성·가격·물류·규제·환율 안정성 정보가 각각 다른 공공데이터·통계·공시 자료에 흩어져 있어, 수출 전에 한 번에 확인하고 판단하기 어려웠습니다.</div>
+    </div>
+  </div>
+  <div class="foot"><span><b>SO JUN HEE</b> · Portfolio</span><span>10</span></div>
+</section>
+
+<!-- 11 PROJECT 02 — SOLUTION & RESULT -->
+<section class="page">
+  <p class="eyebrow">03 / PROJECT 02 · 해결 방법과 결과</p>
+  <h1 class="t">화면만 있는 시안을 실제로 동작하는 서비스로</h1>
+  <div style="display:grid;grid-template-columns:1.25fr 1fr;gap:26px;margin-top:16px">
+    <div>
+      <h4 style="font-size:13px;color:var(--ink)">데이터 파이프라인 → 분석 → 화면</h4>
+      <div class="pipe"><div class="s">공공데이터 수집<small>UN Comtrade · 관세청 · ECOS · KOTRA · WTO · FRED</small></div><div class="ar">→</div><div class="s">가공 · 검증<small>출처·해시 MANIFEST.csv</small></div><div class="ar">→</div><div class="s d">분석 엔진 통합<small>5개 영역</small></div><div class="ar">→</div><div class="s">대시보드 연결<small>업로드 · 탭 · 출처 표시</small></div></div>
+      <h4 style="font-size:13px;color:var(--ink);margin-top:16px">시연용 종합 채점 산식 (가중치 조정 · 합계 100% 검증)</h4>
+      <div class="wbar"><div style="flex:35;background:#13293D">시장성 35</div><div style="flex:30;background:#2D4A66">가격 30</div><div style="flex:20;background:#4A6683">물류 20</div><div style="flex:15;background:#D4A14C;color:#1C1C1C">안정성 15</div></div>
+      <p class="cap">규제는 가중치 대신 감점형 관문으로 반영 · 안정성은 결제통화 환율 변동성과 과거 10년 분포를 비교</p>
+      <ul class="dots" style="margin-top:12px">
+        <li>Supabase 회원가입·로그인·세션 관리와 사용자별 작업 폴더 워크스페이스 백엔드 직접 구현</li>
+        <li>포트폴리오 공개용 별도 배포본: 로그인 없이 방문자 세션으로 체험, IP별 요청 제한 · 업로드 5MB · 7일 자동 삭제</li>
+        <li>구현과 점검에 AI 코딩 도구(Claude Code) 활용 — 공개 기준은 직접 결정</li></ul>
+    </div>
+    <div style="display:grid;gap:12px;align-content:start">
+      <div class="card num"><p style="font-size:12.5px;font-weight:700;color:var(--ink);margin:0">무료 서버(512MB) 강제 종료 문제 해결</p><div class="big">466MB → 215MB</div><p>단계별 메모리 측정으로 한국은행 원표 엑셀의 약 30MB 외부 링크 데이터가 원인임을 찾아, 읽는 값은 같게 유지한 채 최대 메모리를 줄였습니다 (로컬 측정 기준).</p></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div class="card num"><div class="big">47<small>개</small></div><p>공개 배포본 자동 테스트 통과</p></div><div class="card num"><div class="big">0<small>건</small></div><p>Playwright 회귀 테스트 콘솔 오류</p></div></div>
+      <div class="card" style="padding:12px 16px;background:#EEF1F4;border:0"><b style="font-size:12.5px;color:var(--head)">남은 과제</b><p style="font-size:12.3px;line-height:1.6;margin-top:3px">팀 확정 안정성 산식의 엔진 반영 일부 미완료, 물류 영역 실제 항만·공항 API 미연동, 실제 기업 데이터 기반 검증 미수행</p></div>
+    </div>
+  </div>
+  <div class="foot"><span><b>SO JUN HEE</b> · Portfolio</span><span>11</span></div>
+</section>
+
+<!-- 12 SKILLS -->
+<section class="page">
+  <p class="eyebrow">04 / SKILLS &amp; AX JOURNEY</p>
+  <h1 class="t">실무에서 써 온 것과 지금 배우는 것</h1>
+  <p class="sub">숙련도를 점수로 매기지 않고, 실무 경험과 학습 중인 영역을 구분해 적었습니다.</p>
+  <div class="sk">
+    <div>
+      <div class="srow"><div><h3>Logistics Operations</h3><span class="st prac">실무 경험</span></div><div><span class="tag">3PL / 풀필먼트</span><span class="tag">WMS</span><span class="tag">DAS</span><span class="tag">재고 · 입출고 관리</span><span class="tag">B2C · B2B 출고</span><span class="tag">물류비 정산</span><span class="tag">Excel 전산관리</span><span class="tag">FCL</span></div></div>
+      <div class="srow"><div><h3>Trade &amp; Customs</h3><span class="st prac">실무 경험</span></div><div><span class="tag">수입통관 서류</span><span class="tag">UNI-PASS</span><span class="tag">보세창고</span><span class="tag">사방넷</span><span class="tag">협력사 일정 조율</span></div></div>
+      <div class="srow"><div><h3>Data</h3><span class="st mix">실무 + 학습 확장</span></div><div><span class="tag">생산성 데이터 확인 · 실무</span><span class="tag">데이터 분석 · 학습 중</span></div></div>
+      <div class="srow" style="border-bottom:0"><div><h3>Python · AI · Web</h3><span class="st learn">학습·적용 중</span></div><div><span class="tag">Python</span><span class="tag">AI 활용 업무 자동화</span><span class="tag">웹 기반 운영 대시보드</span><p style="font-size:12px;color:var(--mute);margin-top:4px">실무 문제를 해결하기 위해 학습하고 개인·팀 프로젝트(Fashion 3PL Control Tower · AXPORT)에 적용 중</p></div></div>
+    </div>
+    <div>
+      <p class="eyebrow" style="font-size:12px;letter-spacing:.06em;margin-bottom:10px">현장을 아는 사람에서, 직접 해결하는 사람으로</p>
+      <div class="jr">
+        <div class="card"><small>01 · 실무 경험</small><h4>현업의 맥락을 이해합니다.</h4><p>3PL · 재고 · 출고 · 정산 · 통관</p></div>
+        <div class="card"><small>02 · 현재 학습</small><h4>데이터와 기술로 시야를 넓힙니다.</h4><p>한국무역아카데미 무역 AX 2기 — 데이터 분석 · Python · AI · 자동화</p></div>
+        <div class="card dk"><small>03 · 지향점</small><h4>현업 문제를 시스템으로 해결합니다.</h4><p>현장에서 실제로 쓸 수 있는 도구를 만드는 것이 목표입니다.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span><b>SO JUN HEE</b> · Portfolio</span><span>12</span></div>
+</section>
+
+<!-- 13 CONTACT -->
+<section class="page dark contact cover">
+  <div class="ring" style="width:520px;height:520px;right:-120px;top:80px"></div>
+  <div class="ring" style="width:360px;height:360px;right:-40px;top:160px"></div>
+  <div class="mark">JH</div>
+  <div class="main">
+    <p class="eyebrow">Contact</p>
+    <h1>더 나은 운영을 만드는 일,<br><em>함께 이야기하고 싶습니다.</em></h1>
+    <p>SCM · 물류 · 무역, 그리고 데이터와 기술의 접점에서.</p>
+    <div class="info"><div><small>EMAIL</small><a href="mailto:sojh90@naver.com">sojh90@naver.com</a></div><div><small>PHONE</small><span>010-7769-3557</span></div><div><small>WEB</small><a href="https://portfolio-sojunhee.vercel.app">portfolio-sojunhee.vercel.app</a></div></div>
+  </div>
+  <div class="bottom"><span>SO JUN HEE · 소준희 · Seoul, Republic of Korea</span><span>13</span></div>
+</section>
+</body>
+</html>

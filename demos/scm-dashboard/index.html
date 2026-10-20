@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>K-Beauty Brand SCM 운영 대시보드 — 포트폴리오</title>
-  <meta name="description" content="가상 화장품 브랜드의 SCM 물류·재고 관리 포트폴리오. 카페24·스마트스토어·사방넷 B2C 출고와 쿠팡·컬리·올리브영 B2B 납품, 수출 서류, 재고·정산 검증, 제품별 매출을 한 화면에서 보는 운영 대시보드 (브랜드·제품·수치 모두 가상 데이터)">
+  <title>Fashion 3PL Control Tower — 개인 포트폴리오 (가상 데이터)</title>
+  <meta name="description" content="패션 다화주 3PL·풀필먼트 센터를 가정한 운영 대시보드. 입고·재고·로케이션·B2C·B2B 출고·반품·인력·공간·정산을 가상 데이터로 시연하는 소준희 개인 포트폴리오 프로젝트입니다.">
   <meta name="robots" content="noindex, nofollow">
   <link rel="icon" href="/static/images/portfolio/mark.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -15,8 +15,10 @@
   <div class="app">
     <aside class="sidebar" aria-label="화면 이동">
       <div class="brand">
-        <div class="brand-name">K-Beauty Brand</div>
-        <div class="brand-sub">SCM 운영 대시보드 — 포트폴리오 (가상 브랜드)</div>
+        <span class="brand-mark" aria-hidden="true">3PL</span>
+        <div class="brand-name">Fashion 3PL Control Tower</div>
+        <div class="brand-sub">패션 다화주 풀필먼트 운영 대시보드 · 가상 데이터</div>
+        <a class="brand-back" href="/projects/scm-operations-dashboard">← 포트폴리오 프로젝트 설명</a>
       </div>
       <ul class="nav" id="nav"></ul>
       <dl class="sidebar-foot" id="sidebarFoot"></dl>
@@ -27,7 +29,7 @@
         <div class="topbar-row">
           <div class="page-title">
             <span class="eyebrow" id="pageEyebrow"></span>
-            <h1><span id="pageTitle"></span><span class="duty" id="pageDuty"></span></h1>
+            <h1><span id="pageTitle"></span></h1>
           </div>
           <form class="filters" id="filters">
             <div class="field">
@@ -36,8 +38,7 @@
                 <option value="7d">최근 7일</option>
                 <option value="30d">최근 30일</option>
                 <option value="90d" selected>최근 3개월</option>
-                <option value="180d">최근 6개월</option>
-                <option value="365d">최근 12개월</option>
+                <option value="all">전체 6개월</option>
                 <option value="custom">직접 선택</option>
               </select>
             </div>
@@ -52,12 +53,16 @@
               </div>
             </div>
             <div class="field">
-              <label for="fChannel">채널</label>
-              <select id="fChannel"></select>
+              <label for="fBrand">화주사</label>
+              <select id="fBrand"></select>
             </div>
             <div class="field">
-              <label for="fProduct">상품</label>
-              <select id="fProduct"></select>
+              <label for="fType">출고 유형</label>
+              <select id="fType">
+                <option value="ALL">B2C + B2B</option>
+                <option value="B2C">B2C만</option>
+                <option value="B2B">B2B만</option>
+              </select>
             </div>
             <div class="field">
               <label class="sr-only" for="fReset">필터 초기화</label>
@@ -73,13 +78,13 @@
       </main>
 
       <footer class="disclaimer">
-        <p><strong>화장품 브랜드의 SCM 물류·재고 관리 업무를 가정해 개인이 만든 포트폴리오입니다. 브랜드와 제품은 가상이며 특정 회사와 관련이 없습니다.</strong></p>
-        <p>판매·납품 채널과 담당 업무는 화장품 브랜드 SCM 직무 채용공고를 참고했습니다. 제품명·가격, 주문·발주·재고·매출·정산 등 모든 수치와 3PL 센터·납품처 이름은 가상 데이터입니다.</p>
+        <p><strong>소준희 개인 포트폴리오 프로젝트입니다. 패션 다화주 3PL·풀필먼트 센터를 가정한 시연용 시스템이며, 특정 기업의 서비스나 협업 프로젝트가 아닙니다.</strong></p>
+        <p>화주사(브랜드 A~D)·상품·주문·재고·인력·단가·청구 금액은 모두 가상 데이터입니다. 실제 WMS·OMS·ERP·택배사 시스템과 연동하지 않았고, 실제 물류센터의 운영 성과를 검증한 것이 아닙니다.</p>
       </footer>
     </div>
   </div>
 
-  <!-- 포트폴리오 사이트 내장본: Chart.js 4.4.1을 로컬로 포함하고(CSP script-src 'self'), 인라인 onsubmit 대신 embed.js 사용 -->
+  <!-- 포트폴리오 사이트 내장본: Chart.js 4.4.1 로컬 포함(CSP script-src 'self') -->
   <script src="vendor/chart.umd.min.js"></script>
   <script src="js/embed.js"></script>
   <script src="js/data.js"></script>
