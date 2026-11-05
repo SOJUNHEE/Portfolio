@@ -190,8 +190,8 @@ try:
         expect(page.locator('#copy-status')).to_contain_text('복사했습니다')
         assert page.locator('#copy-status').get_attribute('aria-live') == 'polite'
         assert page.locator('.email-link').get_attribute('href') == 'mailto:sojh90@naver.com'
-        assert page.locator('.phone-link').get_attribute('href').startswith('tel:')
-        ok('copy / mail / tel')
+        assert page.locator('.phone-link').count() == 0
+        ok('copy / mail / no phone')
         denied = browser.new_context()
         denied_page = denied.new_page()
         denied_page.add_init_script("Object.defineProperty(navigator, 'clipboard', {value: undefined})")

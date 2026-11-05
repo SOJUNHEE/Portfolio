@@ -1,5 +1,5 @@
 /* =====================================================================
- * Fashion 3PL Control Tower — 소준희 개인 포트폴리오 프로젝트 (가상 데이터)
+ * 다품종 3PL 운영 대시보드 — 소준희 개인 학습 프로젝트 (가상 데이터)
  * 디자인 토큰: 색상은 아래 변수만 사용합니다. (그라데이션·글로우 사용하지 않음)
  * 골드 포인트 컬러는 공통 디자인 토큰으로 관리합니다(특정 기업의 공식 디자인 가이드가 아님).
  * 골드는 면·선·막대 강조에만 쓰고, 밝은 배경 위 글자 강조는 --accent-ink(짙은 골드)를 씁니다.
@@ -36,7 +36,7 @@
   /* 차트 — 실적 --chart-1(차콜), 비교 --chart-2(골드)·--chart-3(회청)·--chart-4(짙은 골드), 계획·목표 --chart-plan */
   --chart-1: #2B2F36;
   --chart-2: #E9A93A;
-  --chart-3: #7D8A9C;
+  --chart-3: #C2410C;
   --chart-4: #B98A2E;
   --chart-plan: #A3AAB1;
   --chart-grid: #EDEFF2;
@@ -151,10 +151,10 @@ a { color: inherit; }
 .scope-line { margin-top: 12px; font-size: 12px; color: var(--text-sub); font-variant-numeric: tabular-nums; }
 .scope-line strong { color: var(--text); font-weight: 600; }
 .scope-sample { color: #9a6400; font-weight: 700; }
-.demo-flag { display: flex; align-items: center; gap: 10px; margin: -6px 0 14px; padding: 8px 12px; background: #fbf1df; border-radius: var(--radius); font-size: 12.5px; color: #5c4300; line-height: 1.5; }
+.demo-flag { display: flex; align-items: center; gap: 10px; margin: -6px 0 14px; padding: 8px 12px; background: #FFF4DE; border-radius: var(--radius); font-size: 12.5px; color: #7A5A12; line-height: 1.5; }
 .demo-flag > span:nth-child(2) { flex: 1; min-width: 0; }
 .sample-badge { flex: none; padding: 2px 7px; font-size: 11.5px; font-weight: 800; letter-spacing: 0.08em; color: #fff; background: #9a6400; border-radius: 3px; }
-.demo-flag-back { flex: none; font-weight: 700; color: #5c4300; }
+.demo-flag-back { flex: none; font-weight: 700; color: #7A5A12; }
 
 /* ---------- 본문 ---------- */
 .view { overflow-x: clip; }
@@ -495,7 +495,7 @@ table.data.matrix td.cell-warn { background: color-mix(in srgb, var(--warn) 14%,
 
 
 /* =====================================================================
- * Fashion 3PL Control Tower 테마 — 다크 사이드바, 골드 활성 메뉴, 버튼·표·검색
+ * 대시보드 테마 — 다크 사이드바, 활성 메뉴 강조, 버튼·표·검색
  * ===================================================================== */
 .eyebrow { color: var(--accent-ink); }
 .sidebar { background: var(--side-bg); border-right-color: var(--side-line); color: var(--side-text); }
@@ -517,8 +517,8 @@ table.data.matrix td.cell-warn { background: color-mix(in srgb, var(--warn) 14%,
 
 .topbar { background: var(--bg); }
 .scope-sample { color: var(--accent-ink); }
-.demo-flag { background: var(--accent-wash); color: #4A3708; border-left: 3px solid var(--color-accent); }
-.demo-flag-back { color: #4A3708; }
+.demo-flag { background: var(--accent-wash); color: #7A5A12; border-left: 3px solid var(--color-accent); }
+.demo-flag-back { color: #7A5A12; }
 .sample-badge { background: var(--color-charcoal); color: var(--color-accent); }
 
 /* 버튼 */
@@ -648,3 +648,41 @@ table.data tbody tr:hover td { background: var(--accent-wash); }
 @media (max-width: 1280px) { .kpi-grid.k4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 600px) { .kpi-grid.k4 { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 900px) { .nav-group { display: none; } }
+
+/* 대표 사례: 3PL 정산 불일치 검증 5단계 */
+.stage-title { font-weight: 700; margin: 2px 0 4px; }
+.stages.case .stat-value { font-size: 24px; }
+.stages.case .stat-sub { line-height: 1.45; }
+.stages.case .stage:last-child { background: var(--accent-wash); box-shadow: inset 0 3px 0 var(--color-accent); }
+.table-block + .table-block { margin-top: 22px; }
+@media (max-width: 900px) {
+  .stages.case { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stages.case .stage { border-bottom: 1px solid var(--line); }
+  .stages.case .stage:nth-child(2n) { border-right: 0; }
+  .stages.case .stage:last-child { grid-column: 1 / -1; border-bottom: 0; }
+  .stages.case .stat-value { font-size: 21px; }
+}
+
+/* 주문 → 재고 반영 7단계 · 피킹 일자 선택 */
+.stages.s7 { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.stages.s7 .stat-value { font-size: 21px; }
+@media (max-width: 1280px) { .stages.s7 { grid-template-columns: repeat(4, minmax(0, 1fr)); } .stages.s7 .stage { border-bottom: 1px solid var(--line); } .stages.s7 .stage:nth-child(4n) { border-right: 0; } }
+@media (max-width: 900px) { .stages.s7 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .stages.s7 .stage:nth-child(4n) { border-right: 1px solid var(--line); } .stages.s7 .stage:nth-child(2n) { border-right: 0; } .stages.s7 .stage:last-child { grid-column: 1 / -1; } }
+.wave-pick { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text-sub); }
+.wave-pick select { font: inherit; padding: 6px 8px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg); color: var(--text); }
+
+/* 다품종 공통: 8단계 흐름 · 상품군 선택 · 안내 띠 */
+.stages.s8 { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+.stages.s8 .stat-value { font-size: 19px; }
+.stages.s8 .stage { padding: 14px 12px; }
+@media (max-width: 1280px) { .stages.s8 { grid-template-columns: repeat(4, minmax(0, 1fr)); } .stages.s8 .stage { border-bottom: 1px solid var(--line); } .stages.s8 .stage:nth-child(4n) { border-right: 0; } }
+@media (max-width: 900px) { .stages.s8 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .stages.s8 .stage:nth-child(4n) { border-right: 1px solid var(--line); } .stages.s8 .stage:nth-child(2n) { border-right: 0; } }
+.ind-pick { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.ind-pick button { padding: 8px 14px; font: inherit; font-size: 13px; font-weight: 700; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); cursor: pointer; }
+.ind-pick button:hover { border-color: var(--color-accent-deep); color: var(--accent-ink); }
+.ind-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; margin-bottom: 18px; padding: 10px 14px; background: var(--accent-wash); border-left: 3px solid var(--color-accent); border-radius: var(--radius); font-size: 13px; color: var(--text-sub); }
+.ind-banner b { color: var(--accent-ink); font-size: 14px; }
+.ind-banner .link-btn { margin-left: auto; }
+.kpi-grid.k3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 1080px) { .kpi-grid.k3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .kpi-grid.k3 { grid-template-columns: minmax(0, 1fr); } }

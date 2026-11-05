@@ -18,6 +18,9 @@ def shot(pg, name, sel=None, pad=0, viewport=False, max_h=None):
         pg.evaluate('window.scrollTo(0, 0)'); pg.wait_for_timeout(300)
         pg.screenshot(path=str(OUT / name))
     else:
+        pg.evaluate('(s) => document.querySelector(s).scrollIntoView({block: "center"})', sel); pg.wait_for_timeout(1500)
+        if not max_h:   # 요소 단위 캡처: 전체 페이지 캡처 때 차트가 다시 그려지며 비는 문제를 피한다
+            pg.locator(sel).first.screenshot(path=str(OUT / name)); print(name); return
         b = pg.evaluate(BOX, sel)
         clip = {'x': b['x'] - pad, 'y': b['y'] - pad, 'width': b['width'] + pad * 2, 'height': (min(b['height'], max_h) if max_h else b['height']) + pad * 2}
         pg.screenshot(path=str(OUT / name), clip=clip, full_page=True)
@@ -33,13 +36,12 @@ with sync_playwright() as p:
         pg.evaluate('(id) => SCMApp.go(id)', sid); pg.wait_for_timeout(1200)
 
     go('overview')
-    shot(pg, 'p7-overview.png', viewport=True)                                   # 7p 대표 화면: 운영 종합 현황(오늘 진행·화주사별 진행률)
-    shot(pg, 'p8-kpis.png', '.kpi-grid.k4', pad=4)                               # 8p 표준 KPI 7개
-    shot(pg, 'p8-todo.png', '.todo', pad=4, max_h=420)                           # 8p 우선 처리 업무
-    go('b2c')
-    pg.evaluate("document.querySelector('#chCause').closest('.grid-2').setAttribute('id','capCause')")
-    shot(pg, 'p9-b2c.png', '#capCause', pad=4)                                   # 9p 지연 원인 + 시간대별 주문
+    shot(pg, 'p7-overview.png', viewport=True)                                   # 7p 대표 화면: 종합 풀필먼트 현황
+    shot(pg, 'p8-kpis.png', '.kpi-grid.k3', pad=4)                               # 8p 센터 공통 지표 6개
+    go('settle')
+    shot(pg, 'p8-settle.png', '.stages', pad=4)                                  # 8p 정산 대조 5단계
+    shot(pg, 'p9-settle.png', '.view .section:nth-of-type(2) .table-block', pad=4, max_h=430)  # 9p 차이 항목과 판정 근거
     go('labor')
     pg.evaluate("document.querySelector('#chLabor').closest('.panel').setAttribute('id','capLabor')")
-    shot(pg, 'p9-labor.png', '#capLabor', pad=4)                                 # 9p 필요 시간 vs 투입 시간
+    shot(pg, 'p9-labor.png', '#capLabor', pad=4)                                 # 9p 공정별 처리량·UPH
     b.close()

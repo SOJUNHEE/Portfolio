@@ -2,7 +2,6 @@
   "name": "소준희",
   "english_name": "SO JUN HEE",
   "email": "sojh90@naver.com",
-  "phone": "010-7769-3557",
   "location": "Seoul, Republic of Korea",
   "education": "수원과학대학교 · 건축학과",
   "certifications": [
@@ -138,14 +137,14 @@
   ],
   "ax_highlights": [
     {
-      "value": "3 / 3",
-      "label": "일부러 넣은 청구 오류를 정산 대조로 찾아냄",
-      "source": "Fashion 3PL · 가상 데이터"
+      "value": "5 / 5",
+      "label": "일부러 넣은 정산 오류를 실적 대조로 찾아냄",
+      "source": "다품종 3PL · 가상 데이터"
     },
     {
-      "value": "1,146,140",
-      "label": "계산 점검 항목 모두 일치",
-      "source": "Fashion 3PL · 재고 수불·SLA·정산 재계산"
+      "value": "447,538",
+      "label": "계산 점검 항목 모두 통과",
+      "source": "다품종 3PL · 로트 재고·실사·정산 재계산"
     },
     {
       "value": "466→215MB",

@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Fashion 3PL Control Tower — 개인 포트폴리오 (가상 데이터)</title>
-  <meta name="description" content="패션 다화주 3PL·풀필먼트 센터를 가정한 운영 대시보드. 입고·재고·로케이션·B2C·B2B 출고·반품·인력·공간·정산을 가상 데이터로 시연하는 소준희 개인 포트폴리오 프로젝트입니다.">
+  <title>다품종 3PL 운영 대시보드 — 개인 프로젝트 (가상 데이터)</title>
+  <meta name="description" content="여러 상품군의 화주사를 운영하는 가상 3PL 센터의 입고·재고·피킹·패킹·출고·반품·인력·정산을 한곳에서 보는 개인 프로젝트입니다.">
   <meta name="robots" content="noindex, nofollow">
   <link rel="icon" href="/static/images/portfolio/mark.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -15,15 +15,14 @@
   <div class="app">
     <aside class="sidebar" aria-label="화면 이동">
       <div class="brand">
-        <span class="brand-mark" aria-hidden="true">3PL</span>
-        <div class="brand-name">Fashion 3PL Control Tower</div>
-        <div class="brand-sub">패션 다화주 풀필먼트 운영 대시보드 · 가상 데이터</div>
+        <span class="brand-mark" aria-hidden="true">OPS</span>
+        <div class="brand-name">다품종 3PL 운영 대시보드</div>
+        <div class="brand-sub">입고 · 재고 · 피킹·패킹 · 출고 · 반품 · 인력 · 정산 · 가상 데이터</div>
         <a class="brand-back" href="/projects/scm-operations-dashboard">← 포트폴리오 프로젝트 설명</a>
       </div>
       <ul class="nav" id="nav"></ul>
       <dl class="sidebar-foot" id="sidebarFoot"></dl>
     </aside>
-
     <div class="main">
       <header class="topbar">
         <div class="topbar-row">
@@ -35,62 +34,37 @@
             <div class="field">
               <label for="fPeriod">기간</label>
               <select id="fPeriod">
-                <option value="7d">최근 7일</option>
+                <option value="all" selected>전체 (5/1~10/28)</option>
+                <option value="90d">최근 90일</option>
                 <option value="30d">최근 30일</option>
-                <option value="90d" selected>최근 3개월</option>
-                <option value="all">전체 6개월</option>
                 <option value="custom">직접 선택</option>
               </select>
             </div>
             <div class="custom-range" id="customRange">
-              <div class="field">
-                <label for="fFrom">시작일</label>
-                <input type="date" id="fFrom">
-              </div>
-              <div class="field">
-                <label for="fTo">종료일</label>
-                <input type="date" id="fTo">
-              </div>
+              <div class="field"><label for="fFrom">시작일</label><input type="date" id="fFrom"></div>
+              <div class="field"><label for="fTo">종료일</label><input type="date" id="fTo"></div>
             </div>
-            <div class="field">
-              <label for="fBrand">화주사</label>
-              <select id="fBrand"></select>
-            </div>
-            <div class="field">
-              <label for="fType">출고 유형</label>
-              <select id="fType">
-                <option value="ALL">B2C + B2B</option>
-                <option value="B2C">B2C만</option>
-                <option value="B2B">B2B만</option>
-              </select>
-            </div>
-            <div class="field">
-              <label class="sr-only" for="fReset">필터 초기화</label>
-              <button type="button" class="btn" id="fReset">초기화</button>
-            </div>
+            <div class="field"><label for="fInd">상품군</label><select id="fInd"></select></div>
+            <div class="field"><label class="sr-only" for="fReset">필터 초기화</label><button type="button" class="btn" id="fReset">초기화</button></div>
           </form>
         </div>
         <p class="scope-line" id="scopeLine"></p>
+        <p class="demo-flag" style="margin:10px 0 0"><span class="sample-badge">SAMPLE DATA</span><span>가상 물류센터 · 가상 화주사 시뮬레이션 · 상품·재고·주문·인력 수치는 모두 가상 · 실제 경력과 구분되는 개인 학습 프로젝트</span></p>
       </header>
-
-      <main class="view" id="view" tabindex="-1">
-        <p class="loading">가상 데이터를 생성하고 있습니다…</p>
-      </main>
-
+      <main class="view" id="view" tabindex="-1"><p class="loading">가상 데이터를 생성하고 있습니다…</p></main>
       <footer class="disclaimer">
-        <p><strong>소준희 개인 포트폴리오 프로젝트입니다. 패션 다화주 3PL·풀필먼트 센터를 가정한 시연용 시스템이며, 특정 기업의 서비스나 협업 프로젝트가 아닙니다.</strong></p>
-        <p>화주사(브랜드 A~D)·상품·주문·재고·인력·단가·청구 금액은 모두 가상 데이터입니다. 실제 WMS·OMS·ERP·택배사 시스템과 연동하지 않았고, 실제 물류센터의 운영 성과를 검증한 것이 아닙니다.</p>
+        <p><strong>소준희 개인 학습 프로젝트입니다. 여러 상품군을 다루는 다화주 3PL 센터를 가정한 시뮬레이션이며, 실제 기업의 자료나 시스템이 아닙니다.</strong></p>
+        <p>센터·화주사·상품·SKU·로케이션·재고·주문량·인력·단가는 모두 가상이고, 출고 마감 시각·공정 표준 처리량·검수와 보관 기준은 학습용 가정입니다. 여러 상품군에서 근무했다는 뜻이 아니며 실제 경력은 메인 페이지에 따로 적었습니다. 코드 작성에는 AI 코딩 도구를 활용했습니다.</p>
       </footer>
     </div>
   </div>
-
-  <!-- 포트폴리오 사이트 내장본: Chart.js 4.4.1 로컬 포함(CSP script-src 'self') -->
   <script src="vendor/chart.umd.min.js"></script>
   <script src="js/embed.js"></script>
   <script src="js/data.js"></script>
   <script src="js/metrics.js"></script>
   <script src="js/charts.js"></script>
   <script src="js/export.js"></script>
+  <script src="js/ui.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
