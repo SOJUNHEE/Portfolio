@@ -155,8 +155,23 @@ try:
                         assert link.count() == 1, f'{key} shown {link.count()} times'
                         assert link.get_attribute('target') == '_blank'
                         assert link.get_attribute('rel') == 'noopener noreferrer'
+                if project['has_story']:
+                    # 4블록(문제 → 해결 과정 → AI 적용 → 성과)은 바로 보이고, 기존 상세 항목은 '자세히 보기'를 펼치면 보인다
+                    text = page.locator('main').inner_text()
+                    for key in ('ax_problem', 'ax_link', 'ax_steps', 'ax_trial', 'ai_note', 'ai_tool', 'ai_human', 'ai_check', 'ax_result', 'tech_stack', 'team_contribution'):
+                        for entry in project[key]:
+                            assert entry in text, f'missing {key} content: {entry[:30]}'
+                    for n in project['ax_numbers']:
+                        assert n['value'] in text and n['label'] in text, f"missing number {n['value']}"
+                    assert project['objective'] and project['objective'][0] not in text, 'details should start closed'
+                    page.locator('#step-more summary').click()
+                    page.wait_for_timeout(200)
+                    assert_layout(page, f"{project['slug']} details {width}")
+                    keys = ('objective', 'data', 'solution', 'architecture', 'features', 'result', 'future_improvement')
+                else:
+                    keys = ('problem', 'objective', 'data', 'solution', 'architecture', 'features', 'result', 'future_improvement', 'tech_stack', 'my_contribution', 'team_contribution')
                 text = page.locator('main').inner_text()
-                for key in ('problem', 'objective', 'data', 'solution', 'architecture', 'features', 'result', 'future_improvement', 'tech_stack', 'my_contribution', 'team_contribution'):
+                for key in keys:
                     for entry in project[key]:
                         assert entry in text, f'missing {key} content: {entry[:30]}'
                 # Step list sits clear of the fixed header and of the body text.

@@ -7,7 +7,7 @@
             <p class="eyebrow">3PL·풀필먼트 · 물류 운영 · 데이터·자동화</p>
             <p class="hero-name">{{ profile.english_name }} <span>/ {{ profile.name }}</span></p>
             <h1><span>현장을 이해하고,</span> <span class="accent"><em>데이터로 물류 운영을</em></span> <span class="accent"><em>개선합니다.</em></span></h1>
-            <p class="hero-description">3PL·풀필먼트 센터에서 입출고, 재고, 인력, 화주사 및 정산 업무를 경험했습니다. 현장에서 쌓은 운영 경험에 데이터 분석과 자동화 역량을 더해 실질적인 업무 개선을 고민하고 있습니다.</p>
+            <p class="hero-description">3PL·풀필먼트 센터와 무역회사에서 4년 8개월 동안 겪은 운영 문제를, AI 코딩 도구로 직접 대시보드를 만들어 풀고 있습니다. 운영 기준은 직접 정하고, 계산 결과는 자동 점검으로 확인합니다.</p>
             <div class="actions"><a class="button primary" href="#projects">프로젝트 보기 <span aria-hidden="true">→</span></a><a class="button secondary" href="#experience">경력 보기</a></div>
         </div>
         {% if featured %}
@@ -38,11 +38,13 @@
     <div class="container">
         <p class="tiny-label metrics-caption">핵심 경력 지표 · 회사별 수치이며 서로 합산하지 않았습니다</p>
         <dl class="metrics-grid">{% for metric in profile.metrics %}<div class="metric"><dt>{{ metric.label }}</dt><dd class="metric-value">{{ metric.value }}</dd><dd class="metric-source">{{ metric.source }}</dd></div>{% endfor %}</dl>
+        {% if profile.ax_highlights %}<p class="tiny-label metrics-caption ax-caption">AX 프로젝트 결과 · 가상 데이터와 로컬 측정 기준</p>
+        <dl class="metrics-grid ax-grid">{% for metric in profile.ax_highlights %}<div class="metric"><dt>{{ metric.label }}</dt><dd class="metric-value">{{ metric.value }}</dd><dd class="metric-source">{{ metric.source }}</dd></div>{% endfor %}</dl>{% endif %}
     </div>
 </section>
 <section id="projects" class="section">
     <div class="container">
-        <div class="section-heading reveal"><p class="eyebrow">01 / SELECTED PROJECTS</p><h2>현업의 질문을 기술로 풀어 본 프로젝트</h2><p>교육 과정과 개인 프로젝트의 결과를 기록합니다. 팀 프로젝트는 직접 담당한 범위를 따로 적었습니다.</p></div>
+        <div class="section-heading reveal"><p class="eyebrow">01 / SELECTED PROJECTS</p><h2>현업의 질문을 기술로 풀어 본 프로젝트</h2><p>물류 현장에서 직접 겪은 문제를 골라, 데이터와 AI 코딩 도구로 직접 도구를 만들어 풀었습니다. 각 프로젝트는 어떤 문제였는지, 어떻게 풀었는지, AI를 어디에 썼는지, 무엇이 나아졌는지 순서로 정리했습니다. 팀 프로젝트는 직접 담당한 범위를 따로 적었습니다.</p></div>
         {% if projects %}
         <div class="project-grid">{% for project in projects %}{% include 'partials/project_card.html' %}{% endfor %}</div>
         {% else %}

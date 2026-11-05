@@ -106,6 +106,29 @@ class PortfolioTests(unittest.TestCase):
         for word in ('mine entry', 'team entry', 'short role'):
             self.assertIn(word, detail)
 
+    def test_story_layout(self):
+        # 문제 → 해결 과정 → AI 적용 → 성과 4블록이 있으면 그 순서로 보이고, 기존 항목은 '자세히 보기' 안으로 들어간다
+        item = {'slug': 'story-test', 'is_published': True, 'title': 'Story', 'card_summary': 'one line summary',
+                'ax_problem': ['story problem'], 'ax_steps': ['step one', 'step two'], 'ax_trial': 'trial text',
+                'ai_note': ['no ai inside'], 'ai_tool': ['ai wrote code'], 'ai_human': ['i defined kpi'], 'ai_check': ['checked by script'],
+                'ax_result': ['result line'], 'ax_numbers': [{'value': '3 / 3', 'label': 'found'}, {'value': 5, 'label': 'bad'}, 'x', {'value': ' ', 'label': 'empty'}],
+                'problem': ['old problem'], 'data': ['old data'], 'future_improvement': ['old future'], 'team_contribution': ['team part']}
+        sparse = {'slug': 'half-story', 'is_published': True, 'ax_problem': ['only problem'], 'problem': ['legacy problem']}
+        self.projects([item, sparse])
+        html = self.client.get('/projects/story-test').text
+        order = [html.index(w) for w in ('story problem', 'step one', 'ai wrote code', 'i defined kpi', 'checked by script', '3 / 3', 'result line', 'team part', 'old data')]
+        self.assertEqual(order, sorted(order))
+        self.assertIn('one line summary', html)
+        self.assertIn('trial text', html)
+        self.assertIn('<details id="step-more"', html)
+        self.assertLess(html.index('<details id="step-more"'), html.index('old data'))
+        self.assertNotIn('old problem', html)  # 4블록의 문제가 기존 문제 정의를 대신한다
+        self.assertNotIn('>bad<', html)
+        self.assertNotIn('>empty<', html)
+        legacy = self.client.get('/projects/half-story').text  # 해결 과정이 없으면 기존 서술 방식 유지
+        self.assertIn('legacy problem', legacy)
+        self.assertNotIn('step-more', legacy)
+
     def test_production_content_and_routes(self):
         app.config['DATA_DIR'] = self.original
         home = self.client.get('/')

@@ -338,3 +338,38 @@ main{padding-top:var(--header-h)}
 .career-split b{color:var(--color-heading);font-weight:700}
 .career-split span{padding-left:10px;border-left:3px solid var(--color-accent)}
 .career-split span.trade{border-left-color:var(--color-border)}
+
+/* AX 결과 지표 · 프로젝트 4블록(문제 → 해결 과정 → AI 적용 → 성과) */
+.ax-caption{margin-top:28px}
+.ax-grid .metric{border-left-color:var(--color-accent-deep)}
+.metrics-grid.ax-grid{grid-template-columns:minmax(0,1fr)}
+@media(min-width:640px){.metrics-grid.ax-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.story h2{display:flex;align-items:center;gap:10px}
+.story-no{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--color-accent);color:var(--color-heading);font-size:16px;font-weight:800;flex:none}
+.story-link,.story-check{padding:12px 16px;border-left:3px solid var(--color-accent);background:var(--color-surface);border-radius:var(--radius-sm);font-size:16px!important}
+.story-link b,.story-check b{display:block;font-size:13px;color:var(--color-muted);margin-bottom:2px}
+.story-steps{margin:16px 0 0;padding:0;list-style:none;counter-reset:st}
+.story-steps li{position:relative;padding:12px 0 12px 44px;border-top:1px solid var(--color-border);counter-increment:st;font-size:16px;line-height:1.7}
+.story-steps li:first-child{border-top:0}
+.story-steps li::before{content:counter(st);position:absolute;left:0;top:12px;width:28px;height:28px;display:grid;place-items:center;border-radius:50%;border:1.5px solid var(--color-accent-deep);color:var(--color-accent-ink);font-size:13px;font-weight:800}
+.story-trial{margin-top:16px;padding:14px 18px;border:1px dashed var(--color-accent-deep);border-radius:var(--radius-sm)}
+.story-trial b{font-size:14px;color:var(--color-accent-ink)}
+.story-trial p{margin-top:6px;font-size:16px;line-height:1.7}
+.ai-split{display:grid;gap:12px;margin-top:16px}
+.ai-split>div{padding:16px 18px;border:1px solid var(--color-border);border-radius:var(--radius-sm);background:var(--color-surface)}
+.ai-split h3{font-size:15px;margin-bottom:8px}
+.ai-split .ai-human{border-color:var(--color-accent-deep)}
+.ai-split ul,.story-result{margin:0;padding-left:18px;font-size:16px;line-height:1.7}
+@media(min-width:640px){.ai-split{grid-template-columns:1fr 1fr}}
+.story-check{margin-top:14px!important}
+.story-numbers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}
+.story-numbers div{display:flex;flex-direction:column;padding:14px 16px;border:1px solid var(--color-border);border-radius:var(--radius-sm);background:var(--color-surface)}
+.story-numbers dd{margin:0;font-size:clamp(24px,3vw,32px);font-weight:800;line-height:1.2;color:var(--color-heading);font-variant-numeric:tabular-nums}
+.story-numbers dt{order:2;margin-top:4px;font-size:14px;color:var(--color-muted);line-height:1.45}
+.story-more{margin:28px 0;border:1px solid var(--color-border);border-radius:var(--radius-sm);background:var(--color-surface)}
+.story-more summary{cursor:pointer;padding:16px 18px;font-weight:750;list-style-position:inside}
+.story-more summary span{display:block;font-size:13px;font-weight:500;color:var(--color-muted);margin-top:2px}
+.story-more .more-block{padding:4px 18px 16px;border-top:1px solid var(--color-border)}
+.story-more .more-block h3{font-size:16px;margin-top:14px}
+.story-more .more-block p{font-size:15px;line-height:1.7;margin-top:8px}
+.story-more .more-block p.step-note{font-size:13px;color:var(--color-muted);margin-top:2px}

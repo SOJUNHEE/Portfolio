@@ -31,7 +31,7 @@ def load_json(name, default):
 def get_profile():
     fallback = {'name': '소준희', 'english_name': 'SO JUN HEE',
                 'email': 'sojh90@naver.com', 'location': 'Seoul, Republic of Korea',
-                'metrics': [], 'competencies': [], 'skills': [], 'certifications': []}
+                'metrics': [], 'ax_highlights': [], 'competencies': [], 'skills': [], 'certifications': []}
     raw = load_json('profile.json', {})
     for key, value in raw.items():
         if key in fallback and not isinstance(value, type(fallback[key])):
@@ -44,7 +44,8 @@ def get_profile():
     fallback['competencies'] = [{'title': text(c.get('title')), 'subtitle': text(c.get('subtitle')), 'items': text_list(c.get('items')),
                                  'letter': text(c.get('letter')), 'learning': text_list(c.get('learning'))}
                                 for c in fallback['competencies'] if isinstance(c, dict)]
-    fallback['metrics'] = [{k: text(m.get(k)) for k in ('value', 'label', 'source')} for m in fallback['metrics'] if isinstance(m, dict)]
+    for key in ('metrics', 'ax_highlights'):
+        fallback[key] = [{k: text(m.get(k)) for k in ('value', 'label', 'source')} for m in fallback[key] if isinstance(m, dict)]
     fallback['certifications'] = text_list(fallback['certifications'])
     return fallback
 
@@ -112,8 +113,13 @@ def get_projects():
         item['title'] = item['title'] or '프로젝트'
         item['status'] = item['status'] or 'Project'
         for key in ('problem', 'objective', 'data', 'solution', 'architecture', 'features', 'tech_stack', 'result', 'future_improvement',
-                    'my_contribution', 'team_contribution'):
+                    'my_contribution', 'team_contribution',
+                    # 문제 → 해결 과정 → AI 적용 → 성과 4블록 (있으면 상세 페이지가 이 순서로 바뀌고 기존 항목은 '자세히 보기'로 접힘)
+                    'ax_problem', 'ax_link', 'ax_steps', 'ax_trial', 'ai_note', 'ai_tool', 'ai_human', 'ai_check', 'ax_result'):
             item[key] = text_list(raw.get(key))
+        item['ax_numbers'] = [{'value': n['value'].strip(), 'label': n['label'].strip()} for n in raw.get('ax_numbers', []) if isinstance(raw.get('ax_numbers'), list)
+                              and isinstance(n, dict) and isinstance(n.get('value'), str) and isinstance(n.get('label'), str) and n['value'].strip()]
+        item['has_story'] = bool(item['ax_problem'] and item['ax_steps'])
         # Optional display-only summaries; older entries without them fall back to existing fields.
         for key, default in (('card_summary', item['description']), ('card_label', item['program']),
                              ('card_role', item['role'] if len(item['role']) <= 80 else '')):
