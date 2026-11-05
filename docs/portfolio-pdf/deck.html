@@ -3,24 +3,26 @@
 <head>
 <meta charset="utf-8">
 <title>소준희 포트폴리오</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/gothic-a1@5.2.8/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/gothic-a1@5.2.8/500.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/gothic-a1@5.2.8/700.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/gothic-a1@5.2.8/800.css">
 <style>
   /* 13페이지 PDF 원본 — python docs/portfolio-pdf/build_pdf.py 로 출력 (1280×720px = 960×540pt)
-     색상: 기존 네이비·화이트 유지, 강조색을 민트 → 골드로 변경. 골드 글자는 네이비 배경에서만, 밝은 배경에서는 --ink 사용 */
+     색상: 사이트와 같은 슬레이트 + 딥틸. --gold는 이름만 남은 주 강조색(딥틸), 어두운 배경 위 글자는 --on-dark, 밝은 배경 위 강조 글자는 --ink */
   @page { size: 1280px 720px; margin: 0; }
   :root {
-    --navy: #13293D; --navy-2: #1B3550; --line-dark: #2A4560;
-    --gold: #FDBF57; --gold-soft: #F4B955; --gold-deep: #D4A14C; --ink: #7A5A12; --wash: #FFF4DE;
-    --bg: #F5F6F8; --card: #FFFFFF; --line: #E2E5EA; --text: #343B45; --head: #13293D; --mute: #66707C;
+    --navy: #193342; --navy-2: #22414F; --line-dark: #2A4757;
+    --gold: #0B7067; --gold-soft: #095F57; --gold-deep: #0B655B; --ink: #0B655B; --wash: #E6F3F0; --on-dark: #7FD1C3;
+    --bg: #F6F8F8; --card: #FFFFFF; --line: #DCE4E5; --text: #2D3C44; --head: #193342; --mute: #536671;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { background: #fff; font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif; color: var(--text); word-break: keep-all; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html, body { background: #fff; font-family: 'Gothic A1', 'Malgun Gothic', sans-serif; color: var(--text); word-break: keep-all; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .page { width: 1280px; height: 720px; position: relative; overflow: hidden; background: var(--bg); padding: 46px 56px 0; page-break-after: always; break-after: page; }
   .page:last-child { page-break-after: auto; break-after: auto; }
   .page.dark { background: var(--navy); color: #E6EBF0; }
   .eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .18em; color: var(--ink); }
-  .dark .eyebrow { color: var(--gold); }
+  .dark .eyebrow { color: var(--on-dark); }
   h1.t { font-size: 31px; font-weight: 800; color: var(--head); letter-spacing: -.02em; margin-top: 6px; line-height: 1.3; }
   .sub { margin-top: 8px; font-size: 14px; color: var(--mute); }
   .foot { position: absolute; left: 56px; right: 56px; bottom: 22px; display: flex; justify-content: space-between; font-size: 12px; color: var(--mute); }
@@ -47,7 +49,7 @@
   .cover .ring { position: absolute; border: 1px solid #22405E; border-radius: 50%; }
   .cover .main { position: absolute; left: 56px; top: 180px; width: 860px; }
   .cover h1 { margin-top: 18px; font-size: 56px; line-height: 1.28; font-weight: 800; color: #fff; letter-spacing: -.025em; }
-  .cover h1 em { font-style: normal; color: var(--gold); }
+  .cover h1 em { font-style: normal; color: var(--on-dark); }
   .cover p.lead { margin-top: 26px; font-size: 17px; line-height: 1.75; color: #C8D3DE; width: 720px; }
   .cover .bottom { position: absolute; left: 56px; right: 56px; bottom: 40px; border-top: 1px solid var(--line-dark); padding-top: 20px; display: flex; justify-content: space-between; font-size: 14px; color: #C8D3DE; }
   .cover .bottom span { margin-right: 26px; }
@@ -74,7 +76,7 @@
   .edu b { color: var(--ink); margin-right: 18px; }
   .comp { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .comp .card { padding: 16px 18px 14px; }
-  .comp .lt { display: inline-flex; width: 24px; height: 24px; border-radius: 6px; background: var(--gold); color: #1C1C1C; font-size: 12px; font-weight: 800; align-items: center; justify-content: center; margin-right: 8px; vertical-align: 1px; }
+  .comp .lt { display: inline-flex; width: 24px; height: 24px; border-radius: 6px; background: var(--gold); color: #FFFFFF; font-size: 12px; font-weight: 800; align-items: center; justify-content: center; margin-right: 8px; vertical-align: 1px; }
   .comp h3 { display: inline; font-size: 16px; color: var(--head); }
   .comp .en { display: block; margin-top: 6px; font-size: 10.5px; font-weight: 700; letter-spacing: .12em; color: var(--ink); }
   .comp ul { margin-top: 6px; }
@@ -114,7 +116,7 @@
   .ach { display: grid; gap: 8px; margin-top: 6px; }
   .ach.c3 { grid-template-columns: repeat(3, 1fr); }
   .ach.c4 { grid-template-columns: repeat(4, 1fr); }
-  .ach div { background: var(--wash); border: 1px solid #F1D9A6; border-radius: 8px; padding: 10px 11px; min-height: 76px; }
+  .ach div { background: var(--wash); border: 1px solid #BFE0D8; border-radius: 8px; padding: 10px 11px; min-height: 76px; }
   .ach b { display: block; font-size: 19px; color: var(--head); letter-spacing: -.01em; }
   .ach span { display: block; font-size: 11.5px; color: var(--text); margin-top: 2px; line-height: 1.45; }
   .co ul.dots { margin-top: 6px; }
@@ -136,7 +138,7 @@
   .p7 .prob li { font-size: 12.8px; }
   .steps { display: grid; gap: 12px; }
   .step { display: grid; grid-template-columns: 30px 1fr; gap: 10px; }
-  .step .no { width: 28px; height: 28px; border-radius: 8px; background: var(--navy); color: var(--gold); font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+  .step .no { width: 28px; height: 28px; border-radius: 8px; background: var(--navy); color: var(--on-dark); font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; }
   .step h4 { font-size: 14.5px; color: var(--head); }
   .step p { font-size: 12.3px; line-height: 1.6; color: var(--text); margin-top: 2px; }
   .vbox { padding: 14px 16px; border-radius: 10px; }
@@ -145,7 +147,7 @@
   .vbox.no { background: #EEF1F4; }
   .vbox li { font-size: 12px; }
   .disc { margin-top: 10px; padding: 10px 14px; border-radius: 8px; background: var(--navy); color: #E6EBF0; font-size: 12px; line-height: 1.6; }
-  .disc b { color: var(--gold); }
+  .disc b { color: var(--on-dark); }
   .feat { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 18px; }
   .feat li { font-size: 12.3px; }
 
@@ -188,7 +190,7 @@
   .jr h4 { font-size: 15px; color: var(--head); margin-top: 3px; }
   .jr p { font-size: 12.5px; color: var(--mute); margin-top: 2px; }
   .jr .card.dk { background: var(--navy); border-color: var(--navy); }
-  .jr .card.dk small { color: var(--gold); }
+  .jr .card.dk small { color: var(--on-dark); }
   .jr .card.dk h4 { color: #fff; }
   .jr .card.dk p { color: #B7C4D1; }
 
@@ -196,10 +198,10 @@
   .contact .main { position: absolute; left: 56px; top: 150px; }
   .contact .eyebrow { letter-spacing: .1em; font-size: 15px; }
   .contact h1 { font-size: 46px; line-height: 1.35; font-weight: 800; color: #fff; margin-top: 18px; letter-spacing: -.02em; }
-  .contact h1 em { font-style: normal; color: var(--gold); }
+  .contact h1 em { font-style: normal; color: var(--on-dark); }
   .contact p { margin-top: 22px; font-size: 16px; color: #C8D3DE; }
   .contact .info { margin-top: 40px; display: flex; gap: 60px; }
-  .contact .info small { display: block; font-size: 12px; letter-spacing: .2em; font-weight: 700; color: var(--gold); }
+  .contact .info small { display: block; font-size: 12px; letter-spacing: .2em; font-weight: 700; color: var(--on-dark); }
   .contact .info a, .contact .info span { font-size: 17px; color: #fff; display: block; margin-top: 6px; }
 </style>
 </head>
@@ -448,7 +450,7 @@
       <h4 style="font-size:13px;color:var(--ink)">데이터 파이프라인 → 분석 → 화면</h4>
       <div class="pipe"><div class="s">공공데이터 수집<small>UN Comtrade · 관세청 · ECOS · KOTRA · WTO · FRED</small></div><div class="ar">→</div><div class="s">가공 · 검증<small>출처·해시 MANIFEST.csv</small></div><div class="ar">→</div><div class="s d">분석 엔진 통합<small>5개 영역</small></div><div class="ar">→</div><div class="s">대시보드 연결<small>업로드 · 탭 · 출처 표시</small></div></div>
       <h4 style="font-size:13px;color:var(--ink);margin-top:16px">시연용 종합 채점 산식 (가중치 조정 · 합계 100% 검증)</h4>
-      <div class="wbar"><div style="flex:35;background:#13293D">시장성 35</div><div style="flex:30;background:#2D4A66">가격 30</div><div style="flex:20;background:#4A6683">물류 20</div><div style="flex:15;background:#D4A14C;color:#1C1C1C">안정성 15</div></div>
+      <div class="wbar"><div style="flex:35;background:#193342">시장성 35</div><div style="flex:30;background:#2D4A66">가격 30</div><div style="flex:20;background:#4A6683">물류 20</div><div style="flex:15;background:#0B7067;color:#FFFFFF">안정성 15</div></div>
       <p class="cap">규제는 가중치 대신 감점형 관문으로 반영 · 안정성은 결제통화 환율 변동성과 과거 10년 분포를 비교</p>
       <ul class="dots" style="margin-top:12px">
         <li>Supabase 회원가입·로그인·세션 관리와 사용자별 작업 폴더 워크스페이스 백엔드 직접 구현</li>
