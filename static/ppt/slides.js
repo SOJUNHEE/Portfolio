@@ -78,7 +78,7 @@ window.DECK = {
       p: 2, type: 'summary', part: '한 줄 요약',
       kicker: '6인 팀 프로젝트 · 팀장 · 무역 AX 2기 · 대시보드 + 브랜드 홈페이지',
       title: '광고 문구 검토 시간을\n4분 30초에서 1분으로 줄였습니다',
-      meta: [['역할', '팀장 · 광고 심의·고객 응대(CS) 탭 담당'], ['기간', '2026.10.23 ~ 11.03'], ['도구', 'Python·Flask · Claude API · Claude Code']],
+      meta: [['역할', '팀장 · 광고 심의·고객 응대(CS) 탭 담당'], ['기간', '2026.10.21 ~ 10.28'], ['도구', 'Python·Flask · Claude API · Claude Code']],
       note: '본인 1회 측정 · 알디콤을 모티브로 한 가상 브랜드',
       image: { src: 'img/reboot-compliance.png', caption: '광고 문구 심의 — 걸린 표현과 바꿔 쓸 방향 (시연판)' },
       notes: '알디콤을 모티브로 팀이 만든 가상 숙취 해소 브랜드 REBOOT의 미국 마케팅 대시보드. 6명 중 팀장이었고 광고 심의와 고객 응대 탭을 맡았습니다. 시간은 본인이 사용자로서 1회 잰 값입니다.'
