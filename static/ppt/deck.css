@@ -256,3 +256,9 @@ html.export-wide .slide, html.export-tall .slide { break-after: page; }
 .tall .s-flow-b, .tall .s-step-b, .tall .s-role ul, .tall .s-trial li, .tall .s-stat-l, .tall .s-more, .tall .s-big-l, .tall .s-side-b, .tall .s-quote, .tall .s-answer, .tall .s-verify, .tall .s-meta { font-size: calc(var(--b) * .96); }
 /* 태블릿 세로: 4:5 슬라이드 폭을 600px로 제한 (글자가 지나치게 커지지 않게) */
 html[data-layout="tall"] .v-track .sf { width: min(100%, 600px); }
+/* 원본 비율을 지켜야 하는 화면 (Excel 재현본 등) */
+.s-fig.contain .s-zoom img { object-fit: contain; object-position: center; background: #fff; }
+/* '실제로 쓴 곳' 줄: 막힘 색을 쓰지 않음 */
+.s-trial.uses li, .s-trial.uses .tr-1, .s-trial.uses .tr-2 { background: var(--wash); color: var(--text); }
+.s-trial.uses li .s-chip { color: #fff; background: var(--accent); }
+.s-lower > :only-child { grid-column: 1 / -1; }

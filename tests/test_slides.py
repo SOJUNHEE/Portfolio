@@ -22,9 +22,11 @@ class SlideNumbersTest(unittest.TestCase):
         bigs = re.findall(r"big:\s*\{\s*value:\s*'([^']+)'", self.js)
         return stats + bigs
 
-    def test_fifteen_slides_three_projects(self):
-        self.assertEqual(len(re.findall(r"\btype:\s*'", self.js)), 15)
-        for p in (1, 2, 3):
+    def test_five_slides_per_project(self):
+        projects = len(re.findall(r"\{\s*no:\s*\d+,\s*name:", self.js))
+        self.assertGreaterEqual(projects, 3)
+        self.assertEqual(len(re.findall(r"\btype:\s*'", self.js)), projects * 5)
+        for p in range(1, projects + 1):
             self.assertEqual(len(re.findall(r'\{\s*\n\s*p:\s*%d,' % p, self.js)), 5, p)
 
     def test_numbers_match_site(self):
@@ -36,7 +38,7 @@ class SlideNumbersTest(unittest.TestCase):
             self.assertIn(squash(v), self.site, f'슬라이드 숫자 "{v}"가 사이트 데이터에 없음')
 
     def test_conditions_kept(self):
-        for phrase in ('가상 데이터', '본인 1회 측정', '로컬 측정', '팀 결과'):
+        for phrase in ('가상 데이터', '본인 1회 측정', '로컬 측정', '팀 결과', '비공개'):
             self.assertIn(phrase, self.js, phrase)
 
 

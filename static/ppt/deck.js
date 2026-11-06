@@ -23,7 +23,7 @@
   function titleFor(s, layout) { return layout === 'tall' ? s.title.split('\n').join(' ') : s.title; }
 
   function figure(img, opts) {
-    var f = el('figure', 's-fig' + (opts && opts.compact ? ' compact' : ''));
+    var f = el('figure', 's-fig' + (opts && opts.compact ? ' compact' : '') + (img.fit === 'contain' ? ' contain' : ''));
     var b = el('button', 's-zoom');
     b.type = 'button';
     b.setAttribute('data-zoom', img.src);
@@ -85,8 +85,9 @@
         add(li, el('span', 's-num', String(i + 1)), el('p', 's-step-h', st[0]), el('p', 's-step-b', st[1]));
         steps.appendChild(li);
       });
-      var trial = el('ol', 's-trial');
-      ['시도', '막힘', '바꾼 방법'].forEach(function (label, i) {
+      var uses = !!s.trialLabels;   // 시도·막힘·바꾼 방법 대신 '실제로 쓴 곳'을 보여 주는 장
+      var trial = el('ol', 's-trial' + (uses ? ' uses' : ''));
+      (s.trialLabels || ['시도', '막힘', '바꾼 방법']).forEach(function (label, i) {
         var li = el('li', 'tr-' + i);
         add(li, el('span', 's-chip', label), el('p', null, s.trial[i]));
         trial.appendChild(li);
