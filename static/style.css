@@ -376,3 +376,6 @@ main{padding-top:var(--header-h)}
 .story-more .more-block h3{font-size:16px;margin-top:14px}
 .story-more .more-block p{font-size:15px;line-height:1.7;margin-top:8px}
 .story-more .more-block p.step-note{font-size:13px;color:var(--color-muted);margin-top:2px}
+/* 가로로 긴 화면(Excel 재현본 등): 잘라내지 않고 전체를 보여 줌 */
+.project-preview.fit-contain,.detail-preview.fit-contain{background:var(--color-bg);padding:14px}
+.project-preview.fit-contain img,.detail-preview.fit-contain img{object-fit:contain;object-position:center}

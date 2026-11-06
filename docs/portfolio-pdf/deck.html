@@ -8,7 +8,8 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/gothic-a1@5.2.8/700.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/gothic-a1@5.2.8/800.css">
 <style>
-  /* 13페이지 PDF 원본 — python docs/portfolio-pdf/build_pdf.py 로 출력 (1280×720px = 960×540pt)
+  /* 13페이지 PDF 원본 — python docs/portfolio-pdf/build_pdf.py 로 출력 (1280×720px = 960×540pt, 1px = 0.75pt)
+     프로젝트 순서는 사이트와 같다: 07 Excel(실무) → 08·09 다품종 3PL → 10 AXPORT → 11 REBOOT
      색상: 사이트와 같은 슬레이트 + 딥틸. --gold는 이름만 남은 주 강조색(딥틸), 어두운 배경 위 글자는 --on-dark, 밝은 배경 위 강조 글자는 --ink */
   @page { size: 1280px 720px; margin: 0; }
   :root {
@@ -203,6 +204,84 @@
   .contact .info { margin-top: 40px; display: flex; gap: 60px; }
   .contact .info small { display: block; font-size: 12px; letter-spacing: .2em; font-weight: 700; color: var(--on-dark); }
   .contact .info a, .contact .info span { font-size: 17px; color: #fff; display: block; margin-top: 6px; }
+
+  /* ===== 2차 보정 (2026-11-06): 본문 14px(10.5pt) 이상, 표·보조 13px(9.75pt) 이상 ===== */
+  .eyebrow { font-size: 14px; }
+  .sub { font-size: 15px; }
+  .foot { font-size: 13px; bottom: 18px; }
+  .tag { font-size: 13px; }
+  .cap { font-size: 13px; line-height: 1.5; }
+  ul.dots li { font-size: 14.5px; line-height: 1.6; }
+  .links a { font-size: 15px; }
+  .k .l { font-size: 16px; }
+  .k .s { font-size: 14px; }
+  .note { font-size: 14px; }
+  .edu { font-size: 14.5px; }
+  .comp ul.dots li { font-size: 14px; line-height: 1.55; }
+  .comp .en { font-size: 13px; }
+  .comp .lt { font-size: 13px; }
+  .contact .info small { font-size: 13px; }
+  .comp .learn { font-size: 13.5px; }
+  .tl .p { font-size: 13.5px; }
+  .tl .pos { font-size: 14px; }
+  .tl .env { font-size: 13.5px; height: 40px; }
+  .tl .focus { font-size: 14px; height: 66px; }
+  .tl .sc span { font-size: 13.5px; }
+  .band { font-size: 14.5px; }
+  .co .meta, .co .fc, .co .scale { font-size: 14px; }
+  .co .lbl { font-size: 13.5px; }
+  .ach b { font-size: 20px; }
+  .ach span { font-size: 13px; }
+  .ach div { min-height: 70px; }
+  .co ul.dots li { font-size: 14px; line-height: 1.6; }
+  .co .story { font-size: 14px; line-height: 1.6; }
+  .srow .st { font-size: 13px; }
+  .jr small { font-size: 13px; }
+  .jr p { font-size: 14px; }
+
+  /* 프로젝트 쪽 (07~11) 공통 */
+  .pj { display: grid; grid-template-columns: 1fr 1.1fr; gap: 30px; margin-top: 6px; }
+  .pj h1.big { font-size: 34px; font-weight: 800; color: var(--head); letter-spacing: -.02em; margin-top: 6px; line-height: 1.25; }
+  .pj h1.big .kr-in { display: block; font-size: 18px; color: var(--ink); margin-top: 4px; letter-spacing: 0; }
+  .pj .kr { font-size: 18px; font-weight: 700; color: var(--ink); margin-top: 4px; }
+  .pj .desc { margin-top: 10px; font-size: 15px; line-height: 1.65; }
+  .pj dl { margin-top: 10px; display: grid; grid-template-columns: 40px 1fr; gap: 5px 10px; font-size: 14.5px; line-height: 1.5; }
+  .pj dt { font-weight: 700; color: var(--ink); }
+  .pj dd .tag { margin-bottom: 3px; }
+  .prob { margin-top: 10px; }
+  .prob h4 { font-size: 15px; color: var(--head); margin-bottom: 3px; }
+  .disc { margin-top: 12px; padding: 10px 14px; border-radius: 8px; background: var(--navy); color: #E6EBF0; font-size: 14px; line-height: 1.55; }
+  .disc b { color: var(--on-dark); }
+  .shot-box { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+  .shot-box img { display: block; width: 100%; height: 250px; object-fit: contain; }
+  .nums { display: grid; gap: 8px; margin-top: 10px; }
+  .nums.n4 { grid-template-columns: .8fr .8fr .8fr 1.3fr; }
+  .nums.n3 { grid-template-columns: repeat(3, 1fr); }
+  .nums.n2 { grid-template-columns: 1.25fr 1fr; }
+  .nums div { background: #fff; border: 1px solid var(--line); border-top: 3px solid var(--gold); border-radius: 8px; padding: 9px 12px; }
+  .nums b { display: block; font-size: 24px; font-weight: 800; color: var(--head); letter-spacing: -.02em; line-height: 1.2; }
+  .nums span { display: block; font-size: 14px; color: var(--text); margin-top: 2px; }
+  .nums em { display: inline-block; font-style: normal; font-size: 13px; font-weight: 700; color: var(--ink); background: var(--wash); border-radius: 5px; padding: 1px 7px; margin-top: 4px; line-height: 1.4; }
+  .steps.tight { margin-top: 12px; gap: 8px; }
+  .step h4 { font-size: 15px; }
+  .step p { font-size: 14px; line-height: 1.5; }
+  .vbox h4 { font-size: 15px; }
+  .vbox li { font-size: 14px; }
+  .roles { margin-top: 12px; gap: 10px; }
+  .roles .card { padding: 11px 14px; }
+  .roles h4 { font-size: 14.5px; }
+  .roles li { font-size: 14px; line-height: 1.5; }
+  .num { padding: 12px 16px; }
+  .num .nl { font-size: 14px; font-weight: 700; color: var(--ink); margin: 0; }
+  .num .big { font-size: 32px; }
+  .num .big small { font-size: 14px; font-weight: 700; color: var(--ink); background: var(--wash); border-radius: 5px; padding: 1px 7px; vertical-align: middle; }
+  .num p { font-size: 14px; line-height: 1.5; }
+  .fda { margin-top: 10px; padding: 10px 14px; font-size: 14px; line-height: 1.55; border-left: 4px solid var(--gold); }
+  .fda b { color: var(--head); margin-right: 6px; }
+  .fda .src { display: block; margin-top: 4px; font-size: 13px; color: var(--mute); }
+  .fda .src a { color: var(--ink); text-decoration: underline; }
+  .co { height: 534px; }
+  .pj img.shot { height: 210px; object-fit: cover; object-position: top left; }
 </style>
 </head>
 <body>
@@ -334,133 +413,159 @@
   <div class="foot"><span><b>SO JUN HEE</b> · Portfolio</span><span>06</span></div>
 </section>
 
-<!-- 07 PROJECT 01 — OVERVIEW -->
+<!-- 07 PROJECT 01 — EXCEL (실무) -->
 <section class="page">
-  <p class="eyebrow">03 / PROJECT 01 · 개인 프로젝트</p>
-  <div class="p7">
+  <p class="eyebrow">03 / PROJECT 01 · 실무 · 회사 업무 (직접 제작)</p>
+  <div class="pj">
     <div>
-      <h1 class="big">다품종 3PL 운영 대시보드</h1>
-      <p class="kr">다화주 풀필먼트 센터 — 입고부터 정산까지</p>
-      <p class="desc">화장품·식품·의류·생활가전·선물상품 5개 상품군의 화주사를 한 센터에서 운영하는 3PL을 가정하고, 입고·검수·재고·피킹·패킹·출고·반품·인력·정산을 한곳에서 확인하도록 만든 운영 대시보드입니다. 물류센터 운영 경험을 바탕으로 기준을 정하고 가상 데이터로 구현했습니다.</p>
+      <h1 class="big">Excel 월 운영 매출 대시보드</h1>
+      <p class="kr">화주 10곳의 보관·입고·출고 매출을 한 화면에</p>
+      <p class="desc">두잇로지스 재직 중 인터지스 남동센터의 월 운영 자료로 처음부터 직접 만든 회사 업무용 대시보드입니다. 월 운영 보고, 화주별 현황 확인, 화주사별 정산과 월 마감 대조에 실제로 썼습니다.</p>
       <dl>
-        <dt>기간</dt><dd>2026.10.30 ~ 11.05 · 이전 Fashion 3PL 대시보드를 대체</dd>
-        <dt>역할</dt><dd>운영 기준·화면 요구사항 정의, 결과 검토 (개인) · 구현에 AI 코딩 도구(Claude Code) 활용</dd>
-        <dt>범위</dt><dd>10개 화면 · 상품군 5개(가상 화주사 5곳) · 49개 품목 · 181일 가상 운영 데이터</dd>
-        <dt>기술</dt><dd><span class="tag">HTML/CSS</span><span class="tag">Vanilla JavaScript</span><span class="tag">Chart.js</span><span class="tag">CSV</span><span class="tag">Node.js·Playwright 점검</span></dd>
+        <dt>기간</dt><dd>2024년 1~3월 (원본 파일 기록 기준)</dd>
+        <dt>역할</dt><dd>데이터 시트 구성부터 피벗·함수·차트·슬라이서까지 직접 설계·제작</dd>
+        <dt>도구</dt><dd><span class="tag">피벗테이블</span><span class="tag">슬라이서</span><span class="tag">차트</span><span class="tag">SUM · AVERAGEIF · ROUND · IFERROR</span><span class="tag">GETPIVOTDATA</span></dd>
       </dl>
       <div class="prob"><h4>문제 정의</h4><ul class="dots">
-        <li>상품군마다 검수 항목·보관 조건·출고 순서(FEFO/FIFO)·세트 구성·반품 판정이 달라 하나의 표로 판단하기 어렵다.</li>
-        <li>실사 차이·오출고·반품 적체의 원인이 입고·재고·출고 자료에 흩어져 있다.</li>
-        <li>월말 정산 초안에 취소 송장·센터 귀책 재출고·단가 오류가 섞여도 수작업 대조로는 놓치기 쉽다.</li></ul></div>
+        <li>월간 물동량·화주별 매출 시트를 하나씩 열어 합계와 비교를 손으로 계산</li>
+        <li>보고서를 쓸 때마다 표와 차트를 새로 만듦</li>
+        <li>일자·화주·기간별로 따로 비교하지 않으면 현황이 보이지 않음</li></ul></div>
+      <p class="disc"><b>원본은 실제 화주사 이름과 매출이 담긴 회사 자료라 공개하지 않습니다.</b> 오른쪽 화면은 화주·날짜·금액을 모두 가상으로 바꿔 같은 구성으로 다시 만든 재현 예시입니다.</p>
     </div>
     <div>
-      <img class="shot" src="img/p7-overview.png" alt="종합 풀필먼트 현황 화면">
-      <p class="cap">종합 풀필먼트 현황 — 센터 공통 지표 6개와 상품군 비교 (가상 데이터)</p>
-      <p class="links" style="margin-top:14px"><a href="https://portfolio-sojunhee.vercel.app/demo/scm-dashboard/">Live Demo ↗</a><a href="https://portfolio-sojunhee.vercel.app/projects/scm-operations-dashboard">상세 보기 ↗</a></p>
-      <p class="cap" style="margin-top:10px">실제 경력 연결: 생활용품·소형가전은 제이아이로지스 다품종 소형가전 3PL 센터, 식품은 젠미코리아 수입식품 통관·출고 데이터 경력. 나머지 상품군 운영 사례는 시뮬레이션이며 모든 상품군에서 근무했다는 뜻이 아닙니다.</p>
+      <div class="shot-box"><img src="../../static/ppt/img/excel-sample.png" alt="Excel 월 운영 매출 대시보드 재현 예시"></div>
+      <p class="cap">재현 예시 (가상 데이터 · SAMPLE DATA) — 일자·월·분기별 매출, 화주별 총매출, 매출 비중, 전월대비 증감률, 조건 슬라이서</p>
+      <div class="nums n4">
+        <div><b>5개</b><span>피벗테이블</span><em>원본 구성</em></div>
+        <div><b>8개</b><span>슬라이서</span><em>원본 구성</em></div>
+        <div><b>10곳</b><span>화주 매출</span><em>실제 회사 자료</em></div>
+        <div><b>7일 → 3일</b><span>월 마감 소요일</span><em>두잇로지스 실제 경력 · 여러 개선의 결과</em></div>
+      </div>
+      <p class="cap">월 마감 단축은 여러 업무 개선이 함께 만든 결과이며, 이 대시보드는 그 과정에서 정산·마감 대조에 쓴 도구입니다. 대시보드만의 효과는 따로 측정하지 않았습니다.</p>
+      <p class="links" style="margin-top:10px"><a href="https://sojunhee-logistics-data.vercel.app/#excel">재현 예시 파일 ↗</a><a href="https://portfolio-sojunhee.vercel.app/projects/excel-sales-dashboard">상세 보기 ↗</a></p>
     </div>
   </div>
   <div class="foot"><span><b>SO JUN HEE</b> · Portfolio</span><span>07</span></div>
 </section>
 
-<!-- 08 PROJECT 01 — SOLUTION -->
+<!-- 08 PROJECT 02 — 다품종 3PL 개요·해결 방법 -->
 <section class="page">
-  <p class="eyebrow">03 / PROJECT 01 · 해결 방법</p>
-  <h1 class="t">상품군마다 다른 기준을, 하나의 현장 흐름 안에서</h1>
-  <div style="display:grid;grid-template-columns:1.05fr 1fr;gap:28px;margin-top:16px">
+  <p class="eyebrow">03 / PROJECT 02 · 개인 프로젝트 · 가상 데이터</p>
+  <div class="pj">
     <div>
-      <img class="shot" src="img/p8-kpis.png" alt="센터 공통 지표 6개">
-      <p class="cap">센터 공통 지표 6개 — 기준이 다른 지표(소비기한·옵션·세트)는 합산하지 않음 (가상 데이터)</p>
-      <div class="card" style="margin-top:10px;padding:12px 16px"><h4 style="font-size:13px;color:var(--head)">가상 데이터 설계</h4><p style="font-size:12.3px;line-height:1.65;margin-top:3px">시드 고정 난수로 2026.05.01 ~ 10.28 (181일) — 주문 <b>41,213건</b>, 입고 278건, 로트 368개. 하루 단위로 입고·검수 → 실사 → 피킹·송장 → 검수·포장 → 출고 확정 → 반품 → 발주를 계산하고, 로트마다 실물과 전산 재고를 따로 기록했습니다. 행사 집중·수입 입고 지연·전산 누락·신규 작업자 오출고 등 시나리오 8개를 넣었습니다.</p></div>
+      <h1 class="big">다품종 3PL 운영 대시보드</h1>
+      <p class="kr">다화주 풀필먼트 센터 — 입고부터 정산까지</p>
+      <p class="desc">화장품·식품·의류·생활가전·선물 5개 상품군 화주사를 한 센터에서 운영하는 3PL을 가정하고, 입고부터 정산까지 한곳에서 확인하도록 만든 대시보드입니다. 물류센터 운영 경험으로 기준을 정하고 가상 데이터로 구현했습니다.</p>
+      <dl>
+        <dt>기간</dt><dd>2026.10.30 ~ 11.05 (개인)</dd>
+        <dt>역할</dt><dd>운영 기준·화면 요구사항 정의, 결과 검토 · 구현에 AI 코딩 도구(Claude Code) 활용</dd>
+        <dt>범위</dt><dd>화면 10개 · 상품군 5개 · 49개 품목 · 181일 가상 운영 데이터 (주문 41,213건)</dd>
+        <dt>기술</dt><dd><span class="tag">JavaScript</span><span class="tag">Chart.js</span><span class="tag">CSV</span><span class="tag">Node.js · Playwright 점검</span></dd>
+      </dl>
+      <div class="prob"><h4>문제 정의</h4><ul class="dots">
+        <li>상품군마다 검수·보관·출고 순서(FEFO/FIFO)·반품 기준이 달라 한 표로 판단하기 어렵다</li>
+        <li>실사 차이·오출고의 원인이 입고·재고·출고 자료에 흩어져 있다</li>
+        <li>정산 초안에 취소 송장·센터 귀책 재출고·단가 오류가 섞여도 수작업 대조로는 놓치기 쉽다</li></ul></div>
     </div>
-    <div class="steps">
-      <div class="step"><span class="no">1</span><div><h4>상품군별 운영 기준 데이터화</h4><p>검수 항목 · 보관 조건 · 출고 배정 규칙(FEFO/FIFO) · 세트 구성(BOM) · 반품 판정을 상품군 설정 한 곳에서 관리. 상품군을 고르면 모든 화면이 그 기준으로 바뀜</p></div></div>
-      <div class="step"><span class="no">2</span><div><h4>로트 단위 실물·전산 재고</h4><p>실물(판매 가능·격리)과 전산을 따로 기록하고 어긋난 사건(전산 누락·파손)을 남겨 실사 차이를 원인까지 추적</p></div></div>
-      <div class="step"><span class="no">3</span><div><h4>공정별 처리량(UPH)으로 인력 계산</h4><p>패킹 능력을 넘긴 주문은 다음 날 출고 → 행사 기간 병목이 당일 출고율과 연장·임시 인력에 나타남</p></div></div>
-      <div class="step"><span class="no">4</span><div><h4>정산 대조 5단계</h4><p>실적 재계산 → 초안 비교 → 차이 → 원인 → 수정 근거. 원인은 송장 취소·재출고 귀책·계약 단가 기록으로 판정</p></div></div>
-      <img class="shot" src="img/p8-settle.png" alt="정산 대조 5단계" style="margin-top:2px">
+    <div>
+      <img class="shot" src="img/p7-overview.png" alt="종합 풀필먼트 현황 화면" style="height:290px">
+      <p class="cap">종합 풀필먼트 현황 — 센터 공통 지표 6개와 상품군 비교 (가상 데이터)</p>
+      <div class="steps tight">
+        <div class="step"><span class="no">1</span><div><h4>상품군별 기준을 설정 한 곳에서</h4><p>검수 · 보관 · FEFO/FIFO · 세트(BOM) · 반품 판정</p></div></div>
+        <div class="step"><span class="no">2</span><div><h4>로트 단위 실물·전산 재고</h4><p>어긋난 사건을 남겨 실사 차이를 원인까지 추적</p></div></div>
+        <div class="step"><span class="no">3</span><div><h4>공정별 처리량(UPH)으로 인력 계산</h4><p>패킹 능력을 넘긴 주문은 다음 날 출고 → 행사 기간 병목 확인</p></div></div>
+        <div class="step"><span class="no">4</span><div><h4>정산 대조 5단계</h4><p>실적 재계산 → 초안 비교 → 차이 → 원인 → 근거</p></div></div>
+      </div>
     </div>
   </div>
-  <div class="foot"><span><b>SO JUN HEE</b> · Portfolio</span><span>08</span></div>
+  <div class="foot"><span><b>SO JUN HEE</b> · Portfolio &nbsp;·&nbsp; 실제 경력 연결: 다품종 소형가전 3PL(제이아이로지스) · 화주사 정산 마감(두잇로지스). 특정 회사의 실제 데이터는 쓰지 않았습니다.</span><span>08</span></div>
 </section>
 
-<!-- 09 PROJECT 01 — FEATURES & VERIFICATION -->
+<!-- 09 PROJECT 02 — 검증 -->
 <section class="page">
-  <p class="eyebrow">03 / PROJECT 01 · 주요 기능과 검증</p>
+  <p class="eyebrow">03 / PROJECT 02 · 검증 결과 (가상 데이터 기반 테스트)</p>
   <h1 class="t">청구 오류를 실적으로 찾아내고, 계산은 자동 점검으로 확인</h1>
-  <div style="display:grid;grid-template-columns:1.12fr 1fr;gap:26px;margin-top:14px">
+  <div style="display:grid;grid-template-columns:1.08fr 1fr;gap:26px;margin-top:14px">
     <div>
       <img class="shot" src="img/p9-settle.png" alt="정산 차이 항목과 판정 근거">
       <p class="cap">물류비·정산 대조 — 차이 항목, 원인, 판정 근거 (가상 데이터)</p>
-      <img class="shot" src="img/p9-labor.png" alt="일별 패킹 처리와 능력" style="margin-top:8px">
-      <p class="cap">인력·생산성 — 일별 패킹 처리량과 패킹 능력 (가상 데이터)</p>
+      <div class="nums n3" style="margin-top:12px">
+        <div><b>5 / 5</b><span>일부러 넣은 정산 오류 탐지</span><em>가상 데이터 기반 테스트</em></div>
+        <div><b>447,538</b><span>계산 점검 항목 통과</span><em>가상 데이터 자동 점검</em></div>
+        <div><b>0건</b><span>화면 120개 조합 오류</span><em>브라우저 자동 점검</em></div>
+      </div>
     </div>
     <div>
-      <h4 style="font-size:13.5px;color:var(--head);margin-bottom:4px">주요 기능 (10개 화면)</h4>
-      <ul class="dots feat">
-        <li>종합 풀필먼트 현황</li><li>입고·검수·적치</li><li>재고·로케이션·실사</li><li>피킹·패킹·출고</li>
-        <li>인력·생산성</li><li>반품 · 출고 이슈</li><li>물류비·정산 대조</li><li>상품군별 현장 기준</li></ul>
-      <div class="vbox ok" style="margin-top:12px"><h4>검증한 것 (2026-11-05 실행)</h4><ul class="dots">
+      <div class="vbox ok"><h4>검증한 것 (2026-11-05 실행)</h4><ul class="dots">
         <li>정산 대조가 일부러 넣은 오류 <b>5건 모두</b> 찾음 — 차이 9줄 · 원인 4유형 · 수정 근거 12건</li>
         <li>계산 일치 점검 <b>447,538개</b> 항목 통과 — 로트 재고 · 실사 · 전체 = 상품군 합계 · 정산 재계산</li>
-        <li>화면 숫자 점검 <b>227개</b> 항목 통과 — KPI · 차트 · 표 · CSV · 검색 · 페이지</li>
-        <li>10개 화면 × 상품군 6가지 × 1440 · 390px, 120개 조합 — 오류 <b>0건</b></li></ul></div>
+        <li>화면 숫자 점검 <b>227개</b> 항목 통과 — KPI · 차트 · 표 · CSV · 검색</li>
+        <li>화면 10개 × 상품군 6가지 × PC·휴대폰, 120개 조합 오류 <b>0건</b></li></ul></div>
       <div class="vbox no" style="margin-top:10px"><h4>아직 검증하지 않은 것</h4><ul class="dots">
         <li>실제 센터 데이터 적용과 업무 시간 단축·비용 절감 효과</li><li>WMS·OMS·ERP 연동, 로그인·권한, DB (현재 브라우저 계산)</li></ul></div>
-      <p class="disc"><b>본 프로젝트는 개인 학습 및 포트폴리오 목적으로 설계한 시연용 시스템이며, 주문·재고·화주사·물류비 데이터는 가상 데이터입니다.</b> 실제 물류센터의 운영 성과를 검증한 것은 아닙니다.</p>
+      <p class="disc"><b>모든 수치는 가상 데이터로 만든 테스트 결과이며, 실제 물류센터의 운영 성과가 아닙니다.</b> 개인 학습·포트폴리오용 시연 시스템입니다.</p>
+      <p class="links" style="margin-top:12px"><a href="https://portfolio-sojunhee.vercel.app/demo/scm-dashboard/">Live Demo ↗</a><a href="https://portfolio-sojunhee.vercel.app/projects/scm-operations-dashboard">상세 보기 ↗</a></p>
     </div>
   </div>
   <div class="foot"><span><b>SO JUN HEE</b> · Portfolio</span><span>09</span></div>
 </section>
 
-<!-- 10 PROJECT 02 — AXPORT -->
+<!-- 10 PROJECT 03 — AXPORT -->
 <section class="page">
-  <p class="eyebrow">03 / PROJECT 02 · 5인 팀 프로젝트</p>
-  <div class="ax">
+  <p class="eyebrow">03 / PROJECT 03 · 5인 팀 프로젝트</p>
+  <div class="pj">
     <div>
-      <h1 class="big">AXPORT</h1>
-      <p class="kr">수출 적합도 분석 플랫폼</p>
-      <p class="desc">반도체 수출을 준비하는 기업의 엑셀 자료를 바탕으로 어느 나라에 팔기 좋은지, 가격·운송·규제·환율 안정성을 한 화면에서 비교하는 웹 서비스입니다.</p>
+      <h1 class="big">AXPORT <span class="kr-in">수출 적합도 분석 플랫폼</span></h1>
+      <p class="desc">반도체 수출을 준비하는 기업의 엑셀 자료로 어느 나라에 팔기 좋은지 시장성·가격·물류·규제·환율 안정성을 한 화면에서 비교하는 웹 서비스입니다. 수출 전에 볼 정보가 기관마다 흩어져 있던 문제에서 출발했습니다.</p>
       <dl>
-        <dt>과정</dt><dd>한국무역아카데미 무역 AX 2기 · 미니프로젝트 1차 (6조)</dd>
+        <dt>과정</dt><dd>한국무역아카데미 무역 AX 2기 · 미니프로젝트 1차</dd>
         <dt>기간</dt><dd>2026.09.23 ~ 09.29 (약 1주, git 커밋 기록 기준)</dd>
-        <dt>기술</dt><dd><span class="tag">Python</span><span class="tag">Flask</span><span class="tag">Jinja2</span><span class="tag">SQLite</span><span class="tag">Supabase</span><span class="tag">Chart.js</span><span class="tag">Playwright</span><span class="tag">Render</span></dd>
+        <dt>기술</dt><dd><span class="tag">Python</span><span class="tag">Flask</span><span class="tag">Supabase</span><span class="tag">Chart.js</span><span class="tag">Playwright</span><span class="tag">Render</span></dd>
       </dl>
       <div class="roles">
-        <div class="card mine"><h4>내가 담당한 부분</h4><ul class="dots"><li>공공데이터 수집·가공 파이프라인 설계</li><li>분석 엔진(5개 영역, 13개+ 모듈) 서버 통합·연결</li><li>로그인·계정·워크스페이스 백엔드 (Supabase)</li><li>문의하기 백엔드 · 대시보드 데이터 연결</li></ul></div>
+        <div class="card mine"><h4>내가 담당한 부분</h4><ul class="dots"><li>공공데이터 수집·가공 파이프라인</li><li>분석 엔진(5개 영역, 13개+ 모듈) 서버 통합</li><li>로그인·계정·워크스페이스 (Supabase)</li><li>로그인 없는 공개 배포본</li></ul></div>
         <div class="card"><h4>다른 팀원 담당</h4><ul class="dots"><li>분석 엔진 개발</li><li>홈 화면 디자인</li><li>대시보드 초기 시안</li><li>챗봇 위젯 연동</li></ul></div>
       </div>
     </div>
     <div>
-      <img class="shot" src="../../static/images/projects/axport-mini1-thumb.png" alt="AXPORT 대표 화면">
-      <p class="cap">AXPORT 대표 화면 · 3개 가상 기업 데이터를 고정 시드로 생성한 시연용 샘플 사용</p>
-      <p class="links" style="margin-top:12px"><a href="https://portfolio-axport.onrender.com">Live Demo ↗</a><a href="https://portfolio-sojunhee.vercel.app/projects/axport-mini1">상세 보기 ↗</a></p>
-      <div class="card" style="margin-top:14px;padding:12px 16px;font-size:12.8px;line-height:1.65"><b style="color:var(--head)">문제 정의</b> — 시장성·가격·물류·규제·환율 안정성 정보가 각각 다른 공공데이터·통계·공시 자료에 흩어져 있어, 수출 전에 한 번에 확인하고 판단하기 어려웠습니다.</div>
+      <img class="shot" src="../../static/ppt/img/ax-result.png" alt="AXPORT 공개 배포본 분석 화면">
+      <p class="cap">공개 배포본 분석 화면 · 고정 시드로 만든 가상 샘플 기업</p>
+      <div class="card num" style="margin-top:10px"><p class="nl">무료 서버(512MB)에서 분석 중 강제 종료되던 문제</p><div class="big">466MB → 215MB <small>로컬 측정</small></div><p>단계별 메모리 측정으로 한국은행 엑셀의 약 30MB 외부 링크 데이터가 원인임을 찾아, 같은 결과값을 유지한 채 최대 메모리를 줄였습니다.</p></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px"><div class="card num"><div class="big">47<small>개</small></div><p>공개 배포본 자동 테스트 통과</p></div><div class="card num"><div class="big">0<small>건</small></div><p>Playwright 회귀 테스트 콘솔 오류</p></div></div>
+      <p class="links" style="margin-top:10px"><a href="https://portfolio-axport.onrender.com">Live Demo ↗</a><a href="https://portfolio-sojunhee.vercel.app/projects/axport-mini1">상세 보기 ↗</a></p>
     </div>
   </div>
-  <div class="foot"><span><b>SO JUN HEE</b> · Portfolio</span><span>10</span></div>
+  <div class="foot"><span><b>SO JUN HEE</b> · Portfolio &nbsp;·&nbsp; 남은 과제: 팀 확정 안정성 산식 일부 미반영 · 항만·공항 API 미연동 · 실제 기업 데이터 검증 전</span><span>10</span></div>
 </section>
 
-<!-- 11 PROJECT 02 — SOLUTION & RESULT -->
+<!-- 11 PROJECT 04 — REBOOT -->
 <section class="page">
-  <p class="eyebrow">03 / PROJECT 02 · 해결 방법과 결과</p>
-  <h1 class="t">화면만 있는 시안을 실제로 동작하는 서비스로</h1>
-  <div style="display:grid;grid-template-columns:1.25fr 1fr;gap:26px;margin-top:16px">
+  <p class="eyebrow">03 / PROJECT 04 · 6인 팀 프로젝트 · 팀장</p>
+  <div class="pj">
     <div>
-      <h4 style="font-size:13px;color:var(--ink)">데이터 파이프라인 → 분석 → 화면</h4>
-      <div class="pipe"><div class="s">공공데이터 수집<small>UN Comtrade · 관세청 · ECOS · KOTRA · WTO · FRED</small></div><div class="ar">→</div><div class="s">가공 · 검증<small>출처·해시 MANIFEST.csv</small></div><div class="ar">→</div><div class="s d">분석 엔진 통합<small>5개 영역</small></div><div class="ar">→</div><div class="s">대시보드 연결<small>업로드 · 탭 · 출처 표시</small></div></div>
-      <h4 style="font-size:13px;color:var(--ink);margin-top:16px">시연용 종합 채점 산식 (가중치 조정 · 합계 100% 검증)</h4>
-      <div class="wbar"><div style="flex:35;background:#193342">시장성 35</div><div style="flex:30;background:#2D4A66">가격 30</div><div style="flex:20;background:#4A6683">물류 20</div><div style="flex:15;background:#0B7067;color:#FFFFFF">안정성 15</div></div>
-      <p class="cap">규제는 가중치 대신 감점형 관문으로 반영 · 안정성은 결제통화 환율 변동성과 과거 10년 분포를 비교</p>
-      <ul class="dots" style="margin-top:12px">
-        <li>Supabase 회원가입·로그인·세션 관리와 사용자별 작업 폴더 워크스페이스 백엔드 직접 구현</li>
-        <li>포트폴리오 공개용 별도 배포본: 로그인 없이 방문자 세션으로 체험, IP별 요청 제한 · 업로드 5MB · 7일 자동 삭제</li>
-        <li>구현과 점검에 AI 코딩 도구(Claude Code) 활용 — 공개 기준은 직접 결정</li></ul>
+      <h1 class="big">REBOOT <span class="kr-in">미국 마케팅 대시보드 + 브랜드 홈페이지</span></h1>
+      <p class="desc">알디콤을 모티브로 한 가상 숙취해소 브랜드의 미국 채널 마케터 1명이 콘텐츠·광고 심의·고객 응대·성과를 한곳에서 처리하는 대시보드입니다. 저는 광고 심의와 고객 응대(CS) 탭을 맡았습니다.</p>
+      <div class="card fda"><b>문제</b> 미국 FDA는 2020년 7월, 숙취를 치료·완화·예방한다고 주장한 제품을 판매한 7개사에 경고장을 보내 해당 제품을 승인받지 않은 신약으로 보았습니다. 국내식 ‘숙취해소’ 문구를 그대로 쓰면 이런 규제 위험이 생길 수 있었습니다.<span class="src">출처: <a href="https://www.fda.gov/food/hfp-constituent-updates/fda-sends-warning-letters-seven-companies-illegally-selling-hangover-products">FDA 공지 2020-07-29 (fda.gov)</a></span></div>
+      <dl>
+        <dt>기간</dt><dd>2026.10.21 ~ 10.28 · 개인 공개본 2026-11-05</dd>
+        <dt>기술</dt><dd><span class="tag">Python · Flask</span><span class="tag">Claude API</span><span class="tag">Gmail API</span><span class="tag">pytest</span><span class="tag">Vercel</span></dd>
+      </dl>
+      <div class="roles">
+        <div class="card mine"><h4>내가 담당한 부분</h4><ul class="dots"><li>광고 심의 규칙 17개 · 경고장 문구 87개 · 근거 조문</li><li>AI 2차 심의 기준 · CS 답장 승인 후 Gmail 발송</li><li>개인 공개본 · 보기 전용 시연 모드</li></ul></div>
+        <div class="card"><h4>다른 팀원 담당</h4><ul class="dots"><li>홈·인사이트·콘텐츠·파트너·성과 탭</li><li>브랜드 홈페이지 (자사몰·관리자·챗봇)</li></ul></div>
+      </div>
     </div>
-    <div style="display:grid;gap:12px;align-content:start">
-      <div class="card num"><p style="font-size:12.5px;font-weight:700;color:var(--ink);margin:0">무료 서버(512MB) 강제 종료 문제 해결</p><div class="big">466MB → 215MB</div><p>단계별 메모리 측정으로 한국은행 원표 엑셀의 약 30MB 외부 링크 데이터가 원인임을 찾아, 읽는 값은 같게 유지한 채 최대 메모리를 줄였습니다 (로컬 측정 기준).</p></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div class="card num"><div class="big">47<small>개</small></div><p>공개 배포본 자동 테스트 통과</p></div><div class="card num"><div class="big">0<small>건</small></div><p>Playwright 회귀 테스트 콘솔 오류</p></div></div>
-      <div class="card" style="padding:12px 16px;background:#EEF1F4;border:0"><b style="font-size:12.5px;color:var(--head)">남은 과제</b><p style="font-size:12.3px;line-height:1.6;margin-top:3px">팀 확정 안정성 산식의 엔진 반영 일부 미완료, 물류 영역 실제 항만·공항 API 미연동, 실제 기업 데이터 기반 검증 미수행</p></div>
+    <div>
+      <img class="shot" src="../../static/ppt/img/reboot-compliance.png" alt="REBOOT 광고 문구 심의 화면">
+      <p class="cap">광고 문구 심의 — 걸린 표현, 근거, 바꿔 쓸 방향 (시연판 · 가상 브랜드)</p>
+      <div class="nums n2">
+        <div><b>4분 30초 → 1분</b><span>광고 문구 검토 시간</span><em>본인 1회 측정 · 검토 요청·2차 검토 제외</em></div>
+        <div><b>87 / 87</b><span>FDA 경고장 원문 문구</span><em>규칙을 만들 때 쓴 사례</em></div>
+        <div><b>17 / 23</b><span>새 위반 문장 판정</span><em>규칙에 쓰지 않은 문장 · 보강 전 11</em></div>
+        <div><b>91개</b><span>5일간 인스타그램 게시물</span><em>팀 결과 · 릴스 4,961회</em></div>
+      </div>
+      <p class="cap"><b>87/87은 모든 광고 위험 표현을 잡는다는 뜻이 아닙니다.</b> 규칙이 놓친 문장(23개 중 6개)은 AI 2차 심의와 담당자 승인으로 보완하며, 판정은 법률 판단이 아닌 1차 점검입니다. 브랜드 홈페이지 챗봇도 같은 심의 규칙으로 답변을 검사합니다.</p>
+      <p class="links" style="margin-top:8px"><a href="https://reboot-dashboard-jh.vercel.app">대시보드 ↗</a><a href="https://reboot-home-jh.vercel.app">브랜드 홈페이지 ↗</a><a href="https://portfolio-sojunhee.vercel.app/projects/reboot-marketing-dashboard">상세 보기 ↗</a></p>
     </div>
   </div>
   <div class="foot"><span><b>SO JUN HEE</b> · Portfolio</span><span>11</span></div>
@@ -475,11 +580,11 @@
     <div>
       <div class="srow"><div><h3>Logistics Operations</h3><span class="st prac">실무 경험</span></div><div><span class="tag">3PL / 풀필먼트</span><span class="tag">WMS</span><span class="tag">DAS</span><span class="tag">재고 · 입출고 관리</span><span class="tag">B2C · B2B 출고</span><span class="tag">물류비 정산</span><span class="tag">Excel 전산관리</span><span class="tag">FCL</span></div></div>
       <div class="srow"><div><h3>Trade &amp; Customs</h3><span class="st prac">실무 경험</span></div><div><span class="tag">수입통관 서류</span><span class="tag">UNI-PASS</span><span class="tag">보세창고</span><span class="tag">사방넷</span><span class="tag">협력사 일정 조율</span></div></div>
-      <div class="srow"><div><h3>Data</h3><span class="st mix">실무 + 학습 확장</span></div><div><span class="tag">생산성 데이터 확인 · 실무</span><span class="tag">데이터 분석 · 학습 중</span></div></div>
-      <div class="srow" style="border-bottom:0"><div><h3>Python · AI · Web</h3><span class="st learn">학습·적용 중</span></div><div><span class="tag">Python</span><span class="tag">AI 활용 업무 자동화</span><span class="tag">웹 기반 운영 대시보드</span><p style="font-size:12px;color:var(--mute);margin-top:4px">실무 문제를 해결하기 위해 학습하고 개인·팀 프로젝트(다품종 3PL 운영 대시보드 · AXPORT)에 적용 중</p></div></div>
+      <div class="srow"><div><h3>Data</h3><span class="st mix">실무 + 학습 확장</span></div><div><span class="tag">Excel 피벗·함수 대시보드 · 실무</span><span class="tag">생산성 데이터 확인 · 실무</span><span class="tag">데이터 분석 · 학습 중</span></div></div>
+      <div class="srow" style="border-bottom:0"><div><h3>Python · AI · Web</h3><span class="st learn">학습·적용 중</span></div><div><span class="tag">Python</span><span class="tag">AI 활용 업무 자동화</span><span class="tag">웹 기반 운영 대시보드</span><p style="font-size:13.5px;color:var(--mute);margin-top:4px">실무 문제를 해결하기 위해 학습하고 개인·팀 프로젝트(다품종 3PL · AXPORT · REBOOT)에 적용 중</p></div></div>
     </div>
     <div>
-      <p class="eyebrow" style="font-size:12px;letter-spacing:.06em;margin-bottom:10px">현장을 아는 사람에서, 직접 해결하는 사람으로</p>
+      <p class="eyebrow" style="font-size:13px;letter-spacing:.06em;margin-bottom:10px">현장을 아는 사람에서, 직접 해결하는 사람으로</p>
       <div class="jr">
         <div class="card"><small>01 · 실무 경험</small><h4>현업의 맥락을 이해합니다.</h4><p>3PL · 재고 · 출고 · 정산 · 통관</p></div>
         <div class="card"><small>02 · 현재 학습</small><h4>데이터와 기술로 시야를 넓힙니다.</h4><p>한국무역아카데미 무역 AX 2기 — 데이터 분석 · Python · AI · 자동화</p></div>

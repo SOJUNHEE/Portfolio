@@ -33,7 +33,7 @@
             </dl>
             {% include 'partials/project_links.html' %}
         </div>
-        <div class="detail-preview">{% if project.thumbnail %}<img src="{{ project.thumbnail }}" alt="{{ project.title }} 대표 이미지" data-title="{{ project.title }}">{% else %}<div class="image-placeholder"><small>Project Preview</small><strong>{{ project.title }}</strong><span>화면 이미지는 준비 중입니다.</span></div>{% endif %}</div>
+        <div class="detail-preview{% if project.thumbnail_fit == 'contain' %} fit-contain{% endif %}">{% if project.thumbnail %}<img src="{{ project.thumbnail }}" alt="{{ project.title }} 대표 이미지" data-title="{{ project.title }}">{% else %}<div class="image-placeholder"><small>Project Preview</small><strong>{{ project.title }}</strong><span>화면 이미지는 준비 중입니다.</span></div>{% endif %}</div>
     </header>
     {% if project.has_story %}
     <div class="detail-flow">

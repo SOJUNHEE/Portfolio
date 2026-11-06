@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>소준희 포트폴리오 — 박람회용 슬라이드</title>
-  <meta name="description" content="소준희 포트폴리오 슬라이드 20장: 다품종 3PL 운영 대시보드, REBOOT 미국 마케팅 대시보드, AXPORT 수출 적합도 분석, Excel 월 운영 매출 대시보드">
+  <meta name="description" content="소준희 포트폴리오: 종합 소개와 프로젝트 4개(Excel 월 운영 매출 대시보드, 다품종 3PL 운영 대시보드, AXPORT 수출 적합도 분석, REBOOT 미국 마케팅 대시보드) 상세 20장">
   <meta name="theme-color" content="#F6F8F8">
   <link rel="icon" href="/static/images/portfolio/mark.svg" type="image/svg+xml">
   <link rel="stylesheet" href="deck.css">
@@ -12,18 +12,28 @@
 <body>
   <div class="viewer">
     <header class="v-top"><div class="v-top-in">
-      <p class="v-title">소준희 포트폴리오<span id="proj-name">PROJECT 1 · 다품종 3PL 운영 대시보드 · 한 줄 요약</span></p>
-      <nav class="v-links" aria-label="파일과 사이트">
-        <a href="sojunhee-portfolio-fair.pdf">PDF 받기</a>
-        <a href="sojunhee-portfolio-fair.pptx">PPT 받기</a>
-        <a class="primary" href="/">웹 포트폴리오</a>
-      </nav>
+      <div class="v-head">
+        <p class="v-title">소준희 포트폴리오<span id="proj-name">종합 소개 · 프로젝트 4개 바로가기</span></p>
+        <div class="v-links">
+          <details class="v-files">
+            <summary>파일 받기</summary>
+            <ul class="v-files-list">
+              <li><a href="sojunhee-portfolio-core10.pdf">핵심 10장 PDF</a></li>
+              <li><a href="sojunhee-portfolio-core10.pptx">핵심 10장 PPT</a></li>
+              <li><a href="sojunhee-portfolio-fair.pdf">상세 20장 PDF</a></li>
+              <li><a href="sojunhee-portfolio-fair.pptx">상세 20장 PPT</a></li>
+            </ul>
+          </details>
+          <a class="primary" href="/">웹 포트폴리오</a>
+        </div>
+      </div>
+      <nav class="v-chips" id="chips" aria-label="프로젝트 바로가기"></nav>
     </div></header>
-    <main class="v-track" id="track" aria-label="슬라이드 20장, 옆으로 넘겨 보기" tabindex="0"></main>
+    <main class="v-track" id="track" aria-label="종합 소개와 상세 20장, 옆으로 넘겨 보기" tabindex="0"></main>
     <p class="v-help">옆으로 밀거나 아래 버튼으로 넘겨 보세요 · 화면 이미지는 눌러서 크게 볼 수 있습니다</p>
     <nav class="v-nav" aria-label="슬라이드 이동"><div class="v-nav-in">
       <button type="button" id="prev">← 이전</button>
-      <span class="v-count" id="counter" aria-live="polite">1 / 20</span>
+      <span class="v-count" id="counter" aria-live="polite">소개</span>
       <button type="button" class="next" id="next">다음 →</button>
     </div></nav>
   </div>

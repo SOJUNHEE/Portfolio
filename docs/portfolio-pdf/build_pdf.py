@@ -14,7 +14,9 @@ with sync_playwright() as p:
     pg.wait_for_timeout(800)
     over = pg.evaluate("""() => Array.from(document.querySelectorAll('.page')).map((pgEl, i) => {
       const r = pgEl.getBoundingClientRect();
-      const bad = Array.from(pgEl.querySelectorAll('*')).filter(e => { const q = e.getBoundingClientRect(); return q.width && (q.bottom > r.bottom + 0.5 || q.right > r.right + 0.5) && !e.classList.contains('ring'); });
+      const foot = pgEl.querySelector(':scope > .foot, :scope > .bottom');
+      const limit = foot ? foot.getBoundingClientRect().top - 4 : r.bottom;   // 본문이 꼬리말(쪽 번호)과 겹치면 넘침으로 본다
+      const bad = Array.from(pgEl.querySelectorAll('*')).filter(e => { const q = e.getBoundingClientRect(); if (!q.width || e.classList.contains('ring') || (foot && foot.contains(e))) return false; return q.bottom > limit + 0.5 || q.right > r.right + 0.5; });
       return [i + 1, bad.length, bad.slice(0, 3).map(e => e.tagName + '.' + e.className + ':' + (e.innerText || '').slice(0, 30))];
     }).filter(x => x[1])""")
     print('넘침', over)
