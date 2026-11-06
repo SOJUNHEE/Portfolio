@@ -56,11 +56,11 @@ with sync_playwright() as p:
         pg.goto(BASE + '#11', wait_until='networkidle'); pg.wait_for_timeout(600)
         check(pg.inner_text('#counter') == '11 / 15' and 'AXPORT' in pg.inner_text('#proj-name'), f'{tag} #11 바로가기')
         for i in range(4):   # 11 → 15
-            pg.click('#next'); pg.wait_for_timeout(600)
+            pg.click('#next'); pg.wait_for_timeout(900)
         check(pg.inner_text('#counter') == '15 / 15' and pg.is_disabled('#next'), f'{tag} 마지막 장에서 다음 비활성')
         for href in ('sojunhee-portfolio-fair.pdf', 'sojunhee-portfolio-fair.pptx'):
             r = pg.request.get(BASE.rsplit('/', 1)[0] + '/' + href)
-            check(r.status == 200 and int(r.headers.get('content-length', '1')) > 10000, f'{tag} {href} 받기')
+            check(r.status == 200 and len(r.body()) > 10000, f'{tag} {href} 받기')   # 압축 응답은 content-length가 없을 수 있음
         check(not errs, f'{tag} 콘솔 오류 없음 {errs[:2]}')
         pg.close()
     b.close()
