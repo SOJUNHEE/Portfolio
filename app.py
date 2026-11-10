@@ -130,6 +130,8 @@ def get_projects():
         item['live_url'] = item['live_url'] or demo_url(raw.get('live_url'))
         item['thumbnail'] = project_image(raw.get('thumbnail'))
         item['thumbnail_fit'] = 'contain' if raw.get('thumbnail_fit') == 'contain' else ''  # 가로로 긴 화면(Excel 등)은 잘리지 않게
+        note = raw.get('thumbnail_note')  # 대표 이미지 성격 표시(예: 가상 데이터 재현본). 화면 표시 전용
+        item['thumbnail_note'] = note.strip() if isinstance(note, str) and item['thumbnail'] else ''
         item['gallery'] = []
         for entry in raw.get('gallery', []) if isinstance(raw.get('gallery'), list) else []:
             entry = {'src': entry, 'alt': item['title']} if isinstance(entry, str) else entry

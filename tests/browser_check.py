@@ -38,10 +38,15 @@ LAYOUT_PROBE = '''() => {
 def settle(page):
     """Scroll the real page so lazy images and reveal transitions finish before measuring or capturing."""
     page.evaluate('document.fonts.ready')
-    height = page.evaluate('document.documentElement.scrollHeight')
-    for y in range(0, height, 500):
+    # Lazy gallery images grow the page while scrolling (e.g. 4,384px → 6,079px on a detail page), so the height
+    # is measured again at every step and scrolling continues until the real bottom is reached.
+    y = 0
+    while True:
         page.evaluate(f'scrollTo(0,{y})')
         page.wait_for_timeout(100)
+        if page.evaluate('innerHeight + scrollY >= document.documentElement.scrollHeight - 2'):
+            break
+        y += 500
     page.evaluate('scrollTo({top:0,behavior:"instant"})')
     page.wait_for_timeout(700)
 

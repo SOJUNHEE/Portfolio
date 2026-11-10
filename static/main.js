@@ -81,6 +81,14 @@ if (revealEls.length && 'IntersectionObserver' in window && !reducedMotion.match
     });
     const showAll = () => { revealEls.forEach(show); revealObserver.disconnect(); };
     window.addEventListener('beforeprint', showAll);
+    // Safety net: an element in the last few percent of the page can never cross the observer's bottom margin,
+    // so once the reader reaches the end of the page everything still pending is shown.
+    const atPageEnd = () => {
+        if (window.innerHeight + window.scrollY < document.documentElement.scrollHeight - 2) return;
+        showAll();
+        window.removeEventListener('scroll', atPageEnd);
+    };
+    window.addEventListener('scroll', atPageEnd, { passive: true });
     const onMotionChange = () => { if (reducedMotion.matches) showAll(); };
     if (reducedMotion.addEventListener) reducedMotion.addEventListener('change', onMotionChange);
     else reducedMotion.addListener(onMotionChange);

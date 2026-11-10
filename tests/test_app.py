@@ -2,7 +2,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
-from app import app
+from app import app, get_projects
 
 
 class PortfolioTests(unittest.TestCase):
@@ -174,6 +174,20 @@ class PortfolioTests(unittest.TestCase):
             self.assertEqual(self.client.get(path).status_code, 404)
         self.assertIn('href="/demo/scm-dashboard/"', self.client.get('/projects/scm-operations-dashboard').text)
         self.assertFalse(app.debug)
+
+    def test_production_featured_is_excel(self):
+        # 실제 data/projects.json 기준: 대표 프로젝트는 실무 Excel 하나, 이미지는 잘리지 않게(contain),
+        # 화면은 가상 데이터 재현본이라는 표시가 함께 나온다.
+        app.config['DATA_DIR'] = self.original
+        with app.test_request_context():
+            featured = [p for p in get_projects() if p['is_featured']]
+        self.assertEqual([p['slug'] for p in featured], ['excel-sales-dashboard'])
+        home = self.client.get('/').text
+        hero = home[home.index('class="hero-work"'):home.index('</figure>')]
+        self.assertIn('href="/projects/excel-sales-dashboard"', hero)
+        self.assertIn('hero-work-media fit-contain', hero)
+        self.assertIn('실무 · 직접 제작', hero)
+        self.assertIn('가상 데이터 재현본', hero)
 
 
 if __name__ == '__main__':

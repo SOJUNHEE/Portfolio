@@ -12,7 +12,7 @@
         </div>
         {% if featured %}
         <figure class="hero-work">
-            <a class="hero-work-media" href="{{ url_for('project_detail', slug=featured.slug) }}" aria-label="{{ featured.title }} 상세 보기">
+            <a class="hero-work-media{% if featured.thumbnail_fit == 'contain' %} fit-contain{% endif %}" href="{{ url_for('project_detail', slug=featured.slug) }}" aria-label="{{ featured.title }} 상세 보기">
                 {% if featured.thumbnail %}<img src="{{ featured.thumbnail }}" alt="{{ featured.title }} 화면" data-title="{{ featured.title }}">{% else %}<span class="image-placeholder"><small>Project Preview</small><strong>{{ featured.title }}</strong></span>{% endif %}
             </a>
             <figcaption>
@@ -20,6 +20,7 @@
                 <strong>{{ featured.title }}</strong>
                 {% set caption = [featured.card_label, featured.card_role] | select | join(' · ') %}
                 {% if caption %}<span class="hero-work-note">{{ caption }}</span>{% endif %}
+                {% if featured.thumbnail_note %}<span class="hero-work-note">{{ featured.thumbnail_note }}</span>{% endif %}
             </figcaption>
         </figure>
         {% else %}
