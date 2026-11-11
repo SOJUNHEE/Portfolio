@@ -189,6 +189,21 @@ class PortfolioTests(unittest.TestCase):
         self.assertIn('실무 · 직접 제작', hero)
         self.assertIn('가상 데이터 재현본', hero)
 
+    def test_gallery_images_reserve_space(self):
+        # 상세 갤러리 이미지는 실제 파일 크기를 width/height로 넣어 늦게 로드돼도 페이지 길이가 바뀌지 않게 한다(CLS).
+        import re
+        app.config['DATA_DIR'] = self.original
+        with app.test_request_context():
+            slugs = [p['slug'] for p in get_projects() if p['gallery']]
+        self.assertTrue(slugs)
+        for slug in slugs:
+            html = self.client.get(f'/projects/{slug}').text
+            gallery = html[html.index('class="gallery"'):]
+            imgs = re.findall(r'<img [^>]*>', gallery)
+            self.assertTrue(imgs, slug)
+            for tag in imgs:
+                self.assertRegex(tag, r'width="\d+" height="\d+"', f'{slug}: {tag[:80]}')
+
 
 if __name__ == '__main__':
     unittest.main()

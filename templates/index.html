@@ -36,11 +36,15 @@
     </div>
 </section>
 <section class="metrics-section" aria-label="경력 핵심 지표">
-    <div class="container">
-        <p class="tiny-label metrics-caption">핵심 경력 지표 · 회사별 수치이며 서로 합산하지 않았습니다</p>
-        <dl class="metrics-grid">{% for metric in profile.metrics %}<div class="metric"><dt>{{ metric.label }}</dt><dd class="metric-value">{{ metric.value }}</dd><dd class="metric-source">{{ metric.source }}</dd></div>{% endfor %}</dl>
-        {% if profile.ax_highlights %}<p class="tiny-label metrics-caption ax-caption">AX 프로젝트 결과 · 가상 데이터와 로컬 측정 기준</p>
-        <dl class="metrics-grid ax-grid">{% for metric in profile.ax_highlights %}<div class="metric"><dt>{{ metric.label }}</dt><dd class="metric-value">{{ metric.value }}</dd><dd class="metric-source">{{ metric.source }}</dd></div>{% endfor %}</dl>{% endif %}
+    <div class="container metrics-board{% if not profile.ax_highlights %} single{% endif %}">
+        <div class="board-card career-board">
+            <div class="board-head"><h2 class="board-title">실무 경력 지표</h2><p class="tiny-label metrics-caption">회사별 수치이며 서로 합산하지 않았습니다</p></div>
+            <dl class="metrics-grid">{% for metric in profile.metrics %}<div class="metric"><dt>{{ metric.label }}</dt><dd class="metric-value">{{ metric.value }}</dd><dd class="metric-source">{{ metric.source }}</dd></div>{% endfor %}</dl>
+        </div>
+        {% if profile.ax_highlights %}<div class="board-card ax-board">
+            <div class="board-head"><h2 class="board-title">AX 프로젝트 결과</h2><p class="tiny-label metrics-caption ax-caption">가상 데이터와 로컬 측정 기준</p></div>
+            <dl class="metrics-grid ax-grid">{% for metric in profile.ax_highlights %}<div class="metric"><dt>{{ metric.label }}</dt><dd class="metric-value">{{ metric.value }}</dd><dd class="metric-source">{{ metric.source }}</dd></div>{% endfor %}</dl>
+        </div>{% endif %}
     </div>
 </section>
 <section id="projects" class="section">

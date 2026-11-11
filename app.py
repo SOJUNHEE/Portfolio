@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import re
+import struct
 import threading
 import webbrowser
 from pathlib import Path
@@ -87,6 +88,42 @@ def demo_url(value):
     return value if match and (Path(app.config['DEMO_DIR']) / match.group(1) / 'index.html').is_file() else ''
 
 
+def image_size(value):
+    """(너비, 높이) from the image header so the page can reserve space (no layout shift). Unknown → (None, None)."""
+    try:
+        path = (Path(app.static_folder) / value).resolve()
+        with open(path, 'rb') as fh:
+            head = fh.read(64 * 1024)
+    except (OSError, TypeError):
+        return None, None
+    if head[:8] == b'\x89PNG\r\n\x1a\n' and len(head) >= 24:
+        return struct.unpack('>II', head[16:24])
+    if head[:6] in (b'GIF87a', b'GIF89a'):
+        return struct.unpack('<HH', head[6:10])
+    if head[:4] == b'RIFF' and head[8:12] == b'WEBP':
+        kind = head[12:16]
+        if kind == b'VP8X':
+            return 1 + int.from_bytes(head[24:27], 'little'), 1 + int.from_bytes(head[27:30], 'little')
+        if kind == b'VP8 ':
+            w, h = struct.unpack('<HH', head[26:30])
+            return w & 0x3FFF, h & 0x3FFF
+        if kind == b'VP8L':
+            bits = int.from_bytes(head[21:25], 'little')
+            return (bits & 0x3FFF) + 1, ((bits >> 14) & 0x3FFF) + 1
+    if head[:2] == b'\xff\xd8':
+        i = 2
+        while i + 9 < len(head):
+            if head[i] != 0xFF:
+                i += 1
+                continue
+            marker, length = head[i + 1], struct.unpack('>H', head[i + 2:i + 4])[0]
+            if marker in (0xC0, 0xC1, 0xC2):
+                h, w = struct.unpack('>HH', head[i + 5:i + 9])
+                return w, h
+            i += 2 + length
+    return None, None
+
+
 def project_image(value):
     """Only existing local raster images confined to static/images/projects."""
     if not isinstance(value, str) or '\\' in value:
@@ -138,7 +175,8 @@ def get_projects():
             if isinstance(entry, dict):
                 src = project_image(entry.get('src'))
                 if src:
-                    item['gallery'].append({'src': src, 'alt': entry.get('alt') or item['title']})
+                    w, h = image_size(entry.get('src'))
+                    item['gallery'].append({'src': src, 'alt': entry.get('alt') or item['title'], 'w': w, 'h': h})
         item['is_featured'] = raw.get('is_featured') is True  # 홈 Hero 대표 프로젝트(없으면 정렬상 첫 프로젝트)
         order = raw.get('sort_order', 999)
         item['sort_order'] = order if isinstance(order, (int, float)) and not isinstance(order, bool) else 999

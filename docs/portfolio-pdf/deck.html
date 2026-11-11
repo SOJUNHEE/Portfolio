@@ -492,7 +492,7 @@
       <div class="nums n3" style="margin-top:12px">
         <div><b>5 / 5</b><span>일부러 넣은 정산 오류 탐지</span><em>가상 데이터 기반 테스트</em></div>
         <div><b>447,538</b><span>계산 점검 항목 통과</span><em>가상 데이터 자동 점검</em></div>
-        <div><b>0건</b><span>화면 120개 조합 오류</span><em>브라우저 자동 점검</em></div>
+        <div><b>120 / 120</b><span>화면 조합 UI 점검 통과</span><em>이동·오류·차트·넘침</em></div>
       </div>
     </div>
     <div>
@@ -500,7 +500,7 @@
         <li>정산 대조가 일부러 넣은 오류 <b>5건 모두</b> 찾음 — 차이 9줄 · 원인 4유형 · 수정 근거 12건</li>
         <li>계산 일치 점검 <b>447,538개</b> 항목 통과 — 로트 재고 · 실사 · 전체 = 상품군 합계 · 정산 재계산</li>
         <li>화면 숫자 점검 <b>227개</b> 항목 통과 — KPI · 차트 · 표 · CSV · 검색</li>
-        <li>화면 10개 × 상품군 6가지 × PC·휴대폰, 120개 조합 오류 <b>0건</b></li></ul></div>
+        <li>화면 10개 × 상품군 6가지 × PC·휴대폰, 120개 조합 UI 점검 <b>모두 통과</b> (숫자 정합성은 계산 점검이 따로 확인)</li></ul></div>
       <div class="vbox no" style="margin-top:10px"><h4>아직 검증하지 않은 것</h4><ul class="dots">
         <li>실제 센터 데이터 적용과 업무 시간 단축·비용 절감 효과</li><li>WMS·OMS·ERP 연동, 로그인·권한, DB (현재 브라우저 계산)</li></ul></div>
       <p class="disc"><b>모든 수치는 가상 데이터로 만든 테스트 결과이며, 실제 물류센터의 운영 성과가 아닙니다.</b> 개인 학습·포트폴리오용 시연 시스템입니다.</p>
@@ -530,7 +530,7 @@
     <div>
       <img class="shot" src="../../static/ppt/img/ax-result.png" alt="AXPORT 공개 배포본 분석 화면">
       <p class="cap">공개 배포본 분석 화면 · 고정 시드로 만든 가상 샘플 기업</p>
-      <div class="card num" style="margin-top:10px"><p class="nl">무료 서버(512MB)에서 분석 중 강제 종료되던 문제</p><div class="big">466MB → 215MB <small>로컬 측정 · 11-10 재측정 221MB</small></div><p>단계별 메모리 측정으로 한국은행 엑셀의 약 30MB 외부 링크 데이터가 원인임을 찾아, 같은 결과값을 유지한 채 최대 메모리를 줄였습니다.</p></div>
+      <div class="card num" style="margin-top:10px"><p class="nl">무료 서버(512MB)에서 분석 중 강제 종료되던 문제</p><div class="big">466MB → 221MB <small>Windows 로컬 재측정 · 과거 기록 215MB</small></div><p>단계별 메모리 측정으로 한국은행 엑셀의 약 30MB 외부 링크 데이터가 원인임을 찾아, 같은 결과값을 유지한 채 최대 메모리를 줄였습니다.</p></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px"><div class="card num"><div class="big">47<small>개</small></div><p>공개 배포본 자동 테스트 통과</p></div><div class="card num"><div class="big">0<small>건</small></div><p>Playwright 회귀 테스트 콘솔 오류</p></div></div>
       <p class="links" style="margin-top:10px"><a href="https://portfolio-axport.onrender.com">Live Demo ↗</a><a href="https://portfolio-sojunhee.vercel.app/projects/axport-mini1">상세 보기 ↗</a></p>
     </div>

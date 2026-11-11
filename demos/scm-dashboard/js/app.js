@@ -66,19 +66,32 @@
   RENDER.overview = function () {
     F = U.F();
     var k = S.commonKpis(F), ik = S.indKpis(F), ac = S.actions(F), rows = S.daily(F), lb = S.labor(F);
-    var h = section({ en: 'Common Indicators', ko: F.ind === 'ALL' ? '센터 공통 지표' : ni(F.ind) + ' 공통 지표', desc: '모든 상품군에 같은 기준으로 계산하는 지표입니다. 소비기한·옵션·세트처럼 기준이 다른 지표는 합산하지 않고 상품군을 골랐을 때만 표시합니다.', body: U.W && '<div class="kpi-grid k3">' + k.map(U.kpiCard).join('') + '</div>' });
-    if (ik.length) h += section({ en: 'Industry Focus', ko: ni(F.ind) + ' 현장 주목 지표', tools: goBtn('focus', '기준 자세히 →'), body: '<div class="kpi-grid k4">' + ik.map(U.kpiCard).join('') + '</div>' });
+    /* 대시보드 개편(2026-11-10): 1행 = 공통 KPI(2칸) + 지금 확인할 일(1칸), 2행 = 주별 추세(2칸) + 인력 운영(1칸), 3행 = 상품군 비교.
+       계산 함수와 값은 이전과 같고 배치만 바꿨다. */
+    var todo = ac.length ? '<ul class="todo">' + ac.slice(0, 8).map(function (a) { return '<li><span class="pri p' + a.pri + '">' + (a.pri === 1 ? '긴급' : '확인') + '</span><span class="area">' + U.esc(a.area) + '</span><span class="what"><b>' + U.esc(a.what) + '</b><span>조치: ' + U.esc(a.act) + '</span></span>' + goBtn(a.go, '상세') + '</li>'; }).join('') + '</ul>' : '<div class="state-card empty">지금 확인할 항목이 없습니다.</div>';
+    var h = '<div class="dash-grid">' +
+      U.card({ cls: 'span-2', title: F.ind === 'ALL' ? '센터 공통 지표' : ni(F.ind) + ' 공통 지표', sub: '모든 상품군에 같은 기준으로 계산 · 소비기한·옵션·세트처럼 기준이 다른 지표는 합산하지 않고 상품군을 골랐을 때만 표시', body: '<div class="kpi-grid k3">' + k.map(U.kpiCard).join('') + '</div>' }) +
+      U.card({ cls: 'todo-card', title: '지금 확인할 일', sub: ac.length ? '우선순위 순 · ' + Math.min(8, ac.length) + '건' + (ac.length > 8 ? ' / 전체 ' + ac.length + '건' : '') : '현재 필터 기준', body: todo }) +
+      '</div>';
+    if (ik.length) h += '<div class="dash-grid">' + U.card({ cls: 'span-3', title: ni(F.ind) + ' 현장 주목 지표', sub: '선택한 상품군에만 해당하는 전용 지표', go: 'focus', body: '<div class="kpi-grid k4">' + ik.map(U.kpiCard).join('') + '</div>' }) + '</div>';
+    h += '<div class="dash-grid">' +
+      U.card({ cls: 'span-2', title: '주별 주문 접수와 출고 확정', sub: '건 · 주별 · ' + Cal.isoOf(F.from) + ' ~ ' + Cal.isoOf(F.to), go: 'outbound', body: chartBox('chWeek', '', '주별 주문 접수와 출고 확정') }) +
+      U.card({ title: '인력 운영', sub: '센터 공통 · 선택 기간 기준', go: 'labor', body: U.metricList([
+        { icon: 'people', value: lb.head === null ? '—' : Fm.num1(lb.head), unit: '명', label: '기간 평균 투입 인원' },
+        { icon: 'temp', value: Fm.int(lb.temps), unit: '인일', label: '임시 인력' },
+        { icon: 'clock', value: Fm.num1(lb.otH), unit: '시간', label: '연장 근무' },
+        { icon: 'calendar', value: Fm.int(F.days), unit: '일', label: '조회 기간' }
+      ]) }) +
+      '</div>';
     if (F.ind === 'ALL') {
       var cmp = D.inds.map(function (x) { var G = S.withPeriod(F, F.from, F.to); G.ind = x.id; var ob = S.outbound(G), ib = S.inbound(G), ct = S.counts(G), fl = S.flow(G), r = S.returnStats(G)[0]; return { id: x.id, name: x.name, ship: ob.ship, units: ob.shipUnits, inb: ib.good, same: fl.sameDayRate, acc: ct.rate, ret: r.rate, stock: D.stockDaily[F.to][x.id] }; });
-      h += section({ en: 'Compare', ko: '상품군 비교 (공통 지표만)', body: table('compare', { columns: [{ label: '상품군', type: 'text', value: function (r) { return r.name; }, html: function (r) { return '<button type="button" class="link-btn" data-set-ind="' + r.id + '">' + U.esc(r.name) + '</button>'; } }, { label: '입고 수량', type: 'int', value: function (r) { return r.inb; } }, { label: '출고 건수', type: 'int', value: function (r) { return r.ship; } }, { label: '출고 수량', type: 'int', value: function (r) { return r.units; } }, { label: '당일 출고율', type: 'pct', value: function (r) { return r.same; } }, { label: '재고 정확도', type: 'pct', value: function (r) { return r.acc; } }, { label: '반품률', type: 'pct', value: function (r) { return r.ret; } }, { label: '기간 종료 재고', type: 'int', value: function (r) { return r.stock; } }], rows: cmp, filename: fileName('현황', '상품군비교'), pageSize: 0, search: false }) });
+      h += '<div class="dash-grid">' + U.card({ cls: 'span-3', title: '상품군 비교 (공통 지표만)', sub: '상품군 이름을 누르면 그 상품군 기준으로 전환', go: 'focus', body: table('compare', { columns: [{ label: '상품군', type: 'text', value: function (r) { return r.name; }, html: function (r) { return '<button type="button" class="link-btn" data-set-ind="' + r.id + '">' + U.esc(r.name) + '</button>'; } }, { label: '입고 수량', type: 'int', value: function (r) { return r.inb; } }, { label: '출고 건수', type: 'int', value: function (r) { return r.ship; } }, { label: '출고 수량', type: 'int', value: function (r) { return r.units; } }, { label: '당일 출고율', type: 'pct', value: function (r) { return r.same; } }, { label: '재고 정확도', type: 'pct', value: function (r) { return r.acc; } }, { label: '반품률', type: 'pct', value: function (r) { return r.ret; } }, { label: '기간 종료 재고', type: 'int', value: function (r) { return r.stock; } }], rows: cmp, filename: fileName('현황', '상품군비교'), pageSize: 0, search: false }) }) + '</div>';
     }
-    h += section({ en: 'Weekly', ko: '주별 주문·출고', desc: '인력은 센터 공통입니다. 기간 평균 ' + (lb.head === null ? '—' : Fm.num1(lb.head)) + '명, 임시 인력 ' + lb.temps + '인일, 연장 ' + Fm.num1(lb.otH) + '시간.', body: panel('주문 접수와 출고 확정', '건 · 주별', chartBox('chWeek', '', '주별 주문 접수와 출고 확정')) });
     hook(function () {
       var P = CH.palette(), bk = U.weekBuckets();
       function agg(f) { return bk.map(function (x) { return rows.filter(function (r) { return r.day >= x[0] && r.day <= x[1]; }).reduce(function (a, r) { return a + f(r); }, 0); }); }
       CH.render('chWeek', { type: 'bar', data: { labels: bk.map(function (x) { return mmdd(x[0]); }), datasets: [{ type: 'bar', label: '출고 확정(건)', data: agg(function (r) { return r.ship; }), backgroundColor: P.tone(0) }, { type: 'line', label: '주문 접수(건)', data: agg(function (r) { return r.received; }), borderColor: P.tone(1), backgroundColor: P.tone(1) }] }, options: { scales: CH.baseScales({ yFmt: U.intAxis() }), interaction: { mode: 'index', intersect: false } } });
     });
-    h += section({ en: 'To Do', ko: '지금 확인할 일', body: ac.length ? '<ul class="todo">' + ac.slice(0, 8).map(function (a) { return '<li><span class="pri p' + a.pri + '">' + (a.pri === 1 ? '긴급' : '확인') + '</span><span class="area">' + U.esc(a.area) + '</span><span class="what"><b>' + U.esc(a.what) + '</b><span>조치: ' + U.esc(a.act) + '</span></span>' + goBtn(a.go, '상세') + '</li>'; }).join('') + '</ul>' : U.naBox('지금 확인할 항목이 없습니다.') });
     return h;
   };
 

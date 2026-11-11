@@ -29,6 +29,16 @@
   function hhmm(t) { return ('0' + Math.floor(t / 60)).slice(-2) + ':' + ('0' + (t % 60)).slice(-2); }
   function b(x) { return '<b>' + x + '</b>'; }
   function goBtn(id, label) { var s = scr(id); return '<button type="button" class="link-btn" data-go="' + s.id + '">' + esc(label || s.no + ' ' + s.ko) + '</button>'; }
+  /* 카드 — 제목 + 보조 설명 + (관련 화면으로 가는) 원형 화살표. 대시보드 개편(2026-11-10) 공통 부품 */
+  function goArrow(id) { var s = scr(id); return s ? '<button type="button" class="arrow-btn" data-go="' + s.id + '" aria-label="' + esc(s.no + ' ' + s.ko + ' 화면으로 이동') + '" title="' + esc(s.ko) + '"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' : ''; }
+  function card(o) { return '<section class="card' + (o.cls ? ' ' + o.cls : '') + '"' + (o.label ? ' aria-label="' + esc(o.label) + '"' : '') + '><header class="card-head"><div class="card-titles"><h2 class="card-title">' + esc(o.title) + '</h2>' + (o.sub ? '<p class="card-sub">' + o.sub + '</p>' : '') + '</div>' + (o.tools || '') + (o.go ? goArrow(o.go) : '') + '</header>' + o.body + '</section>'; }
+  var ICONS = {
+    people: '<path d="M6 7.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM1.5 14c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4M11 7a2 2 0 1 0 0-4M12.5 10c1.3.4 2 1.5 2 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>',
+    temp: '<path d="M8 2.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3.5 14c0-2.3 2-3.8 4.5-3.8M12 10v4M10 12h4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>',
+    clock: '<circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 4.5V8l2.5 1.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>',
+    calendar: '<rect x="2" y="3" width="12" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>'
+  };
+  function metricList(items) { return '<ul class="metric-list">' + items.map(function (m) { return '<li><span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 16 16">' + (ICONS[m.icon] || ICONS.calendar) + '</svg></span><span class="metric-text"><b class="num">' + m.value + (m.unit ? '<small>' + esc(m.unit) + '</small>' : '') + '</b><span>' + esc(m.label) + '</span></span></li>'; }).join('') + '</ul>'; }
   function summary(items) { var list = items.filter(Boolean); if (!list.length) list = ['선택한 필터 조건에 해당하는 데이터가 부족해 해석을 생략합니다.']; return '<section class="summary" aria-label="가상 시나리오 기준 요약"><span class="eyebrow">Analysis · Sample Data</span><h2>가상 시나리오 기준 요약</h2><ol>' + list.map(function (t) { return '<li><span>' + t + '</span></li>'; }).join('') + '</ol></section>'; }
   function dlIcon() { return '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1v7M3 5l3 3 3-3M1.5 10.5h9" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>'; }
   function statusCol(label, fn, textFn) { return { label: label, type: 'text', value: function (r) { return textFn ? textFn(r) : fn(r) ? Fm.statusLabel(fn(r)) : '해당 없음'; }, html: function (r) { return statusHtml(fn(r), textFn ? textFn(r) : null); } }; }
@@ -232,7 +242,12 @@
       resetTables(); syncControls(); render();
     });
     document.getElementById('fReset').addEventListener('click', function () { state.filter = JSON.parse(JSON.stringify(DEFAULT_FILTER)); state.local.wave = null; resetTables(); syncControls(); render(); });
-    nav.addEventListener('click', function (e) { var btn = e.target.closest('[data-screen]'); if (btn) go(btn.getAttribute('data-screen')); });
+    nav.addEventListener('click', function (e) { var btn = e.target.closest('[data-screen]'); if (btn) { setDrawer(false); go(btn.getAttribute('data-screen')); } });
+    /* 모바일(900px 이하): 사이드바를 드로어로 연다. PC에서는 버튼이 보이지 않고 사이드바가 항상 보인다 */
+    var toggle = document.getElementById('navToggle'), backdrop = document.getElementById('navBackdrop');
+    if (toggle) toggle.addEventListener('click', function () { setDrawer(!document.querySelector('.app').classList.contains('nav-open')); });
+    if (backdrop) backdrop.addEventListener('click', function () { setDrawer(false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && document.querySelector('.app').classList.contains('nav-open')) { setDrawer(false); if (toggle) toggle.focus(); } });
     var view = document.getElementById('view');
     view.addEventListener('click', function (e) {
       var ex = e.target.closest('[data-export]'); if (ex) { var r = exportsReg[ex.getAttribute('data-export')]; if (r) X.download(r.filename, r.columns, r.rows()); return; }
@@ -247,6 +262,13 @@
     });
     view.addEventListener('input', function (e) { var k = e.target.getAttribute('data-search'); if (k) { state.tables[k].q = e.target.value; state.tables[k].page = 0; refreshTable(k); } });
     window.addEventListener('hashchange', function () { var id = location.hash.replace('#', ''); if (id && id !== state.screen && scr(id)) { state.screen = id; render(); } });
+  }
+  function setDrawer(open) {
+    var app = document.querySelector('.app'), toggle = document.getElementById('navToggle');
+    if (!app || !toggle) return;
+    app.classList.toggle('nav-open', open);
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) { var cur = document.querySelector('#nav [aria-current="page"]') || document.querySelector('#nav [data-screen]'); if (cur) cur.focus(); }
   }
   function resetTables() { Object.keys(state.tables).forEach(function (k) { state.tables[k].page = 0; }); }
   function syncControls() {
@@ -267,10 +289,15 @@
     document.getElementById('pageTitle').textContent = sc.ko;
     document.getElementById('scopeLine').innerHTML = scopeLineHtml();
     document.title = sc.ko + ' · ' + CFG.title + ' (개인 학습 프로젝트)';
-    var y = window.scrollY;
-    document.getElementById('view').innerHTML = RENDER[sc.id]();
-    Object.keys(tableReg).forEach(updateCount);
-    var h = hooks; hooks = []; h.forEach(function (fn) { fn(); });
+    var y = window.scrollY, view = document.getElementById('view');
+    try {
+      view.innerHTML = RENDER[sc.id]();
+      Object.keys(tableReg).forEach(updateCount);
+      var h = hooks; hooks = []; h.forEach(function (fn) { fn(); });
+    } catch (err) {  // 오류 상태: 빈 화면 대신 원인과 되돌리는 방법을 보여 준다
+      view.innerHTML = '<div class="state-card error" role="alert"><b>이 화면을 그리지 못했습니다.</b><span>필터를 초기화하거나 다른 화면으로 이동해 주세요. (' + esc(err && err.message) + ')</span></div>';
+      if (window.console) console.error(err);
+    }
     if (keep) window.scrollTo(0, y);
   }
   function start(cfg) {
@@ -286,5 +313,5 @@
     window.SCMApp = { state: state, render: render, go: go, exports: function () { return exportsReg; }, screens: SCREENS };
   }
 
-  window.UI = { start: start, esc: esc, nm: nm, ni: ni, statusHtml: statusHtml, section: section, panel: panel, chartBox: chartBox, stat: stat, statRow: statRow, naBox: naBox, hook: hook, fileName: fileName, mmdd: mmdd, hhmm: hhmm, b: b, goBtn: goBtn, summary: summary, statusCol: statusCol, chCol: chCol, indCol: indCol, linesTxt: linesTxt, stTone: stTone, sumOf: sumOf, intAxis: intAxis, wonAxis: wonAxis, weekBuckets: weekBuckets, hbar: hbar, table: table, steps: steps, kpiCard: kpiCard, W: W, state: state, F: function () { return F; } };
+  window.UI = { start: start, esc: esc, nm: nm, ni: ni, statusHtml: statusHtml, section: section, panel: panel, chartBox: chartBox, stat: stat, statRow: statRow, naBox: naBox, hook: hook, fileName: fileName, mmdd: mmdd, hhmm: hhmm, b: b, goBtn: goBtn, goArrow: goArrow, card: card, metricList: metricList, summary: summary, statusCol: statusCol, chCol: chCol, indCol: indCol, linesTxt: linesTxt, stTone: stTone, sumOf: sumOf, intAxis: intAxis, wonAxis: wonAxis, weekBuckets: weekBuckets, hbar: hbar, table: table, steps: steps, kpiCard: kpiCard, W: W, state: state, F: function () { return F; } };
 })();
