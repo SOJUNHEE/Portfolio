@@ -244,10 +244,23 @@
     document.getElementById('fReset').addEventListener('click', function () { state.filter = JSON.parse(JSON.stringify(DEFAULT_FILTER)); state.local.wave = null; resetTables(); syncControls(); render(); });
     nav.addEventListener('click', function (e) { var btn = e.target.closest('[data-screen]'); if (btn) { setDrawer(false); go(btn.getAttribute('data-screen')); } });
     /* 모바일(900px 이하): 사이드바를 드로어로 연다. PC에서는 버튼이 보이지 않고 사이드바가 항상 보인다 */
-    var toggle = document.getElementById('navToggle'), backdrop = document.getElementById('navBackdrop');
-    if (toggle) toggle.addEventListener('click', function () { setDrawer(!document.querySelector('.app').classList.contains('nav-open')); });
-    if (backdrop) backdrop.addEventListener('click', function () { setDrawer(false); });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && document.querySelector('.app').classList.contains('nav-open')) { setDrawer(false); if (toggle) toggle.focus(); } });
+    var toggle = document.getElementById('navToggle'), backdrop = document.getElementById('navBackdrop'), closeBtn = document.getElementById('navClose');
+    if (toggle) toggle.addEventListener('click', function () { setDrawer(!drawerOpen(), true); });
+    if (backdrop) backdrop.addEventListener('click', function () { setDrawer(false, true); });
+    if (closeBtn) closeBtn.addEventListener('click', function () { setDrawer(false, true); });
+    /* 드로어가 열려 있을 때: Esc로 닫고 메뉴 버튼으로 복귀, Tab·Shift+Tab은 드로어 안에서만 돈다(2026-11-11) */
+    document.addEventListener('keydown', function (e) {
+      if (!drawerOpen()) return;
+      if (e.key === 'Escape') { e.preventDefault(); setDrawer(false, true); return; }
+      if (e.key !== 'Tab') return;
+      var items = [].filter.call(document.getElementById('sidebar').querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'), function (el) { return el.offsetWidth || el.offsetHeight; });
+      if (!items.length) return;
+      var first = items[0], last = items[items.length - 1], inside = document.getElementById('sidebar').contains(document.activeElement);
+      if (e.shiftKey && (document.activeElement === first || !inside)) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && (document.activeElement === last || !inside)) { e.preventDefault(); first.focus(); }
+    });
+    /* 드로어가 열린 채로 PC 폭이 되면 닫는다(배경 스크롤 잠금이 남지 않게) */
+    if (window.matchMedia) { var mq = window.matchMedia('(min-width: 901px)'), onMq = function () { if (mq.matches && drawerOpen()) setDrawer(false); }; if (mq.addEventListener) mq.addEventListener('change', onMq); else if (mq.addListener) mq.addListener(onMq); }
     var view = document.getElementById('view');
     view.addEventListener('click', function (e) {
       var ex = e.target.closest('[data-export]'); if (ex) { var r = exportsReg[ex.getAttribute('data-export')]; if (r) X.download(r.filename, r.columns, r.rows()); return; }
@@ -263,12 +276,23 @@
     view.addEventListener('input', function (e) { var k = e.target.getAttribute('data-search'); if (k) { state.tables[k].q = e.target.value; state.tables[k].page = 0; refreshTable(k); } });
     window.addEventListener('hashchange', function () { var id = location.hash.replace('#', ''); if (id && id !== state.screen && scr(id)) { state.screen = id; render(); } });
   }
-  function setDrawer(open) {
-    var app = document.querySelector('.app'), toggle = document.getElementById('navToggle');
+  function drawerOpen() { var app = document.querySelector('.app'); return !!app && app.classList.contains('nav-open'); }
+  /* 모바일 드로어 열기·닫기. returnFocus=true면 닫을 때 '화면 메뉴' 버튼으로 포커스를 돌려준다.
+     (메뉴 항목을 골라 닫을 때는 go()가 새 화면 본문 #view로 포커스를 옮긴다) */
+  function setDrawer(open, returnFocus) {
+    var app = document.querySelector('.app'), toggle = document.getElementById('navToggle'), side = document.getElementById('sidebar');
     if (!app || !toggle) return;
+    var was = app.classList.contains('nav-open');
     app.classList.toggle('nav-open', open);
+    document.documentElement.classList.toggle('nav-lock', open);   // 배경 페이지 스크롤 잠금
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    toggle.setAttribute('aria-label', open ? '화면 메뉴 닫기' : '화면 메뉴 열기');
+    if (side) {
+      if (open) { side.setAttribute('role', 'dialog'); side.setAttribute('aria-modal', 'true'); }
+      else { side.removeAttribute('role'); side.removeAttribute('aria-modal'); }
+    }
     if (open) { var cur = document.querySelector('#nav [aria-current="page"]') || document.querySelector('#nav [data-screen]'); if (cur) cur.focus(); }
+    else if (was && returnFocus) toggle.focus();
   }
   function resetTables() { Object.keys(state.tables).forEach(function (k) { state.tables[k].page = 0; }); }
   function syncControls() {
@@ -278,7 +302,7 @@
     if (f.period === 'custom') { document.getElementById('fFrom').value = f.from; document.getElementById('fTo').value = f.to; }
   }
   function go(id) { state.screen = id; if (location.hash !== '#' + id) history.replaceState(null, '', '#' + id); render(); window.scrollTo(0, 0); document.getElementById('view').focus({ preventScroll: true }); }
-  function scopeLineHtml() { var i = document.getElementById('fInd'), c = document.getElementById('fCh'); return '필터 적용 범위 <strong>' + Cal.isoOf(F.from) + ' ~ ' + Cal.isoOf(F.to) + '</strong> (' + F.days + '일) · <strong>' + esc(i.options[i.selectedIndex].text) + '</strong>' + (c ? ' · <strong>' + esc(c.options[c.selectedIndex].text) + '</strong>' : '') + ' · <span class="scope-sample">가상 데이터</span>'; }
+  function scopeLineHtml() { var i = document.getElementById('fInd'), c = document.getElementById('fCh'); return '<span class="scope-label">필터 적용 범위</span> <strong>' + Cal.isoOf(F.from) + ' ~ ' + Cal.isoOf(F.to) + '</strong> (' + F.days + '일) · <strong>' + esc(i.options[i.selectedIndex].text) + '</strong>' + (c ? ' · <strong>' + esc(c.options[c.selectedIndex].text) + '</strong>' : '') + '<span class="scope-tail"> · <span class="scope-sample">가상 데이터</span></span>'; }
   function render(keep) {
     F = S.resolveFilter(state.filter);
     exportsReg = {}; tableReg = {}; hooks = [];

@@ -125,9 +125,22 @@ class PortfolioTests(unittest.TestCase):
         self.assertNotIn('old problem', html)  # 4블록의 문제가 기존 문제 정의를 대신한다
         self.assertNotIn('>bad<', html)
         self.assertNotIn('>empty<', html)
+        self.assertIn('④ 성과', html)  # kind가 없으면 기존 제목
         legacy = self.client.get('/projects/half-story').text  # 해결 과정이 없으면 기존 서술 방식 유지
         self.assertIn('legacy problem', legacy)
         self.assertNotIn('step-more', legacy)
+
+    def test_number_kind_label(self):
+        # 2026-11-13: 구성 개수(kind='제작 범위')는 카드·상세에서 '확인된 결과'가 아니라 그 분류로 표시
+        item = {'slug': 'kind-test', 'is_published': True, 'title': 'Kind', 'ax_problem': ['p'], 'ax_steps': ['s'],
+                'ax_numbers': [{'value': '5개', 'label': 'pivot tables', 'kind': '제작 범위'}, {'value': '7일 → 3일', 'label': 'closing days'}]}
+        self.projects([item])
+        home = self.client.get('/').text
+        self.assertIn('<dt>제작 범위</dt>', home)
+        self.assertNotIn('<dt>확인된 결과</dt>', home)
+        detail = self.client.get('/projects/kind-test').text
+        self.assertIn('제작 범위와 성과', detail)
+        self.assertIn('<span class="num-kind">제작 범위</span>pivot tables', detail)
 
     def test_production_content_and_routes(self):
         app.config['DATA_DIR'] = self.original

@@ -5,6 +5,8 @@
 {% block content %}
 {% set steps = [('problem','문제 정의',''),('objective','목표',''),('data','활용 데이터','실제 데이터와 직접 만든 데이터를 구분해 적었습니다.'),('solution','해결 방법',''),('architecture','시스템 구조','실제 구현된 범위 기준입니다.'),('features','주요 기능',''),('result','결과','직접 검증한 내용과 아직 확인하지 못한 내용을 함께 적었습니다.'),('future_improvement','향후 개선','현재 구현의 한계와 확장에 필요한 과제입니다.')] %}
 {% set more_steps = [('objective','목표',''),('data','활용 데이터','실제 데이터와 직접 만든 데이터를 구분해 적었습니다.'),('solution','해결 방법 (상세)',''),('architecture','시스템 구조','실제 구현된 범위 기준입니다.'),('features','주요 기능',''),('result','검증 상세',''),('future_improvement','향후 개선','실제 기업 시스템으로 확장하려면 필요한 과제입니다.')] %}
+{% set has_kind = project.ax_numbers | selectattr('kind') | list | length > 0 %}{# 수치 중 '제작 범위' 등 성격 표시가 있으면 제목을 '제작 범위와 성과'로 #}
+{% set result_title = '제작 범위와 성과' if has_kind else '성과' %}
 {% set has_role = project.my_contribution or project.team_contribution or (project.role and project.role != project.card_role) %}
 {% set role_label = '내 기여와 팀의 역할' if project.team_contribution else '담당 범위' %}
 {% macro role_block() %}
@@ -38,7 +40,7 @@
     {% if project.has_story %}
     <div class="detail-flow">
         <nav class="detail-steps" aria-label="프로젝트 서술 단계">
-            <ol><li><a href="#step-problem">① 문제</a></li><li><a href="#step-process">② 해결 과정</a></li>{% if project.ai_tool or project.ai_human or project.ai_note %}<li><a href="#step-ai">③ AI 적용</a></li>{% endif %}{% if project.ax_result or project.ax_numbers %}<li><a href="#step-result">④ 성과</a></li>{% endif %}{% if project.team_contribution %}<li><a href="#step-role">{{ role_label }}</a></li>{% endif %}{% if project.gallery %}<li><a href="#step-gallery">프로젝트 화면</a></li>{% endif %}<li><a href="#step-more">자세히 보기</a></li></ol>
+            <ol><li><a href="#step-problem">① 문제</a></li><li><a href="#step-process">② 해결 과정</a></li>{% if project.ai_tool or project.ai_human or project.ai_note %}<li><a href="#step-ai">③ AI 적용</a></li>{% endif %}{% if project.ax_result or project.ax_numbers %}<li><a href="#step-result">④ {{ result_title }}</a></li>{% endif %}{% if project.team_contribution %}<li><a href="#step-role">{{ role_label }}</a></li>{% endif %}{% if project.gallery %}<li><a href="#step-gallery">프로젝트 화면</a></li>{% endif %}<li><a href="#step-more">자세히 보기</a></li></ol>
         </nav>
         <div class="detail-content">
             <section id="step-problem" class="reveal story">
@@ -64,8 +66,8 @@
             {% endif %}
             {% if project.ax_result or project.ax_numbers %}
             <section id="step-result" class="reveal story">
-                <h2><span class="story-no">④</span> 성과</h2>
-                {% if project.ax_numbers %}<dl class="story-numbers">{% for n in project.ax_numbers %}<div><dd>{{ n.value }}</dd><dt>{{ n.label }}</dt></div>{% endfor %}</dl>{% endif %}
+                <h2><span class="story-no">④</span> {{ result_title }}</h2>
+                {% if project.ax_numbers %}<dl class="story-numbers">{% for n in project.ax_numbers %}<div><dd>{{ n.value }}</dd><dt>{% if n.kind %}<span class="num-kind">{{ n.kind }}</span>{% endif %}{{ n.label }}</dt></div>{% endfor %}</dl>{% endif %}
                 {% if project.ax_result %}<ul class="story-result">{% for entry in project.ax_result %}<li>{{ entry }}</li>{% endfor %}</ul>{% endif %}
             </section>
             {% endif %}

@@ -154,7 +154,8 @@ def get_projects():
                     # 문제 → 해결 과정 → AI 적용 → 성과 4블록 (있으면 상세 페이지가 이 순서로 바뀌고 기존 항목은 '자세히 보기'로 접힘)
                     'ax_problem', 'ax_link', 'ax_steps', 'ax_trial', 'ai_note', 'ai_tool', 'ai_human', 'ai_check', 'ax_result'):
             item[key] = text_list(raw.get(key))
-        item['ax_numbers'] = [{'value': n['value'].strip(), 'label': n['label'].strip()} for n in raw.get('ax_numbers', []) if isinstance(raw.get('ax_numbers'), list)
+        # kind: 수치의 성격(예: '제작 범위'). 없으면 화면에서 '확인된 결과'로 표시
+        item['ax_numbers'] = [{'value': n['value'].strip(), 'label': n['label'].strip(), 'kind': n['kind'].strip() if isinstance(n.get('kind'), str) else ''} for n in raw.get('ax_numbers', []) if isinstance(raw.get('ax_numbers'), list)
                               and isinstance(n, dict) and isinstance(n.get('value'), str) and isinstance(n.get('label'), str) and n['value'].strip()]
         item['has_story'] = bool(item['ax_problem'] and item['ax_steps'])
         # Optional display-only summaries; older entries without them fall back to existing fields.

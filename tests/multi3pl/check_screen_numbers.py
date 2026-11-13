@@ -163,7 +163,7 @@ with sync_playwright() as p:
         if ind == 'ALL':
             check('상품군을 선택하세요' in txt, '전체: 선택 안내 ' + tag)
         if ind in ('FSH', 'HOM', 'GFT', 'BEA'):
-            check('이 상품군의 실제 근무 경력은 없습니다' in txt or ind == 'HOM', '실제 경력 구분 문구 ' + tag)
+            check('이 상품군의 작업 기준은 개인 시뮬레이션용 가정값입니다' in txt or ind == 'HOM', '실제 경력 구분 문구 ' + tag)  # 2026-11-13 문구 변경: 확인되지 않은 경력 유무를 단정하지 않음
 
         for sid in ['intro', 'overview', 'stock', 'focus']:
             go(sid)
