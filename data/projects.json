@@ -410,7 +410,7 @@
       "공개 배포본은 외부 API 키를 넣지 않아 일부 지표가 ‘키 없음’으로 나오고, 무료 서버 디스크를 쓰기 때문에 재시작·재배포 시 방문자 작업이 사라진다. 실제 서비스라면 키 관리(비밀 저장소)와 외부 저장소·사용량 모니터링이 필요하다."
     ],
     "github_url": "",
-    "live_url": "https://portfolio-axport.onrender.com",
+    "live_url": "https://project-axport.vercel.app",
     "external_url": "",
     "thumbnail": "images/projects/axport-mini1-thumb.png",
     "gallery": [],
