@@ -17,6 +17,6 @@
         </dl>
         {% endif %}
         {% if project.tech_stack %}<ul class="tags" aria-label="핵심 기술">{% for tech in project.tech_stack[:4] %}<li>{{ tech }}</li>{% endfor %}{% if project.tech_stack | length > 4 %}<li class="more">외 {{ project.tech_stack | length - 4 }}개</li>{% endif %}</ul>{% endif %}
-        <div class="project-actions"><a class="button primary small" href="{{ url_for('project_detail', slug=project.slug) }}" aria-label="{{ project.title }} 상세 보기">상세 보기 <span aria-hidden="true">→</span></a>{% include 'partials/project_links.html' %}</div>
+        <div class="project-actions"><a class="button primary small" href="{{ url_for('project_detail', slug=project.slug) }}" aria-label="{{ project.title }} 상세 보기">상세 보기 <span aria-hidden="true">→</span></a>{% set on_card = true %}{% include 'partials/project_links.html' %}</div>
     </div>
 </article>

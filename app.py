@@ -169,6 +169,8 @@ def get_projects():
         # 외부 링크 버튼 이름(선택). 없으면 'Website'. 링크가 있을 때만 사용
         label = raw.get('external_label')
         item['external_label'] = label.strip()[:40] if isinstance(label, str) and label.strip() and item['external_url'] else ''
+        # 외부 링크를 홈 프로젝트 카드에도 보일지(기본 예). false면 상세 페이지에서만 표시
+        item['external_on_card'] = raw.get('external_on_card') is not False
         item['thumbnail'] = project_image(raw.get('thumbnail'))
         item['thumbnail_fit'] = 'contain' if raw.get('thumbnail_fit') == 'contain' else ''  # 가로로 긴 화면(Excel 등)은 잘리지 않게
         note = raw.get('thumbnail_note')  # 대표 이미지 성격 표시(예: 가상 데이터 재현본). 화면 표시 전용

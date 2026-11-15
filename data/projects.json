@@ -74,8 +74,7 @@
     ],
     "github_url": "",
     "live_url": "/demo/scm-dashboard/",
-    "external_url": "https://sojunhee-warehouse-ops.vercel.app/",
-    "external_label": "현장 운영 포트폴리오 보기",
+    "external_url": "",
     "thumbnail": "images/projects/multi3pl-overview.png",
     "gallery": [
       {
@@ -534,7 +533,7 @@
     "result": [
       "월 운영 보고(상사·본사), 화주별 매출·물동량 현황 확인, 화주사별 정산과 월 마감 대조에 실제로 사용했다.",
       "두잇로지스 재직 중 월 마감 소요 기간을 7일에서 3일로 줄였고, 이 대시보드는 그 과정에서 정산·마감 대조에 쓴 도구다. 단축 전체가 이 대시보드 하나의 효과라고 따로 측정하지는 않았다.",
-      "원본은 공개하지 않고, 같은 구성을 가상 데이터로 재현한 Excel 파일과 화면을 SCM 포트폴리오에서 볼 수 있다."
+      "원본은 공개하지 않고, 같은 구성을 가상 데이터로 재현한 화면과 Excel 파일을 이 상세 페이지에서 볼 수 있다."
     ],
     "future_improvement": [
       "지금은 운영 자료를 시트에 옮겨 넣는 수작업이 남아 있다. WMS 자료를 바로 불러오는 연결(Power Query 등)을 쓰면 입력 시간을 더 줄일 수 있다(향후 적용 가능).",
@@ -542,8 +541,9 @@
     ],
     "github_url": "",
     "live_url": "",
-    "external_url": "https://sojunhee-logistics-data.vercel.app/#excel",
-    "external_label": "SCM 포트폴리오 보기",
+    "external_url": "https://sojunhee-logistics-data.vercel.app/assets/excel/Excel_Dashboard_Sample.xlsx",
+    "external_label": "재현 예시 Excel 내려받기",
+    "external_on_card": false,
     "thumbnail": "images/projects/excel-dashboard-sample.png",
     "gallery": [
       {

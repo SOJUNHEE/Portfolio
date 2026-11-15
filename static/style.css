@@ -284,9 +284,10 @@ figure.hero-work{position:relative;margin:0}
 .project-preview img{width:100%;height:100%;object-fit:cover;object-position:top;transition:transform var(--dur-image) var(--ease-out)}
 .project-card:hover .project-preview img{transform:scale(1.03)}
 .project-card h3 a:focus-visible{outline-offset:4px}
-/* 직무별 포트폴리오 2곳: 박스 카드 대신 큰 링크 행(Stada 푸터 링크 구조). hover 때 옅은 네이비 면이 아래에서 차오르고 화살표 원이 채워짐 */
+/* 운영 대시보드 2곳: 박스 카드 대신 큰 링크 행(Stada 푸터 링크 구조). hover 때 옅은 네이비 면이 아래에서 차오르고 화살표 원이 채워짐 */
 .track-block{margin-bottom:clamp(72px,8vw,128px)}
 .track-heading{margin-bottom:14px;font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--color-label)}
+.track-note{max-width:72ch;text-wrap:pretty;margin-bottom:18px;font-size:14px;line-height:1.7;color:var(--color-muted)}
 .track-grid{display:grid;margin:0;padding:0;list-style:none;border-top:1px solid var(--color-line)}
 .track-card{min-width:0}
 .track-link{position:relative;isolation:isolate;display:grid;gap:8px 32px;padding:24px 0 26px;border-bottom:1px solid var(--color-rule);color:var(--color-text);transition:padding 450ms var(--ease-out)}
