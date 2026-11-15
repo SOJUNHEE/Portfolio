@@ -58,7 +58,7 @@
       "title": "INVENTORY & SYSTEMS",
       "subtitle": "재고·시스템 관리",
       "items": [
-        "WMS·DAS",
+        "WMS",
         "Excel 전산 관리",
         "월간 재고 마감 · 재고 실사",
         "재고 정확도 관리"
@@ -97,7 +97,6 @@
       "items": [
         "3PL·풀필먼트",
         "WMS",
-        "DAS",
         "재고·입출고 관리",
         "B2C·B2B 출고",
         "물류비 정산",
