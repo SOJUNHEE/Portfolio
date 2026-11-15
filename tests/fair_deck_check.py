@@ -4,13 +4,13 @@
 휴대폰(390·360px)·태블릿(768px)·PC(1440px)에서 확인:
   첫 화면 = 종합 소개(프로젝트 4개 바로가기) · 프로젝트 칩 이동과 브라우저 '뒤로' · 이전/다음 · 키보드
   휴대폰 글자 하한(본문 16px, 제목 24px, 보조 14px)과 버튼 높이(44px) · 긴 장에서 넘기면 새 장 맨 위부터
-  화면 크게 보기: 열림·뒤 화면 스크롤 잠금·닫기/다음 장 버튼이 화면 안·Esc · 파일 4개 받기 · 가로 넘침 · 콘솔 오류
+  화면 크게 보기: 열림·뒤 화면 스크롤 잠금·닫기/다음 장 버튼이 화면 안·Esc · PPT 2개 받기 · 가로 넘침 · 콘솔 오류
 실패가 있으면 종료 코드 1."""
 import sys
 from playwright.sync_api import sync_playwright
 
 BASE = (sys.argv[1] if len(sys.argv) > 1 else 'http://127.0.0.1:5000').rstrip('/') + '/static/ppt/index.html'
-FILES = ('sojunhee-portfolio-core10.pdf', 'sojunhee-portfolio-core10.pptx', 'sojunhee-portfolio-fair.pdf', 'sojunhee-portfolio-fair.pptx')
+FILES = ('sojunhee-portfolio-core10.pptx', 'sojunhee-portfolio-fair.pptx')   # PDF 공개 다운로드는 cdbd6eb에서 삭제
 fails, passes = [], 0
 
 
@@ -148,7 +148,7 @@ with sync_playwright() as p:
 
         # 파일 받기
         pg.click('.v-files summary'); pg.wait_for_timeout(200)
-        check(pg.locator('.v-files-list a').count() == 4 and visible_in_viewport(pg, '.v-files-list'), f'{tag} 파일 받기 목록이 화면 안')
+        check(pg.locator('.v-files-list a').count() == len(FILES) and visible_in_viewport(pg, '.v-files-list'), f'{tag} 파일 받기 목록이 화면 안')
         for href in FILES:
             r = pg.request.get(BASE.rsplit('/', 1)[0] + '/' + href)
             check(r.status == 200 and len(r.body()) > 10000, f'{tag} {href} 받기')   # 압축 응답은 content-length가 없을 수 있음
