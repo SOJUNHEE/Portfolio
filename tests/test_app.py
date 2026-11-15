@@ -142,6 +142,17 @@ class PortfolioTests(unittest.TestCase):
         self.assertIn('제작 범위와 성과', detail)
         self.assertIn('<span class="num-kind">제작 범위</span>pivot tables', detail)
 
+    def test_external_link_label(self):
+        # 2026-11-15: 외부 링크 버튼 이름(external_label). 없으면 'Website', 링크가 없으면 이름도 쓰지 않음
+        self.projects([{'slug': 'label-a', 'is_published': True, 'external_url': 'https://example.com', 'external_label': '직무 포트폴리오 보기'},
+                       {'slug': 'label-b', 'is_published': True, 'external_url': 'https://example.org'},
+                       {'slug': 'label-c', 'is_published': True, 'external_label': '링크 없음'}])
+        home = self.client.get('/').text
+        self.assertIn('직무 포트폴리오 보기', home)
+        self.assertIn('Website', home)
+        self.assertNotIn('링크 없음', home)
+        self.assertIn('직무 포트폴리오 보기', self.client.get('/projects/label-a').text)
+
     def test_production_content_and_routes(self):
         app.config['DATA_DIR'] = self.original
         home = self.client.get('/')

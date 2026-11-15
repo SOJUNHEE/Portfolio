@@ -58,6 +58,24 @@
 <section id="projects" class="section">
     <div class="container">
         <div class="section-heading reveal"><p class="eyebrow">01 / SELECTED PROJECTS</p><h2>현업의 질문을 기술로 풀어 본 프로젝트</h2><p>물류 현장에서 직접 겪은 문제를 골라, 데이터와 AI 코딩 도구로 직접 도구를 만들어 풀었습니다. 각 프로젝트는 어떤 문제였는지, 어떻게 풀었는지, AI를 어디에 썼는지, 무엇이 나아졌는지 순서로 정리했습니다. 팀 프로젝트는 직접 담당한 범위를 따로 적었습니다.</p></div>
+        {# 2026-11-15 직무별 포트폴리오: 지원 직무에 맞춰 따로 만든 사이트 2곳으로 바로 이동(새 탭). 프로젝트 카드보다 먼저 보이게 #}
+        <div class="track-block reveal" role="region" aria-labelledby="track-heading">
+            <p class="track-heading" id="track-heading">직무별 포트폴리오</p>
+            <ul class="track-grid">
+                <li class="track-card">
+                    <span class="track-no">Portfolio 01</span>
+                    <h3>SCM · 물류 데이터</h3>
+                    <p>Excel, 재고·출고 데이터, 물류비 정산 및 SCM 분석</p>
+                    <a class="button primary small" href="https://sojunhee-logistics-data.vercel.app/" target="_blank" rel="noopener noreferrer">SCM 포트폴리오 보기 <span aria-hidden="true">↗</span><span class="sr-only">(새 창)</span></a>
+                </li>
+                <li class="track-card">
+                    <span class="track-no">Portfolio 02</span>
+                    <h3>물류센터 현장 운영</h3>
+                    <p>3PL·풀필먼트, 현장 운영, 재고, 출고, 인력·작업 동선 관리</p>
+                    <a class="button primary small" href="https://sojunhee-warehouse-ops.vercel.app/" target="_blank" rel="noopener noreferrer">현장 운영 포트폴리오 보기 <span aria-hidden="true">↗</span><span class="sr-only">(새 창)</span></a>
+                </li>
+            </ul>
+        </div>
         {% if projects %}
         <div class="project-grid">{% for project in projects %}{% set project_no = loop.index %}{% include 'partials/project_card.html' %}{% endfor %}</div>
         {% else %}

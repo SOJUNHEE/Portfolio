@@ -74,7 +74,8 @@
     ],
     "github_url": "",
     "live_url": "/demo/scm-dashboard/",
-    "external_url": "",
+    "external_url": "https://sojunhee-warehouse-ops.vercel.app/",
+    "external_label": "현장 운영 포트폴리오 보기",
     "thumbnail": "images/projects/multi3pl-overview.png",
     "gallery": [
       {
@@ -543,6 +544,7 @@
     "github_url": "",
     "live_url": "",
     "external_url": "https://sojunhee-logistics-data.vercel.app/#excel",
+    "external_label": "SCM 포트폴리오 보기",
     "thumbnail": "images/projects/excel-dashboard-sample.png",
     "gallery": [
       {

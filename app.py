@@ -166,6 +166,9 @@ def get_projects():
         for key in ('github_url', 'live_url', 'external_url'):
             item[key] = safe_url(raw.get(key))
         item['live_url'] = item['live_url'] or demo_url(raw.get('live_url'))
+        # 외부 링크 버튼 이름(선택). 없으면 'Website'. 링크가 있을 때만 사용
+        label = raw.get('external_label')
+        item['external_label'] = label.strip()[:40] if isinstance(label, str) and label.strip() and item['external_url'] else ''
         item['thumbnail'] = project_image(raw.get('thumbnail'))
         item['thumbnail_fit'] = 'contain' if raw.get('thumbnail_fit') == 'contain' else ''  # 가로로 긴 화면(Excel 등)은 잘리지 않게
         note = raw.get('thumbnail_note')  # 대표 이미지 성격 표시(예: 가상 데이터 재현본). 화면 표시 전용
