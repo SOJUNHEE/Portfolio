@@ -31,6 +31,8 @@ if (toggle && nav) {
             if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
         }
     });
+    // A page restored from the back/forward cache keeps its last DOM state; never come back to an open menu and a locked page.
+    window.addEventListener('pageshow', event => { if (event.persisted) setMenu(false); });
     const onMediaChange = () => { if (!media.matches) setMenu(false); };
     if (media.addEventListener) media.addEventListener('change', onMediaChange);
     else media.addListener(onMediaChange);  // Safari 13 and older

@@ -959,3 +959,8 @@ body { background: var(--canvas); }
   .t-search, [data-search] { min-height: 44px; }
   .sample-badge, .todo-card .todo .area { font-size: 13px; }   /* 561~900px 태블릿에서 11.5px였던 짧은 라벨 */
 }
+
+/* 2026-11-15 모바일 표 가로 스크롤 안내: 표가 화면보다 넓을 때 오른쪽 끝을 옅게 흐려 옆으로 더 있다는 것을 보여 줌(레이아웃·동작 변화 없음) */
+@media (max-width: 767px) {
+  .table-wrap { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); }
+}

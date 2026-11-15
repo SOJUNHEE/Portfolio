@@ -263,7 +263,7 @@ figure.hero-work{position:relative;margin:0}
 .ax-grid{grid-template-columns:minmax(0,1fr)}
 .ax-grid .metric,.ax-grid .metric:nth-child(2n){padding:18px 0 20px;border-left:0}
 .ax-grid .metric:last-child{border-bottom:0}
-.ax-grid .metric-value{margin:0 0 6px;font-size:clamp(26px,calc(.8vw + 22px),34px);font-weight:400;letter-spacing:-.03em;color:var(--color-label)}
+.ax-grid .metric-value{white-space:normal;text-wrap:balance;margin:0 0 6px;font-size:clamp(26px,calc(.8vw + 22px),34px);font-weight:400;letter-spacing:-.03em;color:var(--color-label)}
 .ax-grid dt{font-weight:500}
 @media(min-width:640px){
     .metrics-grid{grid-template-columns:repeat(3,minmax(0,1fr))}

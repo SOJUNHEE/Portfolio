@@ -14,9 +14,9 @@
             <div class="hero-statement">
                 <h1><span>현장을 이해하고,</span> <span class="accent"><em>데이터로 물류 운영을</em></span> <span class="accent"><em>개선합니다.</em></span></h1>
                 <div class="hero-side">
-                    <p class="hero-description">3PL·풀필먼트 센터와 무역회사에서 4년 8개월 동안 겪은 운영 문제를, AI 코딩 도구로 직접 대시보드를 만들어 풀고 있습니다. 운영 기준은 직접 정하고, 계산 결과는 자동 점검으로 확인합니다.</p>
+                    <p class="hero-description">3PL·풀필먼트 센터와 무역회사에서 4년 8개월 동안 겪은 운영 문제를 AI 코딩 도구로 직접 만든 대시보드로 풀어 가고 있습니다. 운영 기준은 직접 정하고, 계산 결과는 자동 점검으로 확인합니다.</p>
                     <div class="actions"><a class="button primary" href="#projects">프로젝트 보기 <span aria-hidden="true">→</span></a><a class="button secondary" href="#experience">경력 보기</a></div>
-                    <a class="text-link pdf-link" href="{{ url_for('static', filename='ppt/sojunhee-portfolio-core10.pdf') }}" download>포트폴리오 PDF <span class="file-meta">PDF · 1.4MB</span> <span aria-hidden="true">↓</span></a>
+                    <a class="text-link pdf-link" href="{{ url_for('static', filename='ppt/sojunhee-portfolio-core10.pdf') }}" download>포트폴리오 PDF <span class="file-meta">10쪽 · 1.4MB</span> <span aria-hidden="true">↓</span></a>
                 </div>
             </div>
         </div>
@@ -170,7 +170,7 @@
 <section id="contact" class="contact-section">
     <div class="container contact-grid">
         <div class="contact-copy reveal"><p class="eyebrow">06 / CONTACT</p><p class="section-opener" lang="en" aria-hidden="true">Contact</p><h2>더 나은 운영을 만드는 일,<br> 함께 이야기하고 싶습니다.</h2><p>SCM · 물류 · 무역, 그리고 데이터와 기술의 접점에서.</p></div>
-        <div class="contact-info reveal"><p class="contact-label">EMAIL</p><a class="email-link" href="mailto:{{ profile.email }}">{{ profile.email }} <span aria-hidden="true">↗</span></a>{% if profile.phone %}<a class="phone-link" href="tel:{{ profile.phone | replace('-', '') }}">{{ profile.phone }}</a>{% endif %}<div class="contact-actions"><button class="copy-email" type="button" data-email="{{ profile.email }}">이메일 복사 <span aria-hidden="true">⧉</span></button><a class="contact-pdf" href="{{ url_for('static', filename='ppt/sojunhee-portfolio-core10.pdf') }}" download>포트폴리오 PDF <span class="file-meta">PDF · 1.4MB</span> <span aria-hidden="true">↓</span></a></div><span id="copy-status" class="copy-status" role="status" aria-live="polite"></span><p class="location">{{ profile.location }}</p></div>
+        <div class="contact-info reveal"><p class="contact-label">EMAIL</p><a class="email-link" href="mailto:{{ profile.email }}">{{ profile.email }} <span aria-hidden="true">↗</span></a>{% if profile.phone %}<a class="phone-link" href="tel:{{ profile.phone | replace('-', '') }}">{{ profile.phone }}</a>{% endif %}<div class="contact-actions"><button class="copy-email" type="button" data-email="{{ profile.email }}">이메일 복사 <span aria-hidden="true">⧉</span></button><a class="contact-pdf" href="{{ url_for('static', filename='ppt/sojunhee-portfolio-core10.pdf') }}" download>포트폴리오 PDF <span class="file-meta">10쪽 · 1.4MB</span> <span aria-hidden="true">↓</span></a></div><span id="copy-status" class="copy-status" role="status" aria-live="polite"></span><p class="location">{{ profile.location }}</p></div>
     </div>
 </section>
 {% endblock %}

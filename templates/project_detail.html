@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}{{ project.title }} | 소준희 Portfolio{% endblock %}
 {% block description %}{{ project.description or '소준희의 교육 과정 및 개인 프로젝트 기록입니다.' }}{% endblock %}
-{% macro gallery(images) %}<div class="gallery"><h3 class="tiny-label">프로젝트 화면</h3>{% for image in images %}<figure><img src="{{ image.src }}" alt="" data-title="{{ image.alt }}"{% if image.w and image.h %} width="{{ image.w }}" height="{{ image.h }}"{% endif %} loading="lazy"><figcaption>{{ image.alt }}</figcaption></figure>{% endfor %}</div>{% endmacro %}
+{% macro gallery(images, heading=true) %}<div class="gallery">{% if heading %}<h3 class="tiny-label">프로젝트 화면</h3>{% endif %}{% for image in images %}<figure><img src="{{ image.src }}" alt="" data-title="{{ image.alt }}"{% if image.w and image.h %} width="{{ image.w }}" height="{{ image.h }}"{% endif %} loading="lazy"><figcaption>{{ image.alt }}</figcaption></figure>{% endfor %}</div>{% endmacro %}
 {% block content %}
 {% set steps = [('problem','문제 정의',''),('objective','목표',''),('data','활용 데이터','실제 데이터와 직접 만든 데이터를 구분해 적었습니다.'),('solution','해결 방법',''),('architecture','시스템 구조','실제 구현된 범위 기준입니다.'),('features','주요 기능',''),('result','결과','직접 검증한 내용과 아직 확인하지 못한 내용을 함께 적었습니다.'),('future_improvement','향후 개선','현재 구현의 한계와 확장에 필요한 과제입니다.')] %}
 {% set more_steps = [('objective','목표',''),('data','활용 데이터','실제 데이터와 직접 만든 데이터를 구분해 적었습니다.'),('solution','해결 방법 (상세)',''),('architecture','시스템 구조','실제 구현된 범위 기준입니다.'),('features','주요 기능',''),('result','검증 상세',''),('future_improvement','향후 개선','실제 기업 시스템으로 확장하려면 필요한 과제입니다.')] %}
@@ -46,7 +46,7 @@
             <section id="step-problem" class="reveal story">
                 <h2><span class="story-no">①</span> 문제</h2>
                 {% for paragraph in project.ax_problem %}<p>{{ paragraph }}</p>{% endfor %}
-                {% for paragraph in project.ax_link %}<p class="story-link"><b>실무 연결</b>{{ paragraph }}</p>{% endfor %}
+                {% for paragraph in project.ax_link %}<p class="story-link"><b>실무 연결</b> {{ paragraph }}</p>{% endfor %}
             </section>
             <section id="step-process" class="reveal story">
                 <h2><span class="story-no">②</span> 해결 과정</h2>
@@ -58,10 +58,10 @@
                 <h2><span class="story-no">③</span> AI 적용</h2>
                 {% for paragraph in project.ai_note %}<p>{{ paragraph }}</p>{% endfor %}
                 <div class="ai-split">
-                    {% if project.ai_tool %}<div class="ai-tool"><h3>AI 코딩 도구(Claude Code)가 한 일</h3><ul>{% for entry in project.ai_tool %}<li>{{ entry }}</li>{% endfor %}</ul></div>{% endif %}
+                    {% if project.ai_tool %}<div class="ai-tool"><h3>AI 도구가 한 일</h3><ul>{% for entry in project.ai_tool %}<li>{{ entry }}</li>{% endfor %}</ul></div>{% endif %}
                     {% if project.ai_human %}<div class="ai-human"><h3>내가 정하고 맡은 일</h3><ul>{% for entry in project.ai_human %}<li>{{ entry }}</li>{% endfor %}</ul></div>{% endif %}
                 </div>
-                {% for paragraph in project.ai_check %}<p class="story-check"><b>검증</b>{{ paragraph }}</p>{% endfor %}
+                {% for paragraph in project.ai_check %}<p class="story-check"><b>검증</b> {{ paragraph }}</p>{% endfor %}
             </section>
             {% endif %}
             {% if project.ax_result or project.ax_numbers %}
@@ -72,7 +72,7 @@
             </section>
             {% endif %}
             {% if project.team_contribution %}{{ role_block() }}{% endif %}
-            {% if project.gallery %}<section id="step-gallery" class="reveal"><h2>프로젝트 화면</h2>{{ gallery(project.gallery) }}</section>{% endif %}
+            {% if project.gallery %}<section id="step-gallery" class="reveal"><h2>프로젝트 화면</h2>{{ gallery(project.gallery, false) }}</section>{% endif %}
             {% if project.tech_stack %}<section id="step-tech" class="reveal"><h2>사용 기술</h2><ul class="tags">{% for tech in project.tech_stack %}<li>{{ tech }}</li>{% endfor %}</ul></section>{% endif %}
             <details id="step-more" class="story-more">
                 <summary>자세히 보기 <span>목표 · 활용 데이터 · 시스템 구조 · 주요 기능 · 검증 상세 · 향후 개선</span></summary>
@@ -103,7 +103,7 @@
                 {% if key == 'features' and project.gallery %}{{ gallery(project.gallery) }}{% set ns.gallery_done = true %}{% endif %}
             </section>
             {% endif %}{% endfor %}
-            {% if project.gallery and not ns.gallery_done %}<section id="step-gallery" class="reveal"><h2>프로젝트 화면</h2>{{ gallery(project.gallery) }}</section>{% endif %}
+            {% if project.gallery and not ns.gallery_done %}<section id="step-gallery" class="reveal"><h2>프로젝트 화면</h2>{{ gallery(project.gallery, false) }}</section>{% endif %}
             {% if project.tech_stack %}<section id="step-tech" class="reveal"><h2>사용 기술</h2><ul class="tags">{% for tech in project.tech_stack %}<li>{{ tech }}</li>{% endfor %}</ul></section>{% endif %}
             <a class="button primary" href="{{ url_for('index') }}#projects">프로젝트 목록으로 돌아가기 <span aria-hidden="true">→</span></a>
         </div>
