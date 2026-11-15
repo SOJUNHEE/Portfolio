@@ -92,7 +92,8 @@ try:
                 target = link.get_attribute('href').split('#')[1]
                 assert page.locator(f'[id="{target}"]').count(), target
             order = page.evaluate("[...document.querySelectorAll('main > section[id]')].map(s => s.id)")
-            assert order == ['home', 'projects', 'about', 'experience', 'skills', 'journey', 'contact'], order
+            # 2026-11-15 Stada 재설계: 소개 → 경력 → 프로젝트 순서(사용자 승인)
+            assert order == ['home', 'about', 'experience', 'projects', 'skills', 'journey', 'contact'], order
             # Primary touch targets stay comfortably tappable.
             small = page.evaluate("[...document.querySelectorAll('.button, #main-nav a, .menu-toggle, .copy-email, summary')].filter(e => e.offsetParent && e.getBoundingClientRect().height < 43.5).map(e => e.textContent.trim())")
             assert not small, f'small targets at {width}: {small}'

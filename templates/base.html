@@ -28,11 +28,13 @@
 <header class="site-header">
     <div class="header-inner container">
         <a class="logo" href="{{ url_for('index') }}" aria-label="소준희 포트폴리오 홈"><span class="monogram" aria-hidden="true">JH</span><span class="logo-name">{{ profile.english_name }}</span></a>
-        <button class="menu-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="메뉴 열기"><span></span><span></span></button>
+        <button class="menu-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="메뉴 열기"><span class="menu-word" aria-hidden="true">Menu</span><span class="menu-lines" aria-hidden="true"><span></span><span></span></span></button>
+        {# 2026-11-15: 섹션 순서(소개 → 경력 → 프로젝트 → 연락처)와 같은 순서. 모바일에서는 전체화면 메뉴로 열림(번호·화살표는 그때만 보임) #}
         <nav id="main-nav" aria-label="주요 메뉴">
-            {% for id, label in [('projects','프로젝트'),('about','소개'),('experience','경력'),('contact','연락처')] %}
-            <a href="{{ url_for('index') }}#{{ id }}"{% if id == 'contact' %} class="nav-contact"{% endif %}>{{ label }}</a>
+            {% for id, label in [('about','소개'),('experience','경력'),('projects','프로젝트'),('contact','연락처')] %}
+            <a href="{{ url_for('index') }}#{{ id }}"{% if id == 'contact' %} class="nav-contact"{% endif %}><span class="nav-no" aria-hidden="true">{{ '%02d' % loop.index }}</span><span class="nav-label">{{ label }}</span><span class="nav-arrow" aria-hidden="true">→</span></a>
             {% endfor %}
+            <p class="nav-meta"><span class="nav-meta-label">EMAIL</span>{{ profile.email }}<span class="nav-meta-label">LOCATION</span>{{ profile.location }}</p>
         </nav>
     </div>
 </header>
